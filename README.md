@@ -1,0 +1,1 @@
+# Inventory-Management-System-with-QR-Technology-and-Predictive-Analytics
