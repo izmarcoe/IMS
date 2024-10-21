@@ -36,6 +36,7 @@ if (isset($_SESSION['user_id'])) {
 
         <div class="container text-center">
             <h1 class="text-center">Welcome <br> <?php echo $user_name; ?>!</h1>
+            <h2 class="text-center">Wait for the special admin to give you a role.</h2>
             <a class="btn btn-dark" href="./endpoint/logout.php">Logout</a>
         </div>
 

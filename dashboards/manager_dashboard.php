@@ -2,11 +2,15 @@
 session_start();
 include ('./conn/conn.php');
 
-// Check if the user is logged in and has the correct role
-if (isset($_SESSION['user_id']) && $_SESSION['user_role'] == 'employee') { // Change 'employee' to 'manager' or 'admin' for other dashboards
-    $user_id = $_SESSION['user_id'];
-    $user_name = $_SESSION['user_name'];
-    $user_role = $_SESSION['user_role'];
+    if (isset($_SESSION['user_id']) && $_SESSION['user_role'] == 'employee') {
+        // Display employee dashboard content
+    } elseif (isset($_SESSION['user_id']) && $_SESSION['user_role'] == 'manager') {
+        // Display manager dashboard content
+    } else {
+        // Redirect to login page if not logged in or wrong role
+        header("Location: http://localhost/IMS/");
+        exit();
+    }
 ?>
 
 <!DOCTYPE html>
@@ -30,11 +34,3 @@ if (isset($_SESSION['user_id']) && $_SESSION['user_role'] == 'employee') { // Ch
     </div>
 </body>
 </html>
-
-<?php
-} else {
-    // Redirect to login page if not logged in or wrong role
-    header("Location: http://localhost/IMS/");
-    exit();
-}
-?>
