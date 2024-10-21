@@ -7,15 +7,17 @@ if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
 
     // Fetch the user's name from the database
-    $stmt = $conn->prepare("SELECT `name` FROM `login_db` WHERE `user_id` = :user_id");
+    $stmt = $conn->prepare("SELECT `Fname`, `Lname` FROM `login_db` WHERE `user_id` = :user_id");
     $stmt->bindParam(':user_id', $user_id);
     $stmt->execute();
     
     if ($stmt->rowCount() > 0) {
         $row = $stmt->fetch();
-        $user_name = $row['name'];
+        $user_name = $row['Fname'] . ' ' . $row['Lname']; // Combine first and last name
+    } else {
+        // Handle case where user is not found
+        $user_name = "User not found";
     }
-
     ?>
 
 <!DOCTYPE html>

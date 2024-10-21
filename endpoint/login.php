@@ -1,21 +1,25 @@
 <?php
+session_start();
 include ('../conn/conn.php');
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $qrCode = $_POST['qr-code'];
 
-    $stmt = $conn->prepare("SELECT `generated_code`, `name`, `user_id` FROM `login_db` WHERE `generated_code` = :generated_code");
-    $stmt->bindParam(':generated_code', $qrCode);
+     // Hash the input QR code using SHA-256
+    $hashedQrCode = hash('sha256', $qrCode);
+
+    $stmt = $conn->prepare("SELECT `generated_code`, `Fname`, `Lname`, `user_id` FROM `login_db` WHERE `generated_code` = :generated_code");
+    $stmt->bindParam(':generated_code', $hashedQrCode);
     $stmt->execute();
 
-    $accountExist =  $stmt->fetch(PDO::FETCH_ASSOC);
+    $accountExist = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($accountExist) {
-        session_start();
+
         $_SESSION['user_id'] = $accountExist['user_id'];
 
-        $name = $accountExist['name'];
-        $user_id = $accountExist['user_id'];
+        // Retrieve first name and last name
+        $name = $accountExist['Fname'] . ' ' . $accountExist['Lname']; // Combine first and last name
 
         echo "
         <script>
@@ -24,6 +28,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </script>
         "; 
     } else {
+        // Debugging: Log the failure to find the account
+        error_log("QR Code account doesn't exist: " . $hashedQrCode); // Log the failure
         echo "
         <script>
             alert('QR Code account doesn\'t exist!'); // Escaped single quote
@@ -32,5 +38,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         "; 
     }
 }
-
 ?>
