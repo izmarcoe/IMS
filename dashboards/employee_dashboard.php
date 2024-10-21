@@ -26,7 +26,7 @@ if (isset($_SESSION['user_id']) && $_SESSION['user_role'] == 'employee') { // Ch
         
         <!-- Add role-specific content here -->
 
-        <a class="btn btn-dark" href="./endpoint/logout.php">Logout</a>
+        <a class="btn btn-dark" href="../endpoint/logout.php">Logout</a>
     </div>
 </body>
 </html>
