@@ -22,13 +22,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Redirect based on role
         switch ($accountExist['role']) {
             case 'employee':
-                $redirect_url = 'http://localhost/IMS/employee_dashboard.php';
+                $redirect_url = 'http://localhost/IMS/dashboards/employee_dashboard.php';
                 break;
             case 'manager':
-                $redirect_url = 'http://localhost/IMS/manager_dashboard.php';
+                $redirect_url = 'http://localhost/IMS/dashboards/manager_dashboard.php';
                 break;
             case 'admin':
-                $redirect_url = 'http://localhost/IMS/admin_dashboard.php';
+                $redirect_url = 'http://localhost/IMS/dashboards/admin_dashboard.php';
                 break;
             default:
                 $redirect_url = 'http://localhost/IMS/home.php';
