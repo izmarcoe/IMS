@@ -1,35 +1,27 @@
 <?php 
 include ('../conn/conn.php');
 
-if (isset($_POST['fname'], $_POST['lname'], $_POST['contact_number'], $_POST['email'], $_POST['generated_code'])) {
-    $fname = $_POST['fname'];
-    $lname = $_POST['lname'];
+if (isset($_POST['name'], $_POST['contact_number'], $_POST['email'], $_POST['generated_code'])) {
+    $name = $_POST['name'];
     $contactNumber = $_POST['contact_number'];
     $email = $_POST['email'];
     $generatedCode = $_POST['generated_code'];
-
     
     try {
-        // Check if a user with the same first name and last name already exists
-        $stmt = $conn->prepare("SELECT `Fname`, `Lname` FROM `login_db` WHERE `Fname` = :fname AND `Lname` = :lname");
-        $stmt->execute(['fname' => $fname, 'lname' => $lname]);
+        $stmt = $conn->prepare("SELECT `name` FROM `login_db` WHERE `name` = :name");
+        $stmt->execute(['name' => $name]);
 
         $nameExist = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (empty($nameExist)) {
-            $conn->beginTransaction();  // Start a transaction to ensure atomicity
+            $conn->beginTransaction();  // Start transaction
 
-            // Hash the generated QR code
-            $hashedCode = hash('sha256', $generatedCode);
-
-            // Insert new user record
-            $insertStmt = $conn->prepare("INSERT INTO `login_db` (`Fname`, `Lname`, `contact_number`, `email`, `generated_code`) 
-                                          VALUES (:fname, :lname, :contact_number, :email, :generated_code)");
-            $insertStmt->bindParam(':fname', $fname, PDO::PARAM_STR);
-            $insertStmt->bindParam(':lname', $lname, PDO::PARAM_STR);
-            $insertStmt->bindParam(':contact_number', $contactNumber, PDO::PARAM_STR);
-            $insertStmt->bindParam(':email', $email, PDO::PARAM_STR);
-            $insertStmt->bindParam(':generated_code', $hashedCode, PDO::PARAM_STR);
+            $insertStmt = $conn->prepare("INSERT INTO `login_db` (`name`, `contact_number`, `email`, `generated_code`) 
+                                          VALUES (:name, :contact_number, :email, :generated_code)");
+            $insertStmt->bindParam('name', $name, PDO::PARAM_STR);
+            $insertStmt->bindParam('contact_number', $contactNumber, PDO::PARAM_STR);
+            $insertStmt->bindParam('email', $email, PDO::PARAM_STR);
+            $insertStmt->bindParam('generated_code', $generatedCode, PDO::PARAM_STR);
 
             $insertStmt->execute();
 
@@ -42,18 +34,19 @@ if (isset($_POST['fname'], $_POST['lname'], $_POST['contact_number'], $_POST['em
             </script>
             ";
         } else {
-            // User with the same name already exists
             echo "
             <script>
-                alert('User with the same name already exists!');
+                alert('Account Already Exist!');
                 window.location.href = 'http://localhost/IMS/';
             </script>
             ";
         }
-    } catch (Exception $e) {
-        $conn->rollBack();  // Rollback the transaction if an error occurs
+    } catch (PDOException $e) {
+        // Check if a transaction is active before rolling it back
+        if ($conn->inTransaction()) {
+            $conn->rollBack();
+        }
         echo "Error: " . $e->getMessage();
     }
 }
-
 ?>

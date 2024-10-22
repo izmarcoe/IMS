@@ -42,24 +42,18 @@
                 <p class="text-center">Fill in your personal details.</p>
                 <form action="./endpoint/add-user.php" method="POST">
                     <div class="hide-registration-inputs">
-                        <div class="form-group registration row">
-                            <div class="col-6">
-                                <label for="fname">First Name:</label>
-                                <input type="text" class="form-control" id="fname" name="fname" required>
-                            </div>
-                            <div class="col-6">
-                                <label for="lname">Last Name:</label>
-                                <input type="text" class="form-control" id="lname" name="lname" required>
-                            </div>
+                        <div class="form-group registration">
+                            <label for="name">Name:</label>
+                            <input type="text" class="form-control" id="name" name="name">
                         </div>
                         <div class="form-group registration row">
                             <div class="col-5">
                                 <label for="contactNumber">Contact Number:</label>
-                                <input type="number" class="form-control" id="contactNumber" name="contact_number" maxlength="11" required>
+                                <input type="number" class="form-control" id="contactNumber" name="contact_number" maxlength="11">
                             </div>
                             <div class="col-7">
                                 <label for="email">Email:</label>
-                                <input type="email" class="form-control" id="email" name="email" required>
+                                <input type="text" class="form-control" id="email" name="email">
                             </div>
                         </div>
                         <p>Already have a QR code account? Login <span class="switch-form-link" onclick="location.reload()">Here.</span></p>
@@ -144,13 +138,14 @@
         const registrationInputs = document.querySelector('.hide-registration-inputs');
         const h2 = document.querySelector('.registration-form > h2');
         const p = document.querySelector('.registration-form > p');
+        const inputs = document.querySelectorAll('.registration input');
         const qrImg = document.getElementById('qrImg');
         const qrBox = document.getElementById('qrBox');
 
         registrationInputs.style.display = 'none';
 
-        let text = generateRandomCode(10);  // Generate random code
-        $("#generatedCode").val(text);  // Store it in a hidden input for the form submission
+        let text = generateRandomCode(10);
+        $("#generatedCode").val(text);
 
         if (text === "") {
             alert("Please enter text to generate a QR code.");
