@@ -1,3 +1,25 @@
+<?php
+// Modified index.php - Add this at the very top
+session_start();
+
+// Add these headers to prevent caching
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
+// If user is already logged in, redirect to appropriate dashboard
+if (isset($_SESSION['user_id'])) {
+    if ($_SESSION['user_role'] == 'employee') {
+        header("Location: dashboards/employee_dashboard.php");
+        exit();
+    } else {
+        header("Location: home.php");
+        exit();
+    }
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
