@@ -7,13 +7,15 @@ if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
 
     // Fetch the user's name from the database
-    $stmt = $conn->prepare("SELECT `name` FROM `login_db` WHERE `user_id` = :user_id");
+    $stmt = $conn->prepare("SELECT `Fname`, `Lname` FROM `login_db` WHERE `user_id` = :user_id");
     $stmt->bindParam(':user_id', $user_id);
     $stmt->execute();
     
     if ($stmt->rowCount() > 0) {
-        $row = $stmt->fetch();
-        $user_name = $row['name'];
+        $row = $stmt->fetch(PDO::FETCH_ASSOC); // Fetch as associative array
+        $fname = $row['Fname'];
+        $lname = $row['Lname'];
+        $user_name = $fname . " " . $lname; // Concatenate first and last name
     }
 
     ?>
@@ -33,9 +35,9 @@ if (isset($_SESSION['user_id'])) {
     <div class="main">
 
         <div class="container text-center">
-            <h1 class="text-center">Welcome <br> <?php echo $user_name; ?>!</h1>
+            <h1 class="text-center">Welcome <br> <?php echo htmlspecialchars($user_name); ?>!</h1>
             <h2 class="text-center">Wait for the special admin to give you a role.</h2>
-            <a class="btn btn-dark" href="./endpoint/logout.php">Logout</a>
+            <a class="btn btn-dark" href="endpoint/logout.php">Logout</a>
         </div>
 
     </div>
@@ -47,5 +49,6 @@ if (isset($_SESSION['user_id'])) {
     
 } else {
     header("http://localhost/IMS/");
+    exit();
 }
 ?>

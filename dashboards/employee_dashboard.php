@@ -1,12 +1,11 @@
-<?php
+<?php 
 session_start();
-include ('./conn/conn.php');
+include ('../conn/conn.php');
 
 // Check if the user is logged in and has the correct role
-if (isset($_SESSION['user_id']) && $_SESSION['user_role'] == 'employee') { // Change 'employee' to 'manager' or 'admin' for other dashboards
+if (isset($_SESSION['user_id']) && $_SESSION['user_role'] == 'employee') { // Use 'user_role' consistently
     $user_id = $_SESSION['user_id'];
-    $user_name = $_SESSION['user_name'];
-    $user_role = $_SESSION['user_role'];
+    $user_role = $_SESSION['user_role']; // Consistent session variable for the role
 ?>
 
 <!DOCTYPE html>
@@ -16,13 +15,12 @@ if (isset($_SESSION['user_id']) && $_SESSION['user_role'] == 'employee') { // Ch
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Dashboard</title> <!-- Change title for other dashboards -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="CSS/dashboard.css">
 </head>
 <body>
     <div class="container">
         <h1 class="text-center">Welcome to the Employee Dashboard</h1> <!-- Change for other dashboards -->
-        <p>Hello, <?php echo htmlspecialchars($user_name); ?>!</p>
-        <p>Your role: <?php echo htmlspecialchars($user_role); ?></p>
+        <p>Hello, <?php echo htmlspecialchars($user_id); ?>!</p>
+        <p>Your role: <?php echo htmlspecialchars($user_role); ?></p> <!-- This should now display the correct role -->
         
         <!-- Add role-specific content here -->
 

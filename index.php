@@ -42,18 +42,24 @@
                 <p class="text-center">Fill in your personal details.</p>
                 <form action="./endpoint/add-user.php" method="POST">
                     <div class="hide-registration-inputs">
-                        <div class="form-group registration">
-                            <label for="name">Name:</label>
-                            <input type="text" class="form-control" id="name" name="name">
+                        <div class="form-group registration row">
+                            <div class="col-6">
+                                <label for="fname">First Name:</label>
+                                <input type="text" class="form-control" id="fname" name="fname" required>
+                            </div>
+                            <div class="col-6">
+                                <label for="lname">Last Name:</label>
+                                <input type="text" class="form-control" id="lname" name="lname" required>
+                            </div>
                         </div>
                         <div class="form-group registration row">
                             <div class="col-5">
                                 <label for="contactNumber">Contact Number:</label>
-                                <input type="number" class="form-control" id="contactNumber" name="contact_number" maxlength="11">
+                                <input type="number" class="form-control" id="contactNumber" name="contact_number" maxlength="11" required>
                             </div>
                             <div class="col-7">
                                 <label for="email">Email:</label>
-                                <input type="text" class="form-control" id="email" name="email">
+                                <input type="email" class="form-control" id="email" name="email" required>
                             </div>
                         </div>
                         <p>Already have a QR code account? Login <span class="switch-form-link" onclick="location.reload()">Here.</span></p>
