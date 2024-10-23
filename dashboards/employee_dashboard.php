@@ -10,7 +10,6 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'employee') {
     header("Location: http://localhost/IMS/");
     exit();
 }
-
 $user_id = $_SESSION['user_id'];
 $user_role = $_SESSION['user_role'];
 ?>
@@ -24,63 +23,31 @@ $user_role = $_SESSION['user_role'];
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Employee Dashboard</title> <!-- Change title for other dashboards -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-    <script>
-        // Replace the current history state
-        window.history.replaceState({ page: 'dashboard' }, '', '');
-        
-        // Add a new history entry
-        window.history.pushState({ page: 'dashboard' }, '', '');
-        
-        // Handle back button
-        window.addEventListener('popstate', function(event) {
-            // If trying to go back, push forward again
-            window.history.pushState({ page: 'dashboard' }, '', '');
-            
-            // Refresh the page to ensure latest state
-            window.location.reload();
-        });
-
-        // Ensure page is fresh on load
-        if (performance.navigation.type === 2) {
-            location.reload(true);
-        }
-
-        // Periodic session check
-        async function checkSession() {
-            try {
-                const response = await fetch('../endpoint/check_session.php');
-                const data = await response.json();
-                if (!data.logged_in || data.role !== 'employee') {
-                    window.location.href = 'http://localhost/IMS/';
-                }
-            } catch (error) {
-                console.error('Session check failed:', error);
-            }
-        }
-
-        // Check session every 30 seconds
-        setInterval(checkSession, 30000);
-
-        // Check session on page visibility change
-        document.addEventListener('visibilitychange', function() {
-            if (document.visibilityState === 'visible') {
-                checkSession();
-            }
-        });
-    </script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="../JS/employeeAuth.js"></script>
 </head>
-<body>
-    <div class="container">
-        <h1 class="text-center">Welcome to the Employee Dashboard</h1> <!-- Change for other dashboards -->
-        <p>Hello, <?php echo htmlspecialchars($user_id); ?>!</p>
-        <p>Your role: <?php echo htmlspecialchars($user_role); ?></p> <!-- This should now display the correct role -->
-        
-        <!-- Add role-specific content here -->
-
-        <a class="btn btn-dark" href="../endpoint/logout.php">Logout</a>
+<body class="d-flex">
+    <div class="bg-dark text-white vh-100 p-3" style="width: 250px;">
+        <h2 class="text-center">Dashboard</h2>
+        <a class="text-white d-block py-2 px-3 text-decoration-none" href="#">Categories</a>
+        <a class="text-white d-block py-2 px-3 text-decoration-none" href="#">Manage Products</a>
+        <a class="text-white d-block py-2 px-3 text-decoration-none" href="#">Add Products</a>
+        <a class="text-white d-block py-2 px-3 text-decoration-none" href="#">Manage Sales</a>
+        <a class="text-white d-block py-2 px-3 text-decoration-none" href="#">Add Sales</a>
+        <a class="text-white d-block py-2 px-3 text-decoration-none" href="#">Sales Report</a>
     </div>
-</body>
+    <div class="flex-grow-1 p-4 position-relative">
+        <div class="position-absolute top-0 end-0 m-3">
+            <a class="btn btn-dark" href="../endpoint/logout.php">Logout</a>
+        </div>
+        <div class="container">
+            <h1 class="text-center">Welcome to the Employee Dashboard</h1> <!-- Change for other dashboards -->
+            <p>Hello, employee # <?php echo htmlspecialchars($user_id); ?>!</p>
+            <p>Your role: <?php echo htmlspecialchars($user_role); ?></p> <!-- This should now display the correct role -->
+            
+            <!-- Add role-specific content here -->
+        </div>
+    </div>
     <script>
         // Add this to your dashboard pages
         window.onpageshow = function(event) {
@@ -89,4 +56,6 @@ $user_role = $_SESSION['user_role'];
             }
         };
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+</body>
 </html>
