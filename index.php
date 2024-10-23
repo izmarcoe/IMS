@@ -35,15 +35,17 @@ if (isset($_SESSION['user_id'])) {
     <div class="main">
 
         <!-- Login Area -->
-
         <div class="login-container">
-
-                <div class="login-form" id="loginForm">
+            <div class="login-form" id="loginForm">
                 <h2 class="text-center">Welcome Back!</h2>
-                <p class="text-center">Login through QR code scanner.</p>
+                <!-- Link to toggle password login -->
+                <div class="mt-3 text-center">
+                    <span class="switch-form-link" onclick="togglePasswordLogin()">Login through QR code</span>
+                </div>
 
-                <video id="interactive" class="viewport" width="415"></div>
-                
+                <!-- QR Code Scanner Section -->
+                <video id="interactive" class="viewport" width="415"></video>
+
                 <div class="qr-detected-container" style="display: none;">
                     <form action="./endpoint/login.php" method="POST">
                         <h4 class="text-center">QR Code Detected!</h4>
@@ -51,10 +53,31 @@ if (isset($_SESSION['user_id'])) {
                         <button type="submit" class="btn btn-dark form-control">Login</button>
                     </form>
                 </div>
+
+                <!-- Link to toggle password login -->
+                <div class="mt-3 text-center">
+                    <span class="switch-form-link" onclick="togglePasswordLogin()">Login using Password</span>
+                </div>
+
+                <!-- New Password Login Section (initially hidden) -->
+                <div class="password-login-container mt-4" id="passwordLoginForm" style="display: none;">
+                    <form action="./endpoint/login.php" method="POST">
+                        <div class="form-group">
+                            <label for="email">Email:</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password:</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <button type="submit" class="btn btn-dark form-control">Login</button>
+                    </form>
+                </div>
+
                 <p class="mt-3">No Account? Register <span class="switch-form-link" onclick="showRegistrationForm()">Here.</span></p>
             </div>
         </div>
-
+        <script src="JS/togglePasswordLogin.js"> </script>
 
 
         <!-- Registration Area -->
@@ -82,6 +105,16 @@ if (isset($_SESSION['user_id'])) {
                             <div class="col-7">
                                 <label for="email">Email:</label>
                                 <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                        </div>
+                        <div class="form-group registration row">
+                            <div class="col-6">
+                                <label for="password">Password:</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                            <div class="col-6">
+                                <label for="confirmPassword">Confirm Password:</label>
+                                <input type="password" class="form-control" id="confirmPassword" name="confirm_password" required>
                             </div>
                         </div>
                         <p>Already have a QR code account? Login <span class="switch-form-link" onclick="location.reload()">Here.</span></p>
