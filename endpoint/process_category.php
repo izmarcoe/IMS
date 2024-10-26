@@ -1,3 +1,5 @@
+<!--THIS IS FOR CATEGORY.PHP-->
+
 <?php
 session_start();
 include('../conn/conn.php');

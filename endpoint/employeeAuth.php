@@ -1,3 +1,6 @@
+<!--THIS IS FOR AUTHENTICATION-->
+
+
 <?php
 // Modified employeeAuth.php
 session_start();

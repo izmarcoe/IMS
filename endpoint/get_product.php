@@ -1,3 +1,6 @@
+<!--THIS IS FOR add_product.php-->
+
+
 <?php
 session_start();
 include('../conn/conn.php');

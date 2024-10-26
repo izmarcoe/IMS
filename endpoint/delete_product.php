@@ -1,3 +1,6 @@
+<!--THIS IS FOR ADD_PRODUCT.PHP-->
+
+
 <?php
 include('../conn/conn.php'); // Database connection file
 
