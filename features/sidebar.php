@@ -3,7 +3,7 @@
     <div>
         <a class="sidebar-link fs-5 py-3" href="../dashboards/employee_dashboard.php" onclick="setActive(this)">Dashboard</a>
         <a class="sidebar-link fs-5 py-3" href="#" style="pointer-events: none; color: gray;">User Management</a>
-        <a class="sidebar-link fs-5 py-3" href="#" onclick="setActive(this)">Categories</a>
+        <a class="sidebar-link fs-5 py-3" href="../features/category.php" onclick="setActive(this)">Categories</a>
         <!-- Products Collapse Dropdown -->
         <a class="sidebar-link fs-5 py-3" href="#productsCollapse" data-bs-toggle="collapse" aria-expanded="false" onclick="setActive(this)">
             Products
