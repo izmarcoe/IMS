@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Error fetching product details:', error);
             });
     };
+    
 
     document.getElementById('editForm').addEventListener('submit', function(e) {
         e.preventDefault(); // Prevent default form submission

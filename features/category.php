@@ -10,10 +10,18 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'employee') {
 
 // Handle category deletion
 if (isset($_GET['delete_id'])) {
-    $delete_id = $_GET['delete_id'];
-    $stmt = $conn->prepare("DELETE FROM product_categories WHERE id = :id");
-    $stmt->bindParam(':id', $delete_id, PDO::PARAM_INT);
-    $stmt->execute();
+    try {
+        $delete_id = $_GET['delete_id'];
+        
+        $stmt = $conn->prepare("DELETE FROM product_categories WHERE id = :id");
+        $stmt->bindParam(':id', $delete_id, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        header("Location: category.php");
+        exit();
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+    }
 }
 
 // Fetch all categories
@@ -23,7 +31,7 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 
 // If AJAX request, return categories as JSON
-if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
     $stmt = $conn->prepare("SELECT id, category_name FROM product_categories ORDER BY category_name");
     $stmt->execute();
     $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -35,6 +43,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH']
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -170,7 +179,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH']
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <p>Are you sure you want to delete this category?</p>
+                        <p>Are you sure you want to delete this category? All associated products will also be deleted.</p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -204,9 +213,10 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH']
         // Handle delete confirmation
         document.getElementById('confirmDelete').addEventListener('click', function() {
             if (categoryToDelete) {
-                window.location.href = `../features/categories.php?delete_id=${categoryToDelete}`;
+                window.location.href = `../features/category.php?delete_id=${categoryToDelete}`;
             }
         });
     </script>
 </body>
+
 </html>

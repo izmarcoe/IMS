@@ -1,8 +1,8 @@
 <?php
 session_start();
-include('../conn/conn.php'); // Database connection file
+include('../conn/conn.php');
 
-// Check if the user is logged in and has the appropriate role to manage products
+// Check if the user is logged in and has the appropriate role
 if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'employee') {
     header("Location: http://localhost/IMS/");
     exit();
@@ -11,13 +11,23 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'employee') {
 // Handle product deletion
 if (isset($_GET['delete_id'])) {
     $delete_id = $_GET['delete_id'];
-    $stmt = $conn->prepare("DELETE FROM products WHERE id = :id");
+    $stmt = $conn->prepare("DELETE FROM products WHERE product_id = :id");
     $stmt->bindParam(':id', $delete_id, PDO::PARAM_INT);
     $stmt->execute();
 }
 
-// Fetch products from the database
-$stmt = $conn->prepare("SELECT * FROM products");
+// Fetch products with category names
+$stmt = $conn->prepare("
+    SELECT 
+        p.product_id,
+        p.product_name,
+        p.price,
+        p.quantity,
+        p.category_id,
+        pc.category_name
+    FROM products p
+    LEFT JOIN product_categories pc ON p.category_id = pc.id
+");
 $stmt->execute();
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -66,7 +76,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <tr data-product-id="<?php echo $product['product_id']; ?>">
                             <td><?php echo $product['product_id']; ?></td>
                             <td><?php echo htmlspecialchars($product['product_name']); ?></td>
-                            <td><?php echo htmlspecialchars($product['category']); ?></td>
+                            <td><?php echo htmlspecialchars($product['category_name'] ?? 'No Category'); ?></td>
                             <td><?php echo htmlspecialchars($product['price']); ?></td>
                             <td><?php echo htmlspecialchars($product['quantity']); ?></td>
                             <td>
@@ -96,7 +106,20 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </div>
                             <div class="mb-3">
                                 <label for="edit_category" class="form-label">Category</label>
-                                <input type="text" class="form-control" id="edit_category" name="category">
+                                <select class="form-control" id="edit_category" name="category_id" required>
+                                    <option value="">Select a category</option>
+                                    <?php
+                                    // Fetch categories
+                                    $stmt = $conn->prepare("SELECT id, category_name FROM product_categories ORDER BY category_name");
+                                    $stmt->execute();
+                                    $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                                    foreach ($categories as $category) {
+                                        echo '<option value="' . htmlspecialchars($category['id']) . '">'
+                                            . htmlspecialchars($category['category_name']) . '</option>';
+                                    }
+                                    ?>
+                                </select>
                             </div>
                             <div class="mb-3">
                                 <label for="edit_price" class="form-label">Price</label>
@@ -135,6 +158,23 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
         <script src="../JS/time.js"></script>
         <script src="../JS/manage_products.js"></script>
+        <script>
+            function openEditModal(productId) {
+                // Fetch product details using AJAX
+                fetch(`../endpoint/get_product.php?id=${productId}`)
+                    .then(response => response.json())
+                    .then(product => {
+                        document.getElementById('edit_product_id').value = product.product_id;
+                        document.getElementById('edit_product_name').value = product.product_name;
+                        document.getElementById('edit_category').value = product.category_id;
+                        document.getElementById('edit_price').value = product.price;
+                        document.getElementById('edit_quantity').value = product.quantity;
+
+                        // Show the modal
+                        new bootstrap.Modal(document.getElementById('editModal')).show();
+                    });
+            }
+        </script>
     </main>
 </body>
 
