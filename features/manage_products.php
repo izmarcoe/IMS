@@ -158,23 +158,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
         <script src="../JS/time.js"></script>
         <script src="../JS/manage_products.js"></script>
-        <script>
-            function openEditModal(productId) {
-                // Fetch product details using AJAX
-                fetch(`../endpoint/get_product.php?id=${productId}`)
-                    .then(response => response.json())
-                    .then(product => {
-                        document.getElementById('edit_product_id').value = product.product_id;
-                        document.getElementById('edit_product_name').value = product.product_name;
-                        document.getElementById('edit_category').value = product.category_id;
-                        document.getElementById('edit_price').value = product.price;
-                        document.getElementById('edit_quantity').value = product.quantity;
-
-                        // Show the modal
-                        new bootstrap.Modal(document.getElementById('editModal')).show();
-                    });
-            }
-        </script>
+        
     </main>
 </body>
 
