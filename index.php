@@ -143,7 +143,7 @@ if (isset($_SESSION['user_id'])) {
 <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
 
 <script src="./JS/QR.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
 
 </body>
 </html>
