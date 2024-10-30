@@ -1,6 +1,7 @@
 <?php
 session_start();
 include('../conn/conn.php'); // Ensure this points to the correct path of your conn.php
+require '../endpoint/employeeAuth.php';
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
@@ -86,6 +87,7 @@ $lname = $_SESSION['Lname'];
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <!-- JS -->
     <script src="../JS/employee_dashboard.js"></script>
+    <script src="../JS/employeeAuth.js"></script>
     <script src="../JS/time.js"></script>
 </body>
 </html>

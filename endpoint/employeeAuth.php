@@ -3,7 +3,6 @@
 
 <?php
 // Modified employeeAuth.php
-session_start();
 include('../conn/conn.php');
 
 // Add cache control headers
