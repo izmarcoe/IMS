@@ -16,7 +16,27 @@ if (isset($_GET['delete_id'])) {
     $stmt->execute();
 }
 
-// Fetch products with category names
+// Pagination
+$productsPerPage = 10;
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($page - 1) * $productsPerPage;
+
+// Search functionality
+$searchQuery = "";
+if (isset($_GET['search'])) {
+    $searchQuery = $_GET['search'];
+}
+
+// Get total number of products (with search filter if applicable)
+$totalProductsQuery = $conn->prepare("
+    SELECT COUNT(*) FROM products 
+    WHERE product_name LIKE :searchQuery
+");
+$totalProductsQuery->execute([':searchQuery' => "%$searchQuery%"]);
+$totalProducts = $totalProductsQuery->fetchColumn();
+$totalPages = ceil($totalProducts / $productsPerPage);
+
+// Fetch products with limit, offset, and search filter
 $stmt = $conn->prepare("
     SELECT 
         p.product_id,
@@ -27,22 +47,26 @@ $stmt = $conn->prepare("
         pc.category_name
     FROM products p
     LEFT JOIN product_categories pc ON p.category_id = pc.id
+    WHERE p.product_name LIKE :searchQuery
+    LIMIT :offset, :limit
 ");
+$likeSearchQuery = "%$searchQuery%";
+$stmt->bindParam(':searchQuery', $likeSearchQuery, PDO::PARAM_STR);
+$stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+$stmt->bindParam(':limit', $productsPerPage, PDO::PARAM_INT);
 $stmt->execute();
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Products</title>
     <link rel="stylesheet" href="../CSS/employee_dashboard.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-
 <body>
     <!-- Header -->
     <header class="d-flex justify-content-between align-items-center bg-danger text-white p-3">
@@ -60,6 +84,14 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         <div class="container mt-5">
             <h2>Manage Products</h2>
+
+            <!-- Search Form -->
+            <form method="GET" class="d-flex mb-3">
+                <input type="text" name="search" class="form-control" placeholder="Search by product name" value="<?php echo htmlspecialchars($searchQuery); ?>">
+                <button type="submit" class="btn btn-primary ms-2">Search</button>
+            </form>
+
+            <!-- Products Table -->
             <table class="table">
                 <thead>
                     <tr>
@@ -87,6 +119,33 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <?php endforeach; ?>
                 </tbody>
             </table>
+
+            <!-- Pagination Controls -->
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    <?php if ($page > 1): ?>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<?php echo $page - 1; ?>&search=<?php echo urlencode($searchQuery); ?>" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+
+                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                        <li class="page-item <?php if ($i == $page) echo 'active'; ?>">
+                            <a class="page-link" href="?page=<?php echo $i; ?>&search=<?php echo urlencode($searchQuery); ?>"><?php echo $i; ?></a>
+                        </li>
+                    <?php endfor; ?>
+
+                    <?php if ($page < $totalPages): ?>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<?php echo $page + 1; ?>&search=<?php echo urlencode($searchQuery); ?>" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                </ul>
+            </nav>
         </div>
 
         <!-- Edit Modal -->
@@ -158,7 +217,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
         <script src="../JS/time.js"></script>
         <script src="../JS/manage_products.js"></script>
-        
+
     </main>
 </body>
 

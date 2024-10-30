@@ -8,36 +8,49 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'employee') {
     exit();
 }
 
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $product_name = trim($_POST['product_name']);
     $category_id = $_POST['category_id'];
     $price = $_POST['price'];
     $quantity = $_POST['quantity'];
 
-    // Validate fields
     if (empty($product_name) || empty($category_id) || empty($price) || empty($quantity)) {
         $error = "Please fill in all required fields.";
     } else {
         try {
-            // Prepare and execute the insert statement
-            $stmt = $conn->prepare("INSERT INTO products (product_name, category_id, price, quantity) 
-                                  VALUES (:product_name, :category_id, :price, :quantity)");
-
+            // Check if product with the same name and price already exists
+            $stmt = $conn->prepare("SELECT product_id, quantity FROM products WHERE product_name = :product_name AND price = :price LIMIT 1");
             $stmt->bindParam(':product_name', $product_name, PDO::PARAM_STR);
-            $stmt->bindParam(':category_id', $category_id, PDO::PARAM_INT);
             $stmt->bindParam(':price', $price, PDO::PARAM_STR);
-            $stmt->bindParam(':quantity', $quantity, PDO::PARAM_INT);
+            $stmt->execute();
+            $existingProduct = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($stmt->execute()) {
-                $success = "Product added successfully!";
+            if ($existingProduct) {
+                // Update quantity if the same product name and price exists
+                $newQuantity = $existingProduct['quantity'] + $quantity;
+                $stmt = $conn->prepare("UPDATE products SET quantity = :new_quantity WHERE product_id = :product_id");
+                $stmt->bindParam(':new_quantity', $newQuantity, PDO::PARAM_INT);
+                $stmt->bindParam(':product_id', $existingProduct['product_id'], PDO::PARAM_INT);
+                $stmt->execute();
+                $success = "Product quantity updated successfully!";
             } else {
-                $error = "Error adding product. Please try again.";
+                // Insert as new product if name and price combination is new
+                $stmt = $conn->prepare("INSERT INTO products (product_name, category_id, price, quantity) VALUES (:product_name, :category_id, :price, :quantity)");
+                $stmt->bindParam(':product_name', $product_name, PDO::PARAM_STR);
+                $stmt->bindParam(':category_id', $category_id, PDO::PARAM_INT);
+                $stmt->bindParam(':price', $price, PDO::PARAM_STR);
+                $stmt->bindParam(':quantity', $quantity, PDO::PARAM_INT);
+                $stmt->execute();
+                $success = "New product added successfully!";
             }
         } catch (PDOException $e) {
             $error = "Database error: " . $e->getMessage();
         }
     }
 }
+
+
 // Determine the active page
 $current_page = basename($_SERVER['PHP_SELF']); // Get the current script name
 // Define active class based on the current page
