@@ -17,26 +17,16 @@ if (isset($_GET['delete_id'])) {
 }
 
 // Pagination
-$productsPerPage = 10;
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$offset = ($page - 1) * $productsPerPage;
+$productsPerPage = 10; // Number of products per page
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Current page
+$offset = ($page - 1) * $productsPerPage; // Offset for SQL query
 
-// Search functionality
-$searchQuery = "";
-if (isset($_GET['search'])) {
-    $searchQuery = $_GET['search'];
-}
-
-// Get total number of products (with search filter if applicable)
-$totalProductsQuery = $conn->prepare("
-    SELECT COUNT(*) FROM products 
-    WHERE product_name LIKE :searchQuery
-");
-$totalProductsQuery->execute([':searchQuery' => "%$searchQuery%"]);
+// Get total number of products
+$totalProductsQuery = $conn->query("SELECT COUNT(*) FROM products");
 $totalProducts = $totalProductsQuery->fetchColumn();
 $totalPages = ceil($totalProducts / $productsPerPage);
 
-// Fetch products with limit, offset, and search filter
+// Fetch products with limit and offset
 $stmt = $conn->prepare("
     SELECT 
         p.product_id,
@@ -47,11 +37,8 @@ $stmt = $conn->prepare("
         pc.category_name
     FROM products p
     LEFT JOIN product_categories pc ON p.category_id = pc.id
-    WHERE p.product_name LIKE :searchQuery
     LIMIT :offset, :limit
 ");
-$likeSearchQuery = "%$searchQuery%";
-$stmt->bindParam(':searchQuery', $likeSearchQuery, PDO::PARAM_STR);
 $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
 $stmt->bindParam(':limit', $productsPerPage, PDO::PARAM_INT);
 $stmt->execute();
@@ -60,13 +47,15 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Products</title>
     <link rel="stylesheet" href="../CSS/employee_dashboard.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 </head>
+
 <body>
     <!-- Header -->
     <header class="d-flex justify-content-between align-items-center bg-danger text-white p-3">
@@ -84,14 +73,6 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         <div class="container mt-5">
             <h2>Manage Products</h2>
-
-            <!-- Search Form -->
-            <form method="GET" class="d-flex mb-3">
-                <input type="text" name="search" class="form-control" placeholder="Search by product name" value="<?php echo htmlspecialchars($searchQuery); ?>">
-                <button type="submit" class="btn btn-primary ms-2">Search</button>
-            </form>
-
-            <!-- Products Table -->
             <table class="table">
                 <thead>
                     <tr>
@@ -120,12 +101,12 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </tbody>
             </table>
 
-            <!-- Pagination Controls -->
+            <!-- Pagination Controls Below the Table -->
             <nav aria-label="Page navigation">
                 <ul class="pagination justify-content-center">
                     <?php if ($page > 1): ?>
                         <li class="page-item">
-                            <a class="page-link" href="?page=<?php echo $page - 1; ?>&search=<?php echo urlencode($searchQuery); ?>" aria-label="Previous">
+                            <a class="page-link" href="?page=<?php echo $page - 1; ?>" aria-label="Previous">
                                 <span aria-hidden="true">&laquo;</span>
                             </a>
                         </li>
@@ -133,13 +114,13 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                     <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                         <li class="page-item <?php if ($i == $page) echo 'active'; ?>">
-                            <a class="page-link" href="?page=<?php echo $i; ?>&search=<?php echo urlencode($searchQuery); ?>"><?php echo $i; ?></a>
+                            <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
                         </li>
                     <?php endfor; ?>
 
                     <?php if ($page < $totalPages): ?>
                         <li class="page-item">
-                            <a class="page-link" href="?page=<?php echo $page + 1; ?>&search=<?php echo urlencode($searchQuery); ?>" aria-label="Next">
+                            <a class="page-link" href="?page=<?php echo $page + 1; ?>" aria-label="Next">
                                 <span aria-hidden="true">&raquo;</span>
                             </a>
                         </li>

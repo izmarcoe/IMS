@@ -18,11 +18,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sale_date = date('Y-m-d H:i:s'); // Get the current date and time
 
     // Prepare the SQL statement
-    $stmt = $conn->prepare("INSERT INTO sales (product_id, category_id, price, quantity, sale_date) 
+    $stmt = $conn->prepare("INSERT INTO sales (id, category_id, price, quantity, sale_date) 
                              VALUES (:product_id, :category_id, :price, :quantity, :sale_date)");
 
     // Bind parameters
-    $stmt->bindParam(':product_id', $product_id);
+    $stmt->bindParam(':product_id', $id);
     $stmt->bindParam(':category_id', $category_id);
     $stmt->bindParam(':price', $price);
     $stmt->bindParam(':quantity', $quantity);
