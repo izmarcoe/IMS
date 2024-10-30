@@ -1,8 +1,7 @@
-<!--THIS IS FOR CATEGORY.PHP-->
-
-
 <?php
 include('../conn/conn.php');
+error_reporting(E_ALL); // Enable error reporting
+ini_set('display_errors', 1); // Display errors
 
 try {
     $stmt = $conn->prepare("SELECT * FROM product_categories");

@@ -18,7 +18,7 @@
         </a>
         <div class="collapse" id="salesCollapse">
             <a class="sidebar-link fs-5 py-3" href="#" onclick="setActive(this)">Manage Sales</a>
-            <a class="sidebar-link fs-5 py-3" href="#" onclick="setActive(this)">Add Sales</a>
+            <a class="sidebar-link fs-5 py-3" href="../features/add_sales.php" onclick="setActive(this)">Add Sales</a>
         </div>
         <a class="sidebar-link fs-5 py-3" href="#" onclick="setActive(this)">Sales Report</a>
     </div>
