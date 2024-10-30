@@ -1,7 +1,7 @@
 <!--THIS IS FOR LOGIN.PHP-->
 
-<?php 
-include ('../conn/conn.php');
+<?php
+include('../conn/conn.php');
 
 if (isset($_POST['fname'], $_POST['lname'], $_POST['contact_number'], $_POST['email'], $_POST['generated_code'], $_POST['password'], $_POST['confirm_password'])) {
     $fname = $_POST['fname'];
@@ -36,9 +36,9 @@ if (isset($_POST['fname'], $_POST['lname'], $_POST['contact_number'], $_POST['em
         if (empty($nameExist)) {
             $conn->beginTransaction();  // Start a transaction to ensure atomicity
 
-            // Insert new user record with hashed password
-            $insertStmt = $conn->prepare("INSERT INTO `login_db` (`Fname`, `Lname`, `contact_number`, `email`, `generated_code`, `password`) 
-                                          VALUES (:fname, :lname, :contact_number, :email, :generated_code, :password)");
+            // Insert new user record with hashed password and default role set to 'none'
+            $insertStmt = $conn->prepare("INSERT INTO `login_db` (`Fname`, `Lname`, `contact_number`, `email`, `generated_code`, `password`, `role`) 
+           VALUES (:fname, :lname, :contact_number, :email, :generated_code, :password, 'none')");
             $insertStmt->bindParam(':fname', $fname, PDO::PARAM_STR);
             $insertStmt->bindParam(':lname', $lname, PDO::PARAM_STR);
             $insertStmt->bindParam(':contact_number', $contactNumber, PDO::PARAM_STR);

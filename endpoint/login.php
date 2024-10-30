@@ -2,9 +2,9 @@
 include ('../conn/conn.php');
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = $_POST['email'];
-    $password = $_POST['password']; // Optional password for login via email
-    $qrCode = $_POST['qr-code']; // Can still be used for QR code login
+    $email = $_POST['email'] ?? null; // Using null coalescing operator for safety
+    $password = $_POST['password'] ?? null; // Password for login
+    $qrCode = $_POST['qr-code'] ?? null; // Using null coalescing operator for safety
 
     // Check if using QR code or email/password
     if (!empty($qrCode)) {
@@ -18,7 +18,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($accountExist) {
             session_start();
             $_SESSION['user_id'] = $accountExist['user_id'];
-            $_SESSION['user_role'] = $accountExist['role']; 
+            $_SESSION['user_role'] = $accountExist['role'];
+            $_SESSION['qr-code'] = $qrCode;
     
             // Check the user role for redirection
             if ($_SESSION['user_role'] == 'employee') {
@@ -37,9 +38,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 ";
             }
         } else {
+            // Optionally hide the error for QR code
             echo "
             <script>
-                alert('QR Code account doesn\'t exist!');
+                alert('QR Code account doesn\'t exist!'); // You may remove this if you want to hide the message
                 window.location.href = 'http://localhost/IMS/';
             </script>
             ";
@@ -55,7 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($user && password_verify($password, $user['password'])) {
             session_start();
             $_SESSION['user_id'] = $user['user_id'];
-            $_SESSION['user_role'] = $user['role']; 
+            $_SESSION['user_role'] = $user['role'];
     
             // Check the user role for redirection
             if ($_SESSION['user_role'] == 'employee') {
@@ -74,9 +76,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 ";
             }
         } else {
+            // Hide the error message
             echo "
             <script>
-                alert('Invalid email or password!');
+                // alert('Invalid email or password!'); // Comment this out to hide
                 window.location.href = 'http://localhost/IMS/';
             </script>
             ";
