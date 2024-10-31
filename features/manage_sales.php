@@ -26,7 +26,7 @@ $totalPages = ceil($totalSales / $productsPerPage);
 // Fetch sales data with limit and offset (with optional search filter)
 // Fetch sales data with limit and offset (with optional search filter)
 $stmt = $conn->prepare("
-    SELECT id, product_name, category_id, price, quantity, sale_date, (price * quantity) AS total_sales
+    SELECT id, product_id, product_name, category_id, price, quantity, sale_date, (price * quantity) AS total_sales
     FROM sales
     WHERE product_name LIKE :search
     ORDER BY id DESC

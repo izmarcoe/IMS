@@ -1,43 +1,89 @@
 <?php
 session_start();
+include('../conn/conn.php');
 
-include('../conn/conn.php'); // Database connection file
-
-// Check if the user is logged in and has the appropriate role to add sales
 if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'employee') {
     header("Location: http://localhost/IMS/");
     exit();
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Get the form data
     $product_id = $_POST['product_id'];
-    $category_id = $_POST['category_id'];
     $price = $_POST['price'];
     $quantity = $_POST['quantity'];
-    $sale_date = date('Y-m-d H:i:s'); // Get the current date and time
 
-    // Prepare the SQL statement
-    $stmt = $conn->prepare("INSERT INTO sales (id, category_id, price, quantity, sale_date) 
-                             VALUES (:product_id, :category_id, :price, :quantity, :sale_date)");
+    try {
+        // Start transaction
+        $conn->beginTransaction();
 
-    // Bind parameters
-    $stmt->bindParam(':product_id', $id);
-    $stmt->bindParam(':category_id', $category_id);
-    $stmt->bindParam(':price', $price);
-    $stmt->bindParam(':quantity', $quantity);
-    $stmt->bindParam(':sale_date', $sale_date);
+        // Fetch product details including current quantity and name
+        $stmt = $conn->prepare("SELECT product_name, quantity, price FROM products WHERE product_id = :product_id FOR UPDATE");
+        $stmt->bindParam(':product_id', $product_id);
+        $stmt->execute();
+        $product = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Execute the statement and set the session variable based on the result
-    if ($stmt->execute()) {
-        $_SESSION['notification'] = "Sale added successfully!";
-    } else {
-        $_SESSION['notification'] = "Failed to add sale.";
+        // Validation checks
+        if (!$product) {
+            throw new Exception("Product not found.");
+        }
+        if ($product['quantity'] < $quantity) {
+            throw new Exception("Insufficient stock. Available: " . $product['quantity']);
+        }
+        if ($quantity <= 0) {
+            throw new Exception("Quantity must be greater than zero.");
+        }
+        if ($price <= 0) {
+            throw new Exception("Price must be greater than zero.");
+        }
+
+        // Update product quantity
+        $new_quantity = $product['quantity'] - $quantity;
+        $update_stmt = $conn->prepare("UPDATE products SET quantity = :new_quantity WHERE product_id = :product_id");
+        $update_stmt->bindParam(':new_quantity', $new_quantity);
+        $update_stmt->bindParam(':product_id', $product_id);
+        $update_stmt->execute();
+
+        // Insert into sales table
+        $stmt = $conn->prepare("
+            INSERT INTO sales (
+                product_id, 
+                product_name,
+                price, 
+                quantity, 
+                sale_date,
+                total_sales
+            ) VALUES (
+                :product_id,
+                :product_name,
+                :price,
+                :quantity,
+                NOW(),
+                :total_sales
+            )
+        ");
+
+        $total_sales = $price * $quantity;
+        
+        $stmt->bindParam(':product_id', $product_id);
+        $stmt->bindParam(':product_name', $product['product_name']);
+        $stmt->bindParam(':price', $price);
+        $stmt->bindParam(':quantity', $quantity);
+        $stmt->bindParam(':total_sales', $total_sales);
+        
+        $stmt->execute();
+
+        // Commit transaction
+        $conn->commit();
+        $_SESSION['notification'] = 'Sale added successfully.';
+        header("Location: manage_sales.php");
+        exit();
+
+    } catch (Exception $e) {
+        $conn->rollBack();
+        $_SESSION['notification'] = "Error: " . $e->getMessage();
+        header("Location: add_sales.php");
+        exit();
     }
-
-    // Redirect to the same page to show the notification
-    header("Location: add_sales.php");
-    exit();
 }
 
 // Fetch categories for the dropdown
@@ -45,25 +91,28 @@ $stmt = $conn->prepare("SELECT id, category_name FROM product_categories ORDER B
 $stmt->execute();
 $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Fetch products for the dropdown
-$stmt = $conn->prepare("SELECT product_id, product_name, category_id FROM products ORDER BY product_name");
+// Fetch products with current stock information
+$stmt = $conn->prepare("
+    SELECT p.product_id, p.product_name, p.category_id, p.quantity, p.price 
+    FROM products p 
+    ORDER BY p.product_name
+");
 $stmt->execute();
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Sales</title>
     <link rel="stylesheet" href="../CSS/employee_dashboard.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Include jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
-
 <body>
+    <!-- Header remains the same -->
     <header class="d-flex justify-content-between align-items-center bg-danger text-white p-3">
         <h1 class="m-0">INVENTORY SYSTEM</h1>
         <div>
@@ -82,60 +131,98 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div class="alert alert-info">
                     <?php
                     echo $_SESSION['notification'];
-                    unset($_SESSION['notification']); // Clear the notification after displaying it
+                    unset($_SESSION['notification']);
                     ?>
                 </div>
             <?php endif; ?>
 
-            <form method="POST" action="add_sales.php">
+            <form method="POST" action="add_sales.php" id="saleForm">
                 <div class="mb-3">
                     <label for="product" class="form-label">Product</label>
                     <select class="form-control" id="product" name="product_id" required>
                         <option value="">Select a product</option>
                         <?php foreach ($products as $product): ?>
                             <option value="<?php echo htmlspecialchars($product['product_id']); ?>"
-                                    data-category-id="<?php echo htmlspecialchars($product['category_id']); ?>">
-                                <?php echo htmlspecialchars($product['product_name']); ?>
+                                    data-category-id="<?php echo htmlspecialchars($product['category_id']); ?>"
+                                    data-price="<?php echo htmlspecialchars($product['price']); ?>"
+                                    data-stock="<?php echo htmlspecialchars($product['quantity']); ?>">
+                                <?php echo htmlspecialchars($product['product_name']); ?> 
+                                (Stock: <?php echo htmlspecialchars($product['quantity']); ?>)
                             </option>
                         <?php endforeach; ?>
                     </select>
                 </div>
-                <div class="mb-3">
-                    <label for="category" class="form-label">Category</label>
-                    <select class="form-control" id="category" name="category_id" required>
-                        <option value="">Select a category</option>
-                        <?php foreach ($categories as $category): ?>
-                            <option value="<?php echo htmlspecialchars($category['id']); ?>">
-                                <?php echo htmlspecialchars($category['category_name']); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
+
                 <div class="mb-3">
                     <label for="price" class="form-label">Price</label>
                     <input type="number" step="0.01" class="form-control" id="price" name="price" required>
                 </div>
+
                 <div class="mb-3">
                     <label for="quantity" class="form-label">Quantity</label>
                     <input type="number" class="form-control" id="quantity" name="quantity" required>
+                    <small class="text-muted" id="stockInfo"></small>
                 </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Total Amount</label>
+                    <div id="totalAmount" class="form-control" readonly>0.00</div>
+                </div>
+
                 <button type="submit" class="btn btn-primary">Add Sale</button>
             </form>
         </div>
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../JS/time.js"></script>
     <script>
-        $(document).ready(function () {
-            $('#product').change(function () {
-                // Get the selected product's category ID
-                var categoryId = $(this).find(':selected').data('category-id');
-                // Set the category dropdown to the corresponding category
-                $('#category').val(categoryId);
+        $(document).ready(function() {
+            $('#product').change(function() {
+                const selected = $(this).find(':selected');
+                const price = selected.data('price');
+                const stock = selected.data('stock');
+                
+                $('#price').val(price);
+                $('#stockInfo').text(`Available stock: ${stock}`);
+                updateTotal();
+            });
+
+            $('#price, #quantity').on('input', updateTotal);
+
+            function updateTotal() {
+                const price = parseFloat($('#price').val()) || 0;
+                const quantity = parseInt($('#quantity').val()) || 0;
+                const total = (price * quantity).toFixed(2);
+                $('#totalAmount').text(total);
+            }
+
+            // Form validation
+            $('#saleForm').submit(function(e) {
+                const selected = $('#product').find(':selected');
+                const stock = selected.data('stock');
+                const quantity = parseInt($('#quantity').val());
+                const price = parseFloat($('#price').val());
+
+                if (quantity > stock) {
+                    e.preventDefault();
+                    alert('Quantity exceeds available stock!');
+                    return false;
+                }
+
+                if (quantity <= 0) {
+                    e.preventDefault();
+                    alert('Quantity must be greater than zero!');
+                    return false;
+                }
+
+                if (price <= 0) {
+                    e.preventDefault();
+                    alert('Price must be greater than zero!');
+                    return false;
+                }
             });
         });
     </script>
-</body>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>
