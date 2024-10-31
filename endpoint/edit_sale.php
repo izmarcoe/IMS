@@ -23,73 +23,78 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $quantity = $_POST['quantity'];
 
 
-        try {
-            // Start transaction
-            $conn->beginTransaction();
-        
-            // Fetch product details
-            $stmt = $conn->prepare("SELECT product_name, quantity FROM products WHERE product_id = :product_id FOR UPDATE");
-            $stmt->bindParam(':product_id', $product_id);
-            $stmt->execute();
-            $product = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-            // Validation checks
-            if (!$product) {
-                throw new Exception("Product not found.");
-            }
-            if ($product['quantity'] < $quantity) {
-                throw new Exception("Insufficient stock. Available: " . $product['quantity']);
-            }
-            if ($quantity <= 0) {
-                throw new Exception("Quantity must be greater than zero.");
-            }
-            if ($price <= 0) {
-                throw new Exception("Price must be greater than zero.");
-            }
-        
-            // Update product quantity (if necessary)
-            $update_stmt = $conn->prepare("UPDATE products SET quantity = quantity + :old_quantity - :new_quantity WHERE product_id = :product_id");
-            $old_quantity = $_POST['old_quantity']; // Assuming you have old quantity stored in a hidden field
-            $new_quantity = $quantity;
-        
-            $update_stmt->bindParam(':old_quantity', $old_quantity);
-            $update_stmt->bindParam(':new_quantity', $new_quantity);
-            $update_stmt->bindParam(':product_id', $product_id);
-            $update_stmt->execute();
-        
-            // Update the sales record
-            $stmt = $conn->prepare("UPDATE sales SET 
-                product_id = :product_id, 
-                product_name = :product_name, 
-                price = :price, 
-                quantity = :quantity, 
-                total_sales = :total_sales 
-                WHERE id = :id
-            ");
-            
-            $total_sales = $price * $quantity;
-        
-            $stmt->bindParam(':product_id', $product_id);
-            $stmt->bindParam(':product_name', $product['product_name']);
-            $stmt->bindParam(':price', $price);
-            $stmt->bindParam(':quantity', $quantity);
-            $stmt->bindParam(':total_sales', $total_sales);
-            $stmt->bindParam(':id', $id); // Use 'id' instead of 'sale_id'
-        
-            $stmt->execute();
-        
-            // Commit transaction
-            $conn->commit();
-            $_SESSION['notification'] = 'Sale updated successfully.';
-            header("Location: ../features/manage_sales.php");
-            exit();
-        
-        } catch (Exception $e) {
-            $conn->rollBack();
-            $_SESSION['notification'] = "Error: " . $e->getMessage();
-            header("Location: ../endpoint/edit_sale.php?id=" . $id); // Use 'id' instead of 'sale_id'
-            exit();
+    try {
+        // Start transaction
+        $conn->beginTransaction();
+    
+        // Fetch product details
+        $stmt = $conn->prepare("SELECT product_name, quantity FROM products WHERE product_id = :product_id FOR UPDATE");
+        $stmt->bindParam(':product_id', $product_id);
+        $stmt->execute();
+        $product = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+        // Validation checks
+        if (!$product) {
+            throw new Exception("Product not found.");
         }
+        if ($quantity <= 0) {
+            throw new Exception("Quantity must be greater than zero.");
+        }
+        if ($price <= 0) {
+            throw new Exception("Price must be greater than zero.");
+        }
+    
+        // Calculate the difference in quantity
+        $old_quantity = $_POST['old_quantity']; // Assuming you have old quantity stored in a hidden field
+        $quantity_difference = $quantity - $old_quantity;
+    
+        // If the new quantity is greater than the old quantity, check stock
+        if ($quantity_difference > 0 && $product['quantity'] < $quantity_difference) {
+            throw new Exception("Insufficient stock. Available: " . $product['quantity']);
+        }
+    
+        // Update product quantity (if necessary)
+        $update_stmt = $conn->prepare("UPDATE products SET quantity = quantity - :quantity_difference WHERE product_id = :product_id");
+        
+        // Bind the quantity difference for the update
+        $update_stmt->bindParam(':quantity_difference', $quantity_difference);
+        $update_stmt->bindParam(':product_id', $product_id);
+        $update_stmt->execute();
+    
+        // Update the sales record
+        $stmt = $conn->prepare("UPDATE sales SET 
+            product_id = :product_id, 
+            product_name = :product_name, 
+            price = :price, 
+            quantity = :quantity, 
+            total_sales = :total_sales 
+            WHERE id = :id
+        ");
+        
+        $total_sales = $price * $quantity;
+    
+        $stmt->bindParam(':product_id', $product_id);
+        $stmt->bindParam(':product_name', $product['product_name']);
+        $stmt->bindParam(':price', $price);
+        $stmt->bindParam(':quantity', $quantity);
+        $stmt->bindParam(':total_sales', $total_sales);
+        $stmt->bindParam(':id', $id); // Use 'id' instead of 'sale_id'
+    
+        $stmt->execute();
+    
+        // Commit transaction
+        $conn->commit();
+        $_SESSION['notification'] = 'Sale updated successfully.';
+        header("Location: ../features/manage_sales.php");
+        exit();
+    
+    } catch (Exception $e) {
+        $conn->rollBack();
+        $_SESSION['notification'] = "Error: " . $e->getMessage();
+        header("Location: ../endpoint/edit_sale.php?id=" . $id); // Use 'id' instead of 'sale_id'
+        exit();
+    }
+    
 }
 
 // Fetch the sale record to edit
