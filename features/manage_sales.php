@@ -24,8 +24,9 @@ $totalSales = $totalSalesQuery->fetchColumn();
 $totalPages = ceil($totalSales / $productsPerPage);
 
 // Fetch sales data with limit and offset (with optional search filter)
+// Fetch sales data with limit and offset (with optional search filter)
 $stmt = $conn->prepare("
-    SELECT id, product_name, category_id, price, quantity, sale_date
+    SELECT id, product_name, category_id, price, quantity, sale_date, (price * quantity) AS total_sales
     FROM sales
     WHERE product_name LIKE :search
     ORDER BY id DESC
@@ -36,6 +37,7 @@ $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
 $stmt->bindParam(':limit', $productsPerPage, PDO::PARAM_INT);
 $stmt->execute();
 $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 
 <!DOCTYPE html>
@@ -59,20 +61,21 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </header>
 
     <div class="d-flex">
-        <?php include '../features/sidebar.php'; ?> <!-- Sidebar inclusion -->
+        <?php include '../features/sidebar.php'; ?>
 
-        <main class="flex-grow-1"> <!-- Main content area -->
+        <main class="flex-grow-1">
             <div class="container mt-5">
                 <h2>Manage Sales</h2>
 
                 <?php if (isset($_SESSION['notification'])): ?>
-                    <div class="alert alert-info">
+                    <div class="alert alert-info" id="notification">
                         <?php
                         echo $_SESSION['notification'];
                         unset($_SESSION['notification']);
                         ?>
                     </div>
                 <?php endif; ?>
+
 
                 <!-- Search Form -->
                 <form method="GET" class="mb-3">
@@ -90,6 +93,7 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <th>Category ID</th>
                             <th>Price</th>
                             <th>Quantity</th>
+                            <th>Total Sales</th> <!-- New column header -->
                             <th>Sale Date</th>
                             <th>Actions</th>
                         </tr>
@@ -97,7 +101,7 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <tbody>
                         <?php if (empty($sales)): ?>
                             <tr>
-                                <td colspan="7" class="text-center">No sales records found.</td>
+                                <td colspan="8" class="text-center">No sales records found.</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($sales as $sale): ?>
@@ -107,12 +111,13 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <td><?php echo htmlspecialchars($sale['category_id']); ?></td>
                                     <td><?php echo htmlspecialchars($sale['price']); ?></td>
                                     <td><?php echo htmlspecialchars($sale['quantity']); ?></td>
+                                    <td><?php echo htmlspecialchars($sale['total_sales']); ?></td> <!-- Display Total Sales -->
                                     <td><?php echo htmlspecialchars($sale['sale_date']); ?></td>
                                     <td>
-                                        <a href="edit_sale.php?id=<?php echo htmlspecialchars($sale['id']); ?>" class="btn btn-warning">Edit</a>
-                                        <form method="POST" action="delete_sale.php" style="display:inline;">
+                                        <a href="../endpoint/edit_sale.php?id=<?php echo htmlspecialchars($sale['id']); ?>" class="btn btn-warning">Edit</a>
+                                        <button class="btn btn-danger delete-btn" data-id="<?php echo htmlspecialchars($sale['id']); ?>">Delete</button>
+                                        <form method="POST" action="../endpoint/delete_sales.php" class="delete-form" style="display:none;">
                                             <input type="hidden" name="id" value="<?php echo htmlspecialchars($sale['id']); ?>">
-                                            <button type="submit" class="btn btn-danger">Delete</button>
                                         </form>
                                     </td>
                                 </tr>
@@ -121,7 +126,8 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </tbody>
                 </table>
 
-                <!-- Pagination Controls Below the Table -->
+
+                <!-- Pagination Controls -->
                 <nav aria-label="Page navigation">
                     <ul class="pagination justify-content-center">
                         <?php if ($page > 1): ?>
@@ -150,6 +156,63 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </main>
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="actionModal" tabindex="-1" aria-labelledby="actionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="actionModalLabel">Action</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Modal body content will be injected here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="confirmAction">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Hide the notification after 5 seconds
+        setTimeout(function() {
+            var notification = document.getElementById('notification');
+            if (notification) {
+                notification.style.transition = 'opacity 0.5s';
+                notification.style.opacity = '0';
+                setTimeout(() => notification.style.display = 'none', 500);
+            }
+        }, 3000);
+    </script>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var actionModal = new bootstrap.Modal(document.getElementById('actionModal'));
+            var modalTitle = document.getElementById('actionModalLabel');
+            var modalBody = document.querySelector('#actionModal .modal-body');
+            var confirmButton = document.getElementById('confirmAction');
+
+            document.querySelectorAll('.delete-btn').forEach(function(button) {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault();
+
+                    modalTitle.textContent = 'Delete';
+                    modalBody.innerHTML = '<p>Are you sure you want to delete this item?</p>';
+
+                    confirmButton.onclick = function() {
+                        var form = button.nextElementSibling;
+                        form.submit();
+                    };
+
+                    actionModal.show();
+                });
+            });
+        });
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
