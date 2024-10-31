@@ -43,6 +43,30 @@ $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
 $stmt->bindParam(':limit', $productsPerPage, PDO::PARAM_INT);
 $stmt->execute();
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+//search logic
+$search = isset($_GET['search']) ? trim($_GET['search']) : '';
+// Fetch products with limit and offset and optional search
+$stmt = $conn->prepare("
+    SELECT 
+        p.product_id,
+        p.product_name,
+        p.price,
+        p.quantity,
+        p.category_id,
+        pc.category_name
+    FROM products p
+    LEFT JOIN product_categories pc ON p.category_id = pc.id
+    WHERE p.product_name LIKE :search
+    LIMIT :offset, :limit
+");
+$searchParam = "%$search%";
+$stmt->bindParam(':search', $searchParam, PDO::PARAM_STR);
+$totalProductsQuery = $conn->prepare("SELECT COUNT(*) FROM products WHERE product_name LIKE :search");
+$totalProductsQuery->bindParam(':search', $searchParam, PDO::PARAM_STR);
+$totalProductsQuery->execute();
+$totalProducts = $totalProductsQuery->fetchColumn();
+
 ?>
 
 <!DOCTYPE html>
@@ -71,8 +95,18 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <!-- Sidebar -->
         <?php include '../features/sidebar.php'; ?>
 
+
+
+
         <div class="container mt-5">
             <h2>Manage Products</h2>
+            <!-- Search Form -->
+            <form method="GET" class="mb-3">
+                <div class="input-group">
+                    <input type="text" class="form-control" name="search" placeholder="Search by Product Name" value="<?php echo htmlspecialchars($search); ?>">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </div>
+            </form>
             <table class="table">
                 <thead>
                     <tr>
@@ -85,19 +119,25 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($products as $product): ?>
-                        <tr data-product-id="<?php echo $product['product_id']; ?>">
-                            <td><?php echo $product['product_id']; ?></td>
-                            <td><?php echo htmlspecialchars($product['product_name']); ?></td>
-                            <td><?php echo htmlspecialchars($product['category_name'] ?? 'No Category'); ?></td>
-                            <td><?php echo htmlspecialchars($product['price']); ?></td>
-                            <td><?php echo htmlspecialchars($product['quantity']); ?></td>
-                            <td>
-                                <button class="btn btn-warning btn-sm" onclick="openEditModal(<?php echo $product['product_id']; ?>)">Edit</button>
-                                <button class="btn btn-danger btn-sm" onclick="openDeleteModal(<?php echo $product['product_id']; ?>)">Delete</button>
-                            </td>
+                    <?php if (empty($products)): ?>
+                        <tr>
+                            <td colspan="6" class="text-center">No products found.</td>
                         </tr>
-                    <?php endforeach; ?>
+                    <?php else: ?>
+                        <?php foreach ($products as $product): ?>
+                            <tr data-product-id="<?php echo $product['product_id']; ?>">
+                                <td><?php echo $product['product_id']; ?></td>
+                                <td><?php echo htmlspecialchars($product['product_name']); ?></td>
+                                <td><?php echo htmlspecialchars($product['category_name'] ?? 'No Category'); ?></td>
+                                <td><?php echo htmlspecialchars($product['price']); ?></td>
+                                <td><?php echo htmlspecialchars($product['quantity']); ?></td>
+                                <td>
+                                    <button class="btn btn-warning btn-sm" onclick="openEditModal(<?php echo $product['product_id']; ?>)">Edit</button>
+                                    <button class="btn btn-danger btn-sm" onclick="openDeleteModal(<?php echo $product['product_id']; ?>)">Delete</button>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </tbody>
             </table>
 
