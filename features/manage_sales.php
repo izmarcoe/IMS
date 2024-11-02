@@ -8,8 +8,42 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'employee') {
     exit();
 }
 
-// Search functionality
+// Search logic
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+$searchParam = "%$search%";
+
+// Sorting logic
+$sort = isset($_GET['sort']) ? $_GET['sort'] : '';
+$orderBy = '';
+switch ($sort) {
+    case 'category_asc':
+        $orderBy = 'pc.category_name ASC';
+        break;
+    case 'category_desc':
+        $orderBy = 'pc.category_name DESC';
+        break;
+    case 'price_asc':
+        $orderBy = 's.price ASC';
+        break;
+    case 'price_desc':
+        $orderBy = 's.price DESC';
+        break;
+    case 'name_asc':
+        $orderBy = 's.product_name ASC';
+        break;
+    case 'name_desc':
+        $orderBy = 's.product_name DESC';
+        break;
+    case 'sales_asc':
+        $orderBy = 'total_sales ASC';
+        break;
+    case 'sales_desc':
+        $orderBy = 'total_sales DESC';
+        break;
+    default:
+        $orderBy = 's.id DESC';
+        break;
+}
 
 // Pagination
 $productsPerPage = 10; // Number of sales records per page
@@ -24,12 +58,13 @@ $totalSales = $totalSalesQuery->fetchColumn();
 $totalPages = ceil($totalSales / $productsPerPage);
 
 // Fetch sales data with limit and offset (with optional search filter)
-// Fetch sales data with limit and offset (with optional search filter)
 $stmt = $conn->prepare("
-    SELECT id, product_id, product_name, category_id, price, quantity, sale_date, (price * quantity) AS total_sales
-    FROM sales
-    WHERE product_name LIKE :search
-    ORDER BY id DESC
+    SELECT s.id, s.product_id, s.product_name, s.price, s.quantity, s.sale_date, (s.price * s.quantity) AS total_sales, pc.category_name
+    FROM sales s
+    LEFT JOIN products p ON s.product_id = p.product_id
+    LEFT JOIN product_categories pc ON p.category_id = pc.id
+    WHERE s.product_name LIKE :search
+    ORDER BY $orderBy
     LIMIT :offset, :limit
 ");
 $stmt->bindValue(':search', "%$search%", PDO::PARAM_STR);
@@ -76,12 +111,25 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </div>
                 <?php endif; ?>
 
-
-                <!-- Search Form -->
                 <form method="GET" class="mb-3">
-                    <div class="input-group">
+                    <div class="input-group mb-3">
                         <input type="text" class="form-control" name="search" placeholder="Search by Product Name" value="<?php echo htmlspecialchars($search); ?>">
                         <button class="btn btn-primary" type="submit">Search</button>
+                        <a href="manage_sales.php" class="btn btn-secondary">Clear</a>
+                    </div>
+                    <div class="input-group mb-3">
+                        <label class="input-group-text" for="sort">Sort By</label>
+                        <select class="form-select" id="sort" name="sort" onchange="this.form.submit()">
+                            <option value="">Select</option>
+                            <option value="category_asc" <?php if ($sort == 'category_asc') echo 'selected'; ?>>Category (A-Z)</option>
+                            <option value="category_desc" <?php if ($sort == 'category_desc') echo 'selected'; ?>>Category (Z-A)</option>
+                            <option value="price_asc" <?php if ($sort == 'price_asc') echo 'selected'; ?>>Price (Low to High)</option>
+                            <option value="price_desc" <?php if ($sort == 'price_desc') echo 'selected'; ?>>Price (High to Low)</option>
+                            <option value="name_asc" <?php if ($sort == 'name_asc') echo 'selected'; ?>>Product Name (A-Z)</option>
+                            <option value="name_desc" <?php if ($sort == 'name_desc') echo 'selected'; ?>>Product Name (Z-A)</option>
+                            <option value="sales_asc" <?php if ($sort == 'sales_asc') echo 'selected'; ?>>Total Sales (Low to High)</option>
+                            <option value="sales_desc" <?php if ($sort == 'sales_desc') echo 'selected'; ?>>Total Sales (High to Low)</option>
+                        </select>
                     </div>
                 </form>
 
@@ -90,10 +138,10 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <tr>
                             <th>ID</th>
                             <th>Product Name</th>
-                            <th>Category ID</th>
+                            <th>Category</th>
                             <th>Price</th>
                             <th>Quantity</th>
-                            <th>Total Sales</th> <!-- New column header -->
+                            <th>Total Sales</th>
                             <th>Sale Date</th>
                             <th>Actions</th>
                         </tr>
@@ -108,10 +156,10 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <tr>
                                     <td><?php echo htmlspecialchars($sale['id']); ?></td>
                                     <td><?php echo htmlspecialchars($sale['product_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($sale['category_id']); ?></td>
+                                    <td><?php echo htmlspecialchars($sale['category_name'] ?? 'No Category'); ?></td>
                                     <td><?php echo htmlspecialchars($sale['price']); ?></td>
                                     <td><?php echo htmlspecialchars($sale['quantity']); ?></td>
-                                    <td><?php echo htmlspecialchars($sale['total_sales']); ?></td> <!-- Display Total Sales -->
+                                    <td><?php echo htmlspecialchars($sale['total_sales']); ?></td>
                                     <td><?php echo htmlspecialchars($sale['sale_date']); ?></td>
                                     <td>
                                         <a href="../endpoint/edit_sale.php?id=<?php echo htmlspecialchars($sale['id']); ?>" class="btn btn-warning">Edit</a>
@@ -126,13 +174,12 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </tbody>
                 </table>
 
-
                 <!-- Pagination Controls -->
                 <nav aria-label="Page navigation">
                     <ul class="pagination justify-content-center">
                         <?php if ($page > 1): ?>
                             <li class="page-item">
-                                <a class="page-link" href="?page=<?php echo $page - 1; ?>&search=<?php echo urlencode($search); ?>" aria-label="Previous">
+                                <a class="page-link" href="?page=<?php echo $page - 1; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>" aria-label="Previous">
                                     <span aria-hidden="true">&laquo;</span>
                                 </a>
                             </li>
@@ -140,13 +187,13 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                         <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                             <li class="page-item <?php if ($i == $page) echo 'active'; ?>">
-                                <a class="page-link" href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>"><?php echo $i; ?></a>
+                                <a class="page-link" href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"><?php echo $i; ?></a>
                             </li>
                         <?php endfor; ?>
 
                         <?php if ($page < $totalPages): ?>
                             <li class="page-item">
-                                <a class="page-link" href="?page=<?php echo $page + 1; ?>&search=<?php echo urlencode($search); ?>" aria-label="Next">
+                                <a class="page-link" href="?page=<?php echo $page + 1; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>" aria-label="Next">
                                     <span aria-hidden="true">&raquo;</span>
                                 </a>
                             </li>
@@ -155,25 +202,6 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </nav>
             </div>
         </main>
-    </div>
-
-    <!-- Modal -->
-    <div class="modal fade" id="actionModal" tabindex="-1" aria-labelledby="actionModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="actionModalLabel">Action</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- Modal body content will be injected here -->
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="confirmAction">Confirm</button>
-                </div>
-            </div>
-        </div>
     </div>
 
     <script>
@@ -187,7 +215,6 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
             }
         }, 3000);
     </script>
-
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {

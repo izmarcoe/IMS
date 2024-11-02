@@ -11,6 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $product_id = $_POST['product_id'];
     $price = $_POST['price'];
     $quantity = $_POST['quantity'];
+    $category_name = $_POST['category_name']; // Get category_name from the form
 
     try {
         // Start transaction
@@ -48,6 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             INSERT INTO sales (
                 product_id, 
                 product_name,
+                category_name,
                 price, 
                 quantity, 
                 sale_date,
@@ -55,6 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ) VALUES (
                 :product_id,
                 :product_name,
+                :category_name,
                 :price,
                 :quantity,
                 NOW(),
@@ -63,13 +66,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         ");
 
         $total_sales = $price * $quantity;
-        
+
         $stmt->bindParam(':product_id', $product_id);
         $stmt->bindParam(':product_name', $product['product_name']);
+        $stmt->bindParam(':category_name', $category_name);
         $stmt->bindParam(':price', $price);
         $stmt->bindParam(':quantity', $quantity);
         $stmt->bindParam(':total_sales', $total_sales);
-        
+
         $stmt->execute();
 
         // Commit transaction
@@ -86,15 +90,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// Fetch categories for the dropdown
-$stmt = $conn->prepare("SELECT id, category_name FROM product_categories ORDER BY category_name");
-$stmt->execute();
-$categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
 // Fetch products with current stock information
 $stmt = $conn->prepare("
-    SELECT p.product_id, p.product_name, p.category_id, p.quantity, p.price 
+    SELECT p.product_id, p.product_name, p.category_id, p.quantity, p.price, pc.category_name 
     FROM products p 
+    LEFT JOIN product_categories pc ON p.category_id = pc.id
     ORDER BY p.product_name
 ");
 $stmt->execute();
@@ -143,7 +143,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <option value="">Select a product</option>
                         <?php foreach ($products as $product): ?>
                             <option value="<?php echo htmlspecialchars($product['product_id']); ?>"
-                                    data-category-id="<?php echo htmlspecialchars($product['category_id']); ?>"
+                                    data-category-name="<?php echo htmlspecialchars($product['category_name']); ?>"
                                     data-price="<?php echo htmlspecialchars($product['price']); ?>"
                                     data-stock="<?php echo htmlspecialchars($product['quantity']); ?>">
                                 <?php echo htmlspecialchars($product['product_name']); ?> 
@@ -151,6 +151,11 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </option>
                         <?php endforeach; ?>
                     </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="category" class="form-label">Category</label>
+                    <input type="text" class="form-control" id="category" name="category_name" readonly>
                 </div>
 
                 <div class="mb-3">
@@ -180,9 +185,11 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 const selected = $(this).find(':selected');
                 const price = selected.data('price');
                 const stock = selected.data('stock');
+                const categoryName = selected.data('category-name');
                 
                 $('#price').val(price);
                 $('#stockInfo').text(`Available stock: ${stock}`);
+                $('#category').val(categoryName);
                 updateTotal();
             });
 
