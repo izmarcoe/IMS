@@ -45,6 +45,22 @@ switch ($sort) {
         break;
 }
 
+// Handle sales deletion
+if (isset($_GET['delete_id'])) {
+    try {
+        $delete_id = $_GET['delete_id'];
+
+        $stmt = $conn->prepare("DELETE FROM sales WHERE id = :id");
+        $stmt->bindParam(':id', $delete_id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        header("Location: manage_sales.php");
+        exit();
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+    }
+}
+
 // Pagination
 $productsPerPage = 10; // Number of sales records per page
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Current page
@@ -137,7 +153,6 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Product Name</th>
                             <th>Category</th>
                             <th>Price</th>
@@ -155,7 +170,6 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <?php else: ?>
                             <?php foreach ($sales as $sale): ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($sale['id']); ?></td>
                                     <td><?php echo htmlspecialchars($sale['product_name']); ?></td>
                                     <td><?php echo htmlspecialchars($sale['category_name'] ?? 'No Category'); ?></td>
                                     <td><?php echo htmlspecialchars($sale['price']); ?></td>
@@ -164,9 +178,10 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <td><?php echo htmlspecialchars($sale['sale_date']); ?></td>
                                     <td>
                                         <a href="../endpoint/edit_sale.php?id=<?php echo htmlspecialchars($sale['id']); ?>" class="btn btn-warning">Edit</a>
-                                        <button class="btn btn-danger delete-btn" data-id="<?php echo htmlspecialchars($sale['id']); ?>">Delete</button>
-                                        <form method="POST" action="../endpoint/delete_sales.php" class="delete-form" style="display:none;">
-                                            <input type="hidden" name="id" value="<?php echo htmlspecialchars($sale['id']); ?>">
+                                        <button class="btn btn-danger btn-sm" onclick="deleteSale(<?php echo $sale['id']; ?>)">
+                                            Delete
+                                        </button>
+                                        <input type="hidden" name="id" value="<?php echo htmlspecialchars($sale['id']); ?>">
                                         </form>
                                     </td>
                                 </tr>
@@ -202,6 +217,26 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </ul>
                 </nav>
             </div>
+
+            <!-- Delete Confirmation Modal -->
+            <div class="modal fade" id="deleteSaleModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Delete Sale</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure you want to delete this sale record?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
 
@@ -218,31 +253,23 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var actionModal = new bootstrap.Modal(document.getElementById('actionModal'));
-            var modalTitle = document.getElementById('actionModalLabel');
-            var modalBody = document.querySelector('#actionModal .modal-body');
-            var confirmButton = document.getElementById('confirmAction');
+        // Initialize modals
+        const deleteSaleModal = new bootstrap.Modal(document.getElementById('deleteSaleModal'));
+        let saleToDelete = null;
 
-            document.querySelectorAll('.delete-btn').forEach(function(button) {
-                button.addEventListener('click', function(event) {
-                    event.preventDefault();
+        function deleteSale(id) {
+            saleToDelete = id;
+            deleteSaleModal.show();
+        }
 
-                    modalTitle.textContent = 'Delete';
-                    modalBody.innerHTML = '<p>Are you sure you want to delete this item?</p>';
-
-                    confirmButton.onclick = function() {
-                        var form = button.nextElementSibling;
-                        form.submit();
-                    };
-
-                    actionModal.show();
-                });
-            });
+        // Handle delete confirmation
+        document.getElementById('confirmDelete').addEventListener('click', function() {
+            if (saleToDelete) {
+                window.location.href = `manage_sales.php?delete_id=${saleToDelete}`;
+            }
         });
     </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

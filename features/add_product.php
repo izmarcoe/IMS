@@ -67,7 +67,7 @@ $active_add_product = ($current_page == 'add-product.php') ? 'active' : '';
     <title>Add Product</title>
     <link rel="stylesheet" href="../CSS/employee_dashboard.css">
     <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-
+    
 </head>
 
 <body>
@@ -131,7 +131,6 @@ $active_add_product = ($current_page == 'add-product.php') ? 'active' : '';
             </form>
         </div>
     </main>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script src="../JS/time.js"></script>
     <script>
         //to handle the dropdown dynamically with AJAX instead of server-side rendering

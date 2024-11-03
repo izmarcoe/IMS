@@ -148,7 +148,6 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Product Name</th>
                             <th>Category</th>
                             <th>Price</th>
@@ -164,7 +163,6 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <?php else: ?>
                             <?php foreach ($products as $product): ?>
                                 <tr data-product-id="<?php echo $product['product_id']; ?>">
-                                    <td><?php echo $product['product_id']; ?></td>
                                     <td><?php echo htmlspecialchars($product['product_name']); ?></td>
                                     <td><?php echo htmlspecialchars($product['category_name'] ?? 'No Category'); ?></td>
                                     <td><?php echo htmlspecialchars($product['price']); ?></td>
@@ -246,7 +244,6 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         });
     </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
