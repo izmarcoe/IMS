@@ -50,6 +50,7 @@ $lname = $_SESSION['Lname'];
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -59,8 +60,10 @@ $lname = $_SESSION['Lname'];
     <title>Employee Dashboard</title>
     <link rel="stylesheet" href="../CSS/employee_dashboard.css">
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <script src="../bootstrap/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 </head>
+
 <body>
     <!-- Header -->
     <header class="d-flex justify-content-between align-items-center bg-danger text-white p-3">
@@ -72,7 +75,7 @@ $lname = $_SESSION['Lname'];
     </header>
     <!-- Content -->
     <main class="d-flex">
-        
+
         <!-- Sidebar -->
         <?php include '../features/sidebar.php' ?>
 
@@ -90,4 +93,5 @@ $lname = $_SESSION['Lname'];
     <script src="../JS/employeeAuth.js"></script>
     <script src="../JS/time.js"></script>
 </body>
+
 </html>

@@ -49,7 +49,8 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Categories</title>
     <link rel="stylesheet" href="../CSS/employee_dashboard.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <script src="../bootstrap/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 </head>
 
 <body>

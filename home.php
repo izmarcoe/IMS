@@ -35,7 +35,8 @@ if (isset($_SESSION['user_id'])) {
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Login System with QR Code Scanner</title>
                 <!-- Bootstrap CSS -->
-                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+                <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+                <script src="../bootstrap/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
                 <link rel="stylesheet" href="CSS/home.css">
                 <script>
                     // Replace the current history state
