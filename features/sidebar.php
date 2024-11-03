@@ -1,5 +1,9 @@
+
+<link href="../bootstrap/css/bootstrap.min.css">
+<script src="../bootstrap/js/bootstrap.bundle.min.js"></script>
+
 <div class="bg-dark text-white vh-100 p-3" style="width: 300px;">
-    <h2 class="text-center fs-2 py-4">Store Name/Logo</h2>
+    <h2 class="text-center fs-2 py-4">Inventory System</h2>
     <div>
         <a class="sidebar-link fs-5 py-3" href="../dashboards/employee_dashboard.php" onclick="setActive(this)">Dashboard</a>
         <a class="sidebar-link fs-5 py-3" href="#" style="pointer-events: none; color: gray;">User Management</a>
@@ -23,5 +27,3 @@
         <a class="sidebar-link fs-5 py-3" href="#" onclick="setActive(this)">Sales Report</a>
     </div>
 </div>
-
-<script src="collapseReset.js"></script>

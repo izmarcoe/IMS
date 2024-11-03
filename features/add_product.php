@@ -67,7 +67,7 @@ $active_add_product = ($current_page == 'add-product.php') ? 'active' : '';
     <title>Add Product</title>
     <link rel="stylesheet" href="../CSS/employee_dashboard.css">
     <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-    
+
 </head>
 
 <body>
@@ -89,12 +89,13 @@ $active_add_product = ($current_page == 'add-product.php') ? 'active' : '';
         <div class="container mt-5">
             <h2>Add New Product</h2>
 
-            <?php if (isset($error)): ?>
-                <div class="alert alert-danger"><?php echo $error; ?></div>
-            <?php endif; ?>
-
-            <?php if (isset($success)): ?>
-                <div class="alert alert-success"><?php echo $success; ?></div>
+            <?php if (isset($_SESSION['notification'])): ?>
+                <div class="alert alert-info" id="notification">
+                    <?php
+                    echo $_SESSION['notification'];
+                    unset($_SESSION['notification']);
+                    ?>
+                </div>
             <?php endif; ?>
 
             <form method="POST">
@@ -132,6 +133,9 @@ $active_add_product = ($current_page == 'add-product.php') ? 'active' : '';
         </div>
     </main>
     <script src="../JS/time.js"></script>
+
+    <script src="../JS/notificationTimer.js"></script>
+
     <script>
         //to handle the dropdown dynamically with AJAX instead of server-side rendering
         function loadCategories() {

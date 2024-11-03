@@ -81,7 +81,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['notification'] = 'Sale added successfully.';
         header("Location: manage_sales.php");
         exit();
-
     } catch (Exception $e) {
         $conn->rollBack();
         $_SESSION['notification'] = "Error: " . $e->getMessage();
@@ -103,6 +102,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -112,6 +112,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <script src="../bootstrap/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
+
 <body>
     <!-- Header remains the same -->
     <header class="d-flex justify-content-between align-items-center bg-danger text-white p-3">
@@ -129,7 +130,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <h2>Add New Sale</h2>
 
             <?php if (isset($_SESSION['notification'])): ?>
-                <div class="alert alert-info">
+                <div class="alert alert-info" id="notification">
                     <?php
                     echo $_SESSION['notification'];
                     unset($_SESSION['notification']);
@@ -144,10 +145,10 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <option value="">Select a product</option>
                         <?php foreach ($products as $product): ?>
                             <option value="<?php echo htmlspecialchars($product['product_id']); ?>"
-                                    data-category-name="<?php echo htmlspecialchars($product['category_name']); ?>"
-                                    data-price="<?php echo htmlspecialchars($product['price']); ?>"
-                                    data-stock="<?php echo htmlspecialchars($product['quantity']); ?>">
-                                <?php echo htmlspecialchars($product['product_name']); ?> 
+                                data-category-name="<?php echo htmlspecialchars($product['category_name']); ?>"
+                                data-price="<?php echo htmlspecialchars($product['price']); ?>"
+                                data-stock="<?php echo htmlspecialchars($product['quantity']); ?>">
+                                <?php echo htmlspecialchars($product['product_name']); ?>
                                 (Stock: <?php echo htmlspecialchars($product['quantity']); ?>)
                             </option>
                         <?php endforeach; ?>
@@ -179,6 +180,8 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </form>
         </div>
     </main>
+    
+    <script src="../JS/notificationTimer.js"></script>
 
     <script>
         $(document).ready(function() {
@@ -187,7 +190,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 const price = selected.data('price');
                 const stock = selected.data('stock');
                 const categoryName = selected.data('category-name');
-                
+
                 $('#price').val(price);
                 $('#stockInfo').text(`Available stock: ${stock}`);
                 $('#category').val(categoryName);
@@ -232,4 +235,5 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </script>
 
 </body>
+
 </html>
