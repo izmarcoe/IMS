@@ -2,7 +2,8 @@
 session_start();
 include('../conn/conn.php');
 
-if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'employee') {
+// Check if the user is logged in and has the appropriate role to add sales
+if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'employee' && $_SESSION['user_role'] != 'admin')) {
     header("Location: http://localhost/IMS/");
     exit();
 }

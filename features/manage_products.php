@@ -3,7 +3,7 @@ session_start();
 include('../conn/conn.php'); // Database connection file
 
 // Check if the user is logged in and has the appropriate role to manage products
-if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'employee') {
+if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'employee' && $_SESSION['user_role'] != 'admin')) {
     header("Location: http://localhost/IMS/");
     exit();
 }
@@ -122,27 +122,6 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <button class="btn btn-primary" type="submit">Search</button>
                         <a href="manage_products.php" class="btn btn-secondary">Clear</a>
                     </div>
-                    <div class="container-fluid mt-5">
-                        <div class="d-flex justify-content-between align-items-center mt-3 mb-3">
-                            <h2>Manage Products</h2>
-
-                            <!-- Sorting dropdown beside the table header -->
-                            <form method="GET" class="d-inline-flex align-items-center">
-                                <label class="me-2" for="sort">Sort By:</label>
-                                <select class="form-select form-select-sm" id="sort" name="sort" onchange="this.form.submit()">
-                                    <option value="">Select</option>
-                                    <option value="category_asc" <?php if ($sort == 'category_asc') echo 'selected'; ?>>Category (A-Z)</option>
-                                    <option value="category_desc" <?php if ($sort == 'category_desc') echo 'selected'; ?>>Category (Z-A)</option>
-                                    <option value="price_asc" <?php if ($sort == 'price_asc') echo 'selected'; ?>>Price (Low to High)</option>
-                                    <option value="price_desc" <?php if ($sort == 'price_desc') echo 'selected'; ?>>Price (High to Low)</option>
-                                    <option value="name_asc" <?php if ($sort == 'name_asc') echo 'selected'; ?>>Product Name (A-Z)</option>
-                                    <option value="name_desc" <?php if ($sort == 'name_desc') echo 'selected'; ?>>Product Name (Z-A)</option>
-                                    <option value="quantity_asc" <?php if ($sort == 'quantity_asc') echo 'selected'; ?>>Quantity (Low to High)</option>
-                                    <option value="quantity_desc" <?php if ($sort == 'quantity_desc') echo 'selected'; ?>>Quantity (High to Low)</option>
-                                </select>
-                            </form>
-                        </div>
-                    </div>
                 </form>
 
                 <table class="table table-striped">
@@ -168,8 +147,11 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <td><?php echo htmlspecialchars($product['price']); ?></td>
                                     <td><?php echo htmlspecialchars($product['quantity']); ?></td>
                                     <td>
-                                        <button class="btn btn-warning btn-sm" onclick="openEditModal(<?php echo $product['product_id']; ?>)">Edit</button>
-                                        <button class="btn btn-danger btn-sm" onclick="openDeleteModal(<?php echo $product['product_id']; ?>)">Delete</button>
+                                        <button class="btn btn-warning btn-sm">Edit</button>
+                                        <button class="btn btn-danger btn-sm delete-btn">Delete</button>
+                                        <form method="POST" action="../endpoint/delete_product.php" style="display:none;">
+                                            <input type="hidden" name="product_id" value="<?php echo $product['product_id']; ?>">
+                                        </form>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -207,33 +189,81 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </main>
     </div>
 
-    <script src="../JS/notificationTimer.js"></script>
+    <!-- Edit Product Modal -->
+    <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="editProductForm" action="edit_product.php" method="POST">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="product_id" id="editProductId">
+                        <div class="mb-3">
+                            <label for="editProductName" class="form-label">Product Name</label>
+                            <input type="text" class="form-control" id="editProductName" name="product_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editProductCategory" class="form-label">Category</label>
+                            <input type="text" class="form-control" id="editProductCategory" name="category_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editProductPrice" class="form-label">Price</label>
+                            <input type="number" step="0.01" class="form-control" id="editProductPrice" name="price" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editProductQuantity" class="form-label">Quantity</label>
+                            <input type="number" class="form-control" id="editProductQuantity" name="quantity" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="actionModal" tabindex="-1" aria-labelledby="actionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="actionModalLabel">Confirm Action</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this item?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmAction">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../JS/notificationTimer.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var actionModal = new bootstrap.Modal(document.getElementById('actionModal'));
-            var modalTitle = document.getElementById('actionModalLabel');
-            var modalBody = document.querySelector('#actionModal .modal-body');
             var confirmButton = document.getElementById('confirmAction');
 
             document.querySelectorAll('.delete-btn').forEach(function(button) {
                 button.addEventListener('click', function(event) {
                     event.preventDefault();
-
-                    modalTitle.textContent = 'Delete';
-                    modalBody.innerHTML = '<p>Are you sure you want to delete this item?</p>';
+                    var deleteForm = this.nextElementSibling;
+                    actionModal.show();
 
                     confirmButton.onclick = function() {
-                        var form = button.nextElementSibling;
-                        form.submit();
+                        deleteForm.submit();
                     };
-
-                    actionModal.show();
                 });
             });
         });
     </script>
-
 </body>
 
 </html>

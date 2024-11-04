@@ -67,6 +67,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     window.location.href = 'http://localhost/IMS/dashboards/employee_dashboard.php';
                 </script>
                 ";
+            } 
+            // Check the user role for redirection
+            else if ($_SESSION['user_role'] == 'admin') {
+                echo "
+                <script>
+                    alert('Login Successfully!');
+                    window.location.href = 'http://localhost/IMS/dashboards/admin_dashboard.php';
+                </script>
+                ";
             } else {
                 echo "
                 <script>

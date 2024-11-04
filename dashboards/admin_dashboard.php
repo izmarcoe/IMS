@@ -1,13 +1,13 @@
 <?php
 session_start();
 include('../conn/conn.php'); // Ensure this points to the correct path of your conn.php
-require '../endpoint/employeeAuth.php';
+require '../endpoint/adminAuth.php';
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
 // Check if the user is logged in and is an employee
-if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'employee') {
+if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
     header("Location: http://localhost/IMS/");
     exit();
 }
@@ -82,14 +82,18 @@ $lname = $_SESSION['Lname'];
         <!-- Main Content -->
         <div class="flex-grow-1 p-3">
             <h2 class="text-center">Welcome, <?php echo htmlspecialchars($fname) . ' ' . htmlspecialchars($lname); ?>!</h2>
-            <p class="text-center">This is the employee dashboard.</p>
+            <p class="text-center">This is the Admin dashboard.</p>
         </div>
     </main>
 
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <!-- JS -->
-    <script src="../JS/collapseSidebar.js"></script>
+    <script src="../JS/employee_dashboard.js"></script>
     <script src="../JS/employeeAuth.js"></script>
     <script src="../JS/time.js"></script>
     <script src="../JS/preventBack.js"></script>
+
 </body>
+
 </html>

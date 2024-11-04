@@ -2,8 +2,8 @@
 session_start();
 include('../conn/conn.php');
 
-// Check if the user is logged in as an employee
-if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'employee') {
+// Check if the user is logged in as an employee or an admin
+if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'employee' && $_SESSION['user_role'] != 'admin')) {
     header("Location: http://localhost/IMS/");
     exit();
 }

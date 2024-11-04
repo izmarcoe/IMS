@@ -2,8 +2,8 @@
 session_start();
 include('../conn/conn.php');
 
-// Check for user authentication
-if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'employee') {
+// Check if the user is logged in and has the appropriate role to add products
+if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'employee' && $_SESSION['user_role'] != 'admin')) {
     header("Location: http://localhost/IMS/");
     exit();
 }
@@ -85,7 +85,6 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Category Name</th>
                             <th>Description</th>
                             <th>Actions</th>
@@ -94,7 +93,6 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'
                     <tbody>
                         <?php foreach ($categories as $category): ?>
                             <tr>
-                                <td><?php echo htmlspecialchars($category['id']); ?></td>
                                 <td><?php echo htmlspecialchars($category['category_name']); ?></td>
                                 <td><?php echo htmlspecialchars($category['description']); ?></td>
                                 <td>

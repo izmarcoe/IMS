@@ -2,8 +2,9 @@
 session_start();
 include('../conn/conn.php'); // Database connection file
 
+
 // Check if the user is logged in and has the appropriate role to add products
-if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'employee') {
+if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'employee' && $_SESSION['user_role'] != 'admin')) {
     header("Location: http://localhost/IMS/");
     exit();
 }
