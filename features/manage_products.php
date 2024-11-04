@@ -124,6 +124,22 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </div>
                 </form>
 
+                <!-- Sorting dropdown beside the table header -->
+                <form method="GET" class="d-inline-flex align-items-center">
+                    <label class="me-2" for="sort">Sort By:</label>
+                    <select class="form-select form-select-sm" id="sort" name="sort" onchange="this.form.submit()">
+                        <option value="">Select</option>
+                        <option value="category_asc" <?php if ($sort == 'category_asc') echo 'selected'; ?>>Category (A-Z)</option>
+                        <option value="category_desc" <?php if ($sort == 'category_desc') echo 'selected'; ?>>Category (Z-A)</option>
+                        <option value="price_asc" <?php if ($sort == 'price_asc') echo 'selected'; ?>>Price (Low to High)</option>
+                        <option value="price_desc" <?php if ($sort == 'price_desc') echo 'selected'; ?>>Price (High to Low)</option>
+                        <option value="name_asc" <?php if ($sort == 'name_asc') echo 'selected'; ?>>Product Name (A-Z)</option>
+                        <option value="name_desc" <?php if ($sort == 'name_desc') echo 'selected'; ?>>Product Name (Z-A)</option>
+                        <option value="quantity_asc" <?php if ($sort == 'quantity_asc') echo 'selected'; ?>>Quantity (Low to High)</option>
+                        <option value="quantity_desc" <?php if ($sort == 'quantity_desc') echo 'selected'; ?>>Quantity (High to Low)</option>
+                    </select>
+                </form>
+
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -187,43 +203,6 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </nav>
             </div>
         </main>
-    </div>
-
-    <!-- Edit Product Modal -->
-    <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form id="editProductForm" action="edit_product.php" method="POST">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <input type="hidden" name="product_id" id="editProductId">
-                        <div class="mb-3">
-                            <label for="editProductName" class="form-label">Product Name</label>
-                            <input type="text" class="form-control" id="editProductName" name="product_name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editProductCategory" class="form-label">Category</label>
-                            <input type="text" class="form-control" id="editProductCategory" name="category_name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editProductPrice" class="form-label">Price</label>
-                            <input type="number" step="0.01" class="form-control" id="editProductPrice" name="price" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editProductQuantity" class="form-label">Quantity</label>
-                            <input type="number" class="form-control" id="editProductQuantity" name="quantity" required>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
-                    </div>
-                </form>
-            </div>
-        </div>
     </div>
 
     <!-- Delete Confirmation Modal -->
