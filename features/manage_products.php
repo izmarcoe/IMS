@@ -238,11 +238,11 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </div>
                         <div class="mb-3">
                             <label for="editPrice" class="form-label">Price</label>
-                            <input type="number" step="0.01" class="form-control" id="editPrice" name="price" required>
+                            <input type="number" step="0.01" class="form-control" id="editPrice" name="price" min="1" required>
                         </div>
                         <div class="mb-3">
                             <label for="editQuantity" class="form-label">Quantity</label>
-                            <input type="number" class="form-control" id="editQuantity" name="quantity" required>
+                            <input type="number" class="form-control" id="editQuantity" name="quantity" min="1" required>
                         </div>
                         <button type="submit" class="btn btn-primary">Update Product</button>
                     </form>
@@ -271,39 +271,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 
     <script src="../JS/notificationTimer.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var actionModal = new bootstrap.Modal(document.getElementById('actionModal'));
-            var confirmButton = document.getElementById('confirmAction');
-            var editProductModal = new bootstrap.Modal(document.getElementById('editProductModal'));
-            var editProductForm = document.getElement
-            var editProductForm = document.getElementById('editProductForm');
-
-            document.querySelectorAll('.delete-btn').forEach(function(button) {
-                button.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    var deleteForm = this.nextElementSibling;
-                    actionModal.show();
-
-                    confirmButton.onclick = function() {
-                        deleteForm.submit();
-                    };
-                });
-            });
-
-            document.querySelectorAll('.edit-btn').forEach(function(button) {
-                button.addEventListener('click', function() {
-                    var product = JSON.parse(this.getAttribute('data-product'));
-                    document.getElementById('editProductId').value = product.product_id;
-                    document.getElementById('editProductName').value = product.product_name;
-                    document.getElementById('editCategory').value = product.category_id;
-                    document.getElementById('editPrice').value = product.price;
-                    document.getElementById('editQuantity').value = product.quantity;
-                    editProductModal.show();
-                });
-            });
-        });
-    </script>
+    <script src="../JS/manage_products.js"></script>
 </body>
 
 </html>
