@@ -8,6 +8,11 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'employee' && $_S
     exit();
 }
 
+// Fetch categories for the dropdown
+$categoriesStmt = $conn->prepare("SELECT id, category_name FROM product_categories ORDER BY category_name");
+$categoriesStmt->execute();
+$categories = $categoriesStmt->fetchAll(PDO::FETCH_ASSOC);
+
 // Search logic
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $searchParam = "%$search%";
@@ -163,7 +168,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <td><?php echo htmlspecialchars($product['price']); ?></td>
                                     <td><?php echo htmlspecialchars($product['quantity']); ?></td>
                                     <td>
-                                        <button class="btn btn-warning btn-sm">Edit</button>
+                                        <button class="btn btn-warning btn-sm edit-btn" data-product='<?php echo json_encode($product); ?>'>Edit</button>
                                         <button class="btn btn-danger btn-sm delete-btn">Delete</button>
                                         <form method="POST" action="../endpoint/delete_product.php" style="display:none;">
                                             <input type="hidden" name="product_id" value="<?php echo $product['product_id']; ?>">
@@ -205,6 +210,47 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </main>
     </div>
 
+    <!-- Edit Product Modal -->
+    <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editProductForm" method="POST" action="../endpoint/edit_product.php">
+                        <input type="hidden" name="product_id" id="editProductId">
+                        <div class="mb-3">
+                            <label for="editProductName" class="form-label">Product Name</label>
+                            <input type="text" class="form-control" id="editProductName" name="product_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editCategory" class="form-label">Category</label>
+                            <select class="form-control" id="editCategory" name="category" required>
+                                <option value="">Select a category</option>
+                                <?php foreach ($categories as $category): ?>
+                                    <option value="<?php echo htmlspecialchars($category['id']); ?>">
+                                        <?php echo htmlspecialchars($category['category_name']); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editPrice" class="form-label">Price</label>
+                            <input type="number" step="0.01" class="form-control" id="editPrice" name="price" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editQuantity" class="form-label">Quantity</label>
+                            <input type="number" class="form-control" id="editQuantity" name="quantity" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Product</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Delete Confirmation Modal -->
     <div class="modal fade" id="actionModal" tabindex="-1" aria-labelledby="actionModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -229,6 +275,9 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         document.addEventListener('DOMContentLoaded', function() {
             var actionModal = new bootstrap.Modal(document.getElementById('actionModal'));
             var confirmButton = document.getElementById('confirmAction');
+            var editProductModal = new bootstrap.Modal(document.getElementById('editProductModal'));
+            var editProductForm = document.getElement
+            var editProductForm = document.getElementById('editProductForm');
 
             document.querySelectorAll('.delete-btn').forEach(function(button) {
                 button.addEventListener('click', function(event) {
@@ -239,6 +288,18 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     confirmButton.onclick = function() {
                         deleteForm.submit();
                     };
+                });
+            });
+
+            document.querySelectorAll('.edit-btn').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var product = JSON.parse(this.getAttribute('data-product'));
+                    document.getElementById('editProductId').value = product.product_id;
+                    document.getElementById('editProductName').value = product.product_name;
+                    document.getElementById('editCategory').value = product.category_id;
+                    document.getElementById('editPrice').value = product.price;
+                    document.getElementById('editQuantity').value = product.quantity;
+                    editProductModal.show();
                 });
             });
         });

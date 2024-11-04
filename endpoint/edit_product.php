@@ -12,27 +12,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $stmt->execute([
             ':product_name' => $_POST['product_name'],
-            ':category' => $_POST['category'], // This will receive the category_id from the form
+            ':category' => $_POST['category'],
             ':price' => $_POST['price'],
             ':quantity' => $_POST['quantity'],
             ':product_id' => $_POST['product_id']
         ]);
 
-        // Fetch the updated product data
-        $stmt = $conn->prepare("SELECT * FROM products WHERE product_id = :product_id");
-        $stmt->execute([':product_id' => $_POST['product_id']]);
-        $updatedProduct = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        echo json_encode([
-            'success' => true,
-            'message' => 'Product updated successfully',
-            'product' => $updatedProduct
-        ]);
+        $_SESSION['notification'] = 'Product updated successfully';
+        header("Location: ../features/manage_products.php");
+        exit();
     } catch (PDOException $e) {
-        echo json_encode([
-            'success' => false,
-            'message' => 'Error updating product: ' . $e->getMessage()
-        ]);
+        $_SESSION['notification'] = 'Error updating product: ' . $e->getMessage();
+        header("Location: ../features/manage_products.php");
+        exit();
     }
 }
 ?>
