@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_role'])) {
     $new_role = $_POST['role'];
     $updateStmt = $conn->prepare("UPDATE login_db SET role = ? WHERE user_id = ?");
     $updateStmt->execute([$new_role, $user_id]);
-    header("Location: manage-users.php");
+    header("Location: ../features/manage-users.php");
     exit();
 }
 
@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['archive_user'])) {
     $user_id = $_POST['user_id'];
     $archiveStmt = $conn->prepare("UPDATE login_db SET status = 'archived' WHERE user_id = ?");
     $archiveStmt->execute([$user_id]);
-    header("Location: manage-users.php");
+    header("Location: ../features/manage-users.php");
     exit();
 }
 ?>
@@ -80,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['archive_user'])) {
                                         <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($user['user_id']); ?>">
                                         <select name="role" class="form-select d-inline w-auto">
                                             <option value="admin" <?php if ($user['role'] == 'admin') echo 'selected'; ?>>Admin</option>
-                                            <option value="user" <?php if ($user['role'] == 'user') echo 'selected'; ?>>User</option>
+                                            <option value="user" <?php if ($user['role'] == 'employee') echo 'selected'; ?>>Employee</option>
                                         </select>
                                         <button type="submit" name="update_role" class="btn btn-primary btn-sm">Edit</button>
                                     </form>
