@@ -30,10 +30,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </script>
                 ";
             } else {
+                ($_SESSION['user_role'] == 'admin');    
                 echo "
                 <script>
                     alert('Login Successfully!');
-                    window.location.href = 'http://localhost/IMS/home.php';
+                    window.location.href = 'http://localhost/IMS/dashboards/admin_dashboard.php';
                 </script>
                 ";
             }
