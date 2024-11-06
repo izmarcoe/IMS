@@ -9,13 +9,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Check if using QR code or email/password
     if (!empty($qrCode)) {
         // Handle QR code login
-        $stmt = $conn->prepare("SELECT `generated_code`, `Fname`, `Lname`, `user_id`, `role` FROM `login_db` WHERE `generated_code` = :generated_code");
+        $stmt = $conn->prepare("SELECT `generated_code`, `Fname`, `Lname`, `user_id`, `role`, `status` FROM `login_db` WHERE `generated_code` = :generated_code");
         $stmt->bindParam(':generated_code', $qrCode);
         $stmt->execute();
 
         $accountExist = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($accountExist) {
+        if ($accountExist && $accountExist['status'] == 'active') {
             session_start();
             $_SESSION['user_id'] = $accountExist['user_id'];
             $_SESSION['user_role'] = $accountExist['role'];
@@ -41,20 +41,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Optionally hide the error for QR code
             echo "
             <script>
-                alert('QR Code account doesn\'t exist!'); // You may remove this if you want to hide the message
+                alert('QR Code account doesn\'t exist or is inactive!'); // You may remove this if you want to hide the message
                 window.location.href = 'http://localhost/IMS/';
             </script>
             ";
         }
     } else {
         // Handle email/password login
-        $stmt = $conn->prepare("SELECT `user_id`, `Fname`, `Lname`, `role`, `password` FROM `login_db` WHERE `email` = :email");
+        $stmt = $conn->prepare("SELECT `user_id`, `Fname`, `Lname`, `role`, `password`, `status` FROM `login_db` WHERE `email` = :email");
         $stmt->bindParam(':email', $email);
         $stmt->execute();
 
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($user && password_verify($password, $user['password'])) {
+        if ($user && password_verify($password, $user['password']) && $user['status'] == 'active') {
             session_start();
             $_SESSION['user_id'] = $user['user_id'];
             $_SESSION['user_role'] = $user['role'];
@@ -88,7 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Hide the error message
             echo "
             <script>
-                // alert('Invalid email or password!'); // Comment this out to hide
+                // alert('Invalid email or password or account is inactive!'); // Comment this out to hide
                 window.location.href = 'http://localhost/IMS/';
             </script>
             ";

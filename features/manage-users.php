@@ -8,9 +8,9 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'admin')) {
     exit();
 }
 
-// Fetch USERS
-$UserStmt = $conn->prepare("SELECT user_id, Fname, Lname, role FROM login_db WHERE status = 'active' ORDER BY user_id");
-$UserStmt->execute();
+// Fetch USERS excluding the current live session account
+$UserStmt = $conn->prepare("SELECT user_id, Fname, Lname, role, status FROM login_db WHERE user_id != ? ORDER BY user_id");
+$UserStmt->execute([$_SESSION['user_id']]);
 $users = $UserStmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Handle role update
@@ -24,10 +24,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_role'])) {
 }
 
 // Handle user archive
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['archive_user'])) {
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['inactive_user'])) {
     $user_id = $_POST['user_id'];
-    $archiveStmt = $conn->prepare("UPDATE login_db SET status = 'archived' WHERE user_id = ?");
+    $archiveStmt = $conn->prepare("UPDATE login_db SET status = 'inactive' WHERE user_id = ?");
     $archiveStmt->execute([$user_id]);
+    header("Location: ../features/manage-users.php");
+    exit();
+}
+
+// Handle user activation
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activate_user'])) {
+    $user_id = $_POST['user_id'];
+    $activateStmt = $conn->prepare("UPDATE login_db SET status = 'active' WHERE user_id = ?");
+    $activateStmt->execute([$user_id]);
     header("Location: ../features/manage-users.php");
     exit();
 }
@@ -66,32 +75,82 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['archive_user'])) {
                             <th>First Name</th>
                             <th>Last Name</th>
                             <th>Role</th>
+                            <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($users as $user): ?>
-                            <tr>
+                            <tr class="<?php echo $user['status'] == 'inactive' ? 'table-secondary' : ''; ?>">
                                 <td><?php echo htmlspecialchars($user['user_id']); ?></td>
                                 <td><?php echo htmlspecialchars($user['Fname']); ?></td>
                                 <td><?php echo htmlspecialchars($user['Lname']); ?></td>
                                 <td>
-                                    <form method="POST" class="d-inline">
-                                        <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($user['user_id']); ?>">
-                                        <select name="role" class="form-select d-inline w-auto">
-                                            <option value="admin" <?php if ($user['role'] == 'admin') echo 'selected'; ?>>Admin</option>
-                                            <option value="user" <?php if ($user['role'] == 'employee') echo 'selected'; ?>>Employee</option>
-                                        </select>
-                                        <button type="submit" name="update_role" class="btn btn-primary btn-sm">Edit</button>
-                                    </form>
+                                    <?php
+                                    switch ($user['role']) {
+                                        case 'admin':
+                                            echo 'Admin';
+                                            break;
+                                        case 'employee':
+                                            echo 'Employee';
+                                            break;
+                                        case 'new_user':
+                                            echo 'New User';
+                                            break;
+                                        default:
+                                            echo 'New User';
+                                    }
+                                    ?>
                                 </td>
+                                <td><?php echo htmlspecialchars($user['status']); ?></td>
                                 <td>
-                                    <form method="POST" class="d-inline">
-                                        <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($user['user_id']); ?>">
-                                        <button type="submit" name="archive_user" class="btn btn-warning btn-sm">Archive</button>
-                                    </form>
+                                    <?php if ($user['status'] == 'active'): ?>
+                                        <!-- Edit Button to trigger modal -->
+                                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editRoleModal<?php echo $user['user_id']; ?>">
+                                            Edit
+                                        </button>
+
+                                        <!-- Archive Button -->
+                                        <form method="POST" class="d-inline">
+                                            <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($user['user_id']); ?>">
+                                            <button type="submit" name="inactive_user" class="btn btn-warning btn-sm">Archive</button>
+                                        </form>
+                                    <?php else: ?>
+                                        <!-- Activate Button -->
+                                        <form method="POST" class="d-inline">
+                                            <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($user['user_id']); ?>">
+                                            <button type="submit" name="activate_user" class="btn btn-success btn-sm">Activate</button>
+                                        </form>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
+                            <?php if ($user['status'] == 'active'): ?>
+                                <!-- Modal for Editing Role -->
+                                <div class="modal fade" id="editRoleModal<?php echo $user['user_id']; ?>" tabindex="-1" aria-labelledby="editRoleModalLabel<?php echo $user['user_id']; ?>" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="editRoleModalLabel<?php echo $user['user_id']; ?>">Edit Role for <?php echo htmlspecialchars($user['Fname']) . ' ' . htmlspecialchars($user['Lname']); ?></h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form method="POST">
+                                                    <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($user['user_id']); ?>">
+                                                    <div class="mb-3">
+                                                        <label for="role" class="form-label">Role</label>
+                                                        <select name="role" class="form-select">
+                                                            <option value="admin" <?php if ($user['role'] == 'admin') echo 'selected'; ?>>Admin</option>
+                                                            <option value="employee" <?php if ($user['role'] == 'employee') echo 'selected'; ?>>Employee</option>
+                                                            <option value="new_user" <?php if ($user['role'] == 'new_user') echo 'selected'; ?>>New User</option>
+                                                        </select>
+                                                    </div>
+                                                    <button type="submit" name="update_role" class="btn btn-primary">Save changes</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
                         <?php endforeach; ?>
                     </tbody>
                 </table>

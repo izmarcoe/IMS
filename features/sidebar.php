@@ -9,7 +9,7 @@
         <a class="sidebar-link fs-5 py-3" href="../dashboards/employee_dashboard.php" onclick="setActive(this)">Dashboard</a>
         
         <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'admin'): ?>
-            <a class="sidebar-link fs-5 py-3" href="../features/" onclick="setActive(this)">User Management</a>
+            <a class="sidebar-link fs-5 py-3" href="../features/manage-users.php" onclick="setActive(this)">User Management</a>
         <?php else: ?>
             <a class="sidebar-link fs-5 py-3" href="#" style="pointer-events: none; color: gray;">User Management</a>
         <?php endif; ?>
