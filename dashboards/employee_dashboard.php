@@ -46,6 +46,37 @@ if (!isset($_SESSION['Fname']) || !isset($_SESSION['Lname'])) {
 // Now Fname and Lname are guaranteed to be in the session
 $fname = $_SESSION['Fname'];
 $lname = $_SESSION['Lname'];
+
+// Fetch highest selling products
+$highestSellingStmt = $conn->prepare("
+    SELECT product_name, SUM(quantity) AS total_quantity
+    FROM sales
+    GROUP BY product_name
+    ORDER BY total_quantity DESC
+    LIMIT 5
+");
+$highestSellingStmt->execute();
+$highestSellingProducts = $highestSellingStmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Fetch latest sales
+$latestSalesStmt = $conn->prepare("
+    SELECT product_name, sale_date, quantity
+    FROM sales
+    ORDER BY sale_date DESC
+    LIMIT 5
+");
+$latestSalesStmt->execute();
+$latestSales = $latestSalesStmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Fetch recently added products
+$recentlyAddedStmt = $conn->prepare("
+    SELECT product_name, created_at
+    FROM products
+    ORDER BY created_at DESC
+    LIMIT 5
+");
+$recentlyAddedStmt->execute();
+$recentlyAddedProducts = $recentlyAddedStmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -83,6 +114,57 @@ $lname = $_SESSION['Lname'];
         <div class="flex-grow-1 p-3">
             <h2 class="text-center">Welcome, <?php echo htmlspecialchars($fname) . ' ' . htmlspecialchars($lname); ?>!</h2>
             <p class="text-center">This is the employee dashboard.</p>
+
+            <!-- Dashboard Boxes -->
+            <div class="row">
+                <!-- Highest Selling Products -->
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white">Highest Selling Products</div>
+                        <div class="card-body">
+                            <ul class="list-group">
+                                <?php foreach ($highestSellingProducts as $product): ?>
+                                    <li class="list-group-item">
+                                        <?php echo htmlspecialchars($product['product_name']) . ' - ' . htmlspecialchars($product['total_quantity']) . ' units'; ?>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Latest Sales -->
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-header bg-success text-white">Latest Sales</div>
+                        <div class="card-body">
+                            <ul class="list-group">
+                                <?php foreach ($latestSales as $sale): ?>
+                                    <li class="list-group-item">
+                                        <?php echo htmlspecialchars($sale['product_name']) . ' - ' . htmlspecialchars($sale['quantity']) . ' units on ' . htmlspecialchars($sale['sale_date']); ?>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recently Added Products -->
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-header bg-warning text-white">Recently Added Products</div>
+                        <div class="card-body">
+                            <ul class="list-group">
+                                <?php foreach ($recentlyAddedProducts as $product): ?>
+                                    <li class="list-group-item">
+                                        <?php echo htmlspecialchars($product['product_name']) . ' - added on ' . htmlspecialchars($product['created_at']); ?>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 
