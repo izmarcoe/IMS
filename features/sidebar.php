@@ -12,7 +12,7 @@
         <div>
             <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'admin'): ?>
                 <a class="sidebar-link fs-5 py-3" href="../dashboards/admin_dashboard.php" onclick="setActive(this)">Dashboard</a>
-            <?php elseif(isset($_SESSION['user_role']) && $_SESSION['user_role' == 'employee']): ?>
+            <?php elseif (isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'employee'): ?>
                 <a class="sidebar-link fs-5 py-3" href="../dashboards/employee_dashboard.php" onclick="setActive(this)">Dashboard</a>
             <?php endif; ?>
 
