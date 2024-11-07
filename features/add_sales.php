@@ -163,7 +163,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                 <div class="mb-3">
                     <label for="price" class="form-label">Price</label>
-                    <input type="number" step="0.01" class="form-control" id="price" name="price" required>
+                    <input type="number" step="0.01" class="form-control" id="price" name="price" readonly>
                 </div>
 
                 <div class="mb-3">

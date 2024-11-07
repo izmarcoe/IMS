@@ -29,8 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     window.location.href = 'http://localhost/IMS/dashboards/employee_dashboard.php';
                 </script>
                 ";
-            } else {
-                ($_SESSION['user_role'] == 'admin');    
+            } else if  ($_SESSION['user_role'] == 'admin'){
                 echo "
                 <script>
                     alert('Login Successfully!');

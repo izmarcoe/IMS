@@ -61,7 +61,6 @@ $lname = $_SESSION['Lname'];
     <link rel="stylesheet" href="../CSS/employee_dashboard.css">
     <!-- Bootstrap CSS -->
     <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-    <script src="../bootstrap/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -86,13 +85,12 @@ $lname = $_SESSION['Lname'];
         </div>
     </main>
 
-    <!-- Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-    <!-- JS -->
+    <!-- Bootstrap Bundle with Popper -->    <!-- JS -->
     <script src="../JS/employee_dashboard.js"></script>
     <script src="../JS/employeeAuth.js"></script>
     <script src="../JS/time.js"></script>
     <script src="../JS/preventBack.js"></script>
+    <script src="../bootstrap/js/bootstrap.bundle.min.js" crossorigin="anonymous" defer></script>
 
 </body>
 
