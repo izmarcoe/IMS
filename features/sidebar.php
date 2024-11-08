@@ -38,7 +38,7 @@
 
             <!-- Products Collapse Dropdown -->
             <a class="sidebar-link fs-5 py-3 mb-3 d-flex align-items-center" href="#productsCollapse" data-bs-toggle="collapse" aria-expanded="false" aria-controls="productsCollapse" onclick="setActive(this)">
-               <img src="../icons/cart.svg" style="height:25px; margin-right: 10px;"> Products
+                <img src="../icons/cart.svg" style="height:25px; margin-right: 10px;"> Products
             </a>
             <div class="collapse" id="productsCollapse">
                 <a class="sidebar-link fs-5 py-3 ps-4 mb-3" href="../features/manage_products.php" onclick="setActive(this)">Manage Products</a>
@@ -54,8 +54,13 @@
                 <a class="sidebar-link fs-5 py-3 ps-4 mb-3" href="../features/add_sales.php" onclick="setActive(this)">Add Sales</a>
             </div>
 
-            <a class="sidebar-link fs-5 py-3 mb-3 d-flex align-items-center" href="#" onclick="setActive(this)">
+            <a class="sidebar-link fs-5 py-3 mb-3 d-flex align-items-center" href="#reportCollapse" data-bs-toggle="collapse" aria-expanded="false" aria-controls="reportCollapse" onclick="setActive(this)">
                 <img src="../icons/salesreport.svg" style="height:25px; margin-right: 10px;">Sales Report</a>
+            <div class="collapse" id="reportCollapse">
+                <a class="sidebar-link fs-5 py-3 ps-4 mb-3" href="../features/salesPerDay.php" onclick="setActive(this)">Sales by Date</a>
+                <a class="sidebar-link fs-5 py-3 ps-4 mb-3" href="../features/salesPerMonth.php" onclick="setActive(this)">Sales by Month</a>
+                <a class="sidebar-link fs-5 py-3 ps-4 mb-3" href="../features/add_sales.php" onclick="setActive(this)">Sales by Date Range</a>
+            </div>
         </div>
     </div>
 
