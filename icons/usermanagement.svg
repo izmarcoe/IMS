@@ -1,0 +1,5 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="32" height="32" fill="#CDCACA"/>
+<path d="M16 15C19.866 15 23 11.866 23 8C23 4.13401 19.866 1 16 1C12.134 1 9 4.13401 9 8C9 11.866 12.134 15 16 15Z" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M28 31C28 27.8174 26.7357 24.7652 24.4853 22.5147C22.2348 20.2643 19.1826 19 16 19C12.8174 19 9.76516 20.2643 7.51472 22.5147C5.26428 24.7652 4 27.8174 4 31H28Z" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

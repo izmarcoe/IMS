@@ -11,12 +11,12 @@
 
 /* Hover effect */
 .sidebar-link:hover {
-    background-color: yellow; /* Change to yellow on hover */
+    background-color: green; /* Change to yellow on hover */
 }
 
 /* Active link style */
 .sidebar-link.active {
-    background-color: yellow; /* Stay yellow when clicked */
+    background-color: gray; /* Stay yellow when clicked */
 }
 
 /* Products collapse dropdown color */
