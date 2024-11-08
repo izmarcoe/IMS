@@ -106,17 +106,21 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
 
 
-        <div class="d-flex align-items-center justify-content-end text-black p-3 flex-grow-1" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: gray" ;>
-            <span class="px-4" id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
-            <button class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <span><img src="../icons/user.svg" alt="User Icon"></span>
-                user
-            </button>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li><a class="dropdown-item" href="#">Another action</a></li>
-                <a class="btn btn-primary ms-3" href="../endpoint/logout.php">Logout</a>
-            </ul>
+        <div class="d-flex align-items-center text-black p-3 flex-grow-1" style="background-color: gray;">
+            <div class="d-flex justify-content-start flex-grow-1 text-white">
+                <span class="px-4" id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
+            </div>
+            <div class="d-flex justify-content-end">
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span><img src="../icons/user.svg" alt="User Icon" style="width: 20px; height: 20px; margin-right: 5px;"></span>
+                    user
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#">Action</a></li>
+                    <li><a class="dropdown-item" href="#">Another action</a></li>
+                    <li><a class="dropdown-item" href="../endpoint/logout.php">Logout</a></li>
+                </ul>
+            </div>
         </div>
     </header>
 
