@@ -12,11 +12,11 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'employee' && $_S
 if (isset($_GET['delete_id'])) {
     try {
         $delete_id = $_GET['delete_id'];
-        
+
         $stmt = $conn->prepare("DELETE FROM product_categories WHERE id = :id");
         $stmt->bindParam(':id', $delete_id, PDO::PARAM_INT);
         $stmt->execute();
-        
+
         header("Location: category.php");
         exit();
     } catch (PDOException $e) {
@@ -55,19 +55,28 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'
 
 <body>
     <!-- Header -->
-    <header class="d-flex justify-content-between align-items-center bg-danger text-white p-3">
-        <h1 class="m-0">INVENTORY SYSTEM</h1>
-        <div>
-            <span id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
-            <a class="btn btn-light ms-3" href="../endpoint/logout.php">Logout</a>
+    <header class="d-flex flex-row">
+        <div class="d-flex justify-content text-center bg-danger align-items-center text-white">
+            <div class="" style="width: 300px">
+                <h4 class="m-0">INVENTORY SYSTEM</h4>
+            </div>
+        </div>
+
+
+        <div class="d-flex align-items-center justify-content-end text-black p-3 flex-grow-1" style="background-color: gray" ;>
+            <div>
+                <span id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
+                <a class="btn btn-primary ms-3" href="../endpoint/logout.php">Logout</a>
+            </div>
         </div>
     </header>
 
     <!-- Content -->
     <main class="d-flex">
-        <!-- Sidebar -->
-        <?php include '../features/sidebar.php'; ?>
-
+        <aside>
+            <!-- Sidebar -->
+            <?php include '../features/sidebar.php'; ?>
+        </aside>
         <div class="container mt-5">
             <div class="row mb-4">
                 <div class="col-md-6">

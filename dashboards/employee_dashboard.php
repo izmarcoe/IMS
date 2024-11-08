@@ -96,12 +96,20 @@ $recentlyAddedProducts = $recentlyAddedStmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 
 <body>
-    <!-- Header -->
-    <header class="d-flex justify-content-between align-items-center bg-danger text-white p-3">
-        <h1 class="m-0">INVENTORY SYSTEM</h1>
-        <div>
-            <span id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
-            <a class="btn btn-light ms-3" href="../endpoint/logout.php">Logout</a>
+     <!-- Header -->
+     <header class="d-flex flex-row">
+        <div class="d-flex justify-content text-center bg-danger align-items-center text-white">
+            <div class="" style="width: 300px">
+                <h4 class="m-0">INVENTORY SYSTEM</h4>
+            </div>
+        </div>
+
+
+        <div class="d-flex align-items-center justify-content-end text-black p-3 flex-grow-1" style="background-color: gray";>
+            <div>
+                <span id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
+                <a class="btn btn-primary ms-3" href="../endpoint/logout.php">Logout</a>
+            </div>
         </div>
     </header>
     <!-- Content -->

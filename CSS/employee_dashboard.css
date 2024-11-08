@@ -24,3 +24,8 @@
     background-color: rgba(0, 0, 0, 0.5); /* Lighter black for collapsed section */
 }
 
+/* Add this to your CSS file */
+.sidebar {
+    width: 300px; /* or any fixed width you prefer */
+    min-height: 100vh; /* Ensure it takes full viewport height */
+}
