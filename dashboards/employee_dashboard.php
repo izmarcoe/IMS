@@ -106,7 +106,7 @@ $recentlyAddedProducts = $recentlyAddedStmt->fetchAll(PDO::FETCH_ASSOC);
     </header>
     <!-- Content -->
     <main class="d-flex">
-
+    
         <!-- Sidebar -->
         <?php include '../features/sidebar.php' ?>
 

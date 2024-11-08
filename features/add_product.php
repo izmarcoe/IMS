@@ -68,7 +68,7 @@ $active_add_product = ($current_page == 'add-product.php') ? 'active' : '';
     <title>Add Product</title>
     <link rel="stylesheet" href="../CSS/employee_dashboard.css">
     <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-
+    <script src="../bootstrap/js/bootstrap.bundle.min.js"></script>
 </head>
 
 <body>

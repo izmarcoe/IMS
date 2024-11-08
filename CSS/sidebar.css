@@ -1,0 +1,36 @@
+.sidebar-minimized {
+    width: 60px;
+    transition: width 0.3s;
+}
+.sidebar-expanded {
+    width: 300px;
+    transition: width 0.3s;
+}
+.sidebar-link {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.toggle-button {
+    position: absolute;
+    top: 10px;
+    left: 100%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    border: none;
+    background-color: #343a40;
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+.hide-text .sidebar-link {
+    display: flex;
+    justify-content: center;
+}
+.hide-text .sidebar-link span {
+    display: none;
+}
+.hide-text h2 {
+    display: none;
+}
