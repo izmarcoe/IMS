@@ -12,7 +12,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $product_id = $_POST['product_id'];
     $price = $_POST['price'];
     $quantity = $_POST['quantity'];
-    $category_name = $_POST['category_name']; // Get category_name from the form
+    $category_name = $_POST['category_name'];
+    $sales_date = $_POST['sales_date']; // Get sales_date from the form
 
     try {
         // Start transaction
@@ -61,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 :category_name,
                 :price,
                 :quantity,
-                NOW(),
+                :sale_date,
                 :total_sales
             )
         ");
@@ -73,7 +74,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bindParam(':category_name', $category_name);
         $stmt->bindParam(':price', $price);
         $stmt->bindParam(':quantity', $quantity);
+        $stmt->bindParam(':sale_date', $sales_date);
         $stmt->bindParam(':total_sales', $total_sales);
+
+
 
         $stmt->execute();
 
@@ -122,7 +126,6 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <h4 class="m-0">INVENTORY SYSTEM</h4>
             </div>
         </div>
-
 
         <div class="d-flex align-items-center text-black p-3 flex-grow-1" style="background-color: gray;">
             <div class="d-flex justify-content-start flex-grow-1 text-white">
@@ -196,6 +199,11 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <div id="totalAmount" class="form-control" readonly>0.00</div>
                 </div>
 
+                <div class="mb-3">
+                    <label for="sales_date" class="form-label">Sales Date</label>
+                    <input type="date" class="form-control" id="sales_date" name="sales_date" required>
+                </div>
+
                 <button type="submit" class="btn btn-primary">Add Sale</button>
             </form>
         </div>
@@ -226,12 +234,17 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 $('#totalAmount').text(total);
             }
 
+            // Set max attribute for sales_date input to current date
+            const today = new Date().toISOString().split('T')[0];
+            $('#sales_date').attr('max', today);
+
             // Form validation
             $('#saleForm').submit(function(e) {
                 const selected = $('#product').find(':selected');
                 const stock = selected.data('stock');
                 const quantity = parseInt($('#quantity').val());
                 const price = parseFloat($('#price').val());
+                const salesDate = $('#sales_date').val();
 
                 if (quantity > stock) {
                     e.preventDefault();
@@ -248,6 +261,12 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 if (price <= 0) {
                     e.preventDefault();
                     alert('Price must be greater than zero!');
+                    return false;
+                }
+
+                if (salesDate > today) {
+                    e.preventDefault();
+                    alert('Sales date cannot be in the future!');
                     return false;
                 }
             });

@@ -174,6 +174,7 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <table class="table table-striped">
                     <thead>
                         <tr>
+                            <th>Sales ID</th>
                             <th>Product Name</th>
                             <th>Category</th>
                             <th>Price</th>
@@ -191,12 +192,13 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <?php else: ?>
                             <?php foreach ($sales as $sale): ?>
                                 <tr>
+                                    <td><?php echo htmlspecialchars($sale['id']); ?></td>
                                     <td><?php echo htmlspecialchars($sale['product_name']); ?></td>
                                     <td><?php echo htmlspecialchars($sale['category_name'] ?? 'No Category'); ?></td>
                                     <td><?php echo htmlspecialchars($sale['price']); ?></td>
                                     <td><?php echo htmlspecialchars($sale['quantity']); ?></td>
                                     <td><?php echo htmlspecialchars($sale['total_sales']); ?></td>
-                                    <td><?php echo htmlspecialchars($sale['sale_date']); ?></td>
+                                    <td><?php echo htmlspecialchars(date('F j, Y', strtotime($sale['sale_date']))); ?></td>
                                     <td>
                                         <a href="../endpoint/edit_sale.php?id=<?php echo htmlspecialchars($sale['id']); ?>" class="btn btn-warning">Edit</a>
                                         <button class="btn btn-danger btn-sm" onclick="deleteSale(<?php echo $sale['id']; ?>)">
