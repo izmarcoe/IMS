@@ -137,7 +137,7 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </aside>
 
         <main class="flex-grow-1">
-            <div class="container mt-5">
+            <div class="container mt-2">
                 <h2>Manage Sales</h2>
 
                 <?php if (isset($_SESSION['notification'])): ?>

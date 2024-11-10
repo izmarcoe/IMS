@@ -10,7 +10,7 @@
 </head>
 
 <body>
-    <div class="bg-dark text-white vh-100 p-3" style="width: 300px;">
+    <div class="bg-dark text-white min-vh-100 p-1" style="width: 300px;">
         <div class="pt-5">
             <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'admin'): ?>
                 <a class="sidebar-link fs-5 py-3 mb-3 d-flex align-items-center" href="../dashboards/admin_dashboard.php" onclick="setActive(this)">
