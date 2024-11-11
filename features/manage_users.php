@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_role'])) {
     $new_role = $_POST['role'];
     $updateStmt = $conn->prepare("UPDATE login_db SET role = ? WHERE user_id = ?");
     $updateStmt->execute([$new_role, $user_id]);
-    header("Location: ../features/manage-users.php");
+    header("Location: ../features/manage_users.php");
     exit();
 }
 
@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['inactive_user'])) {
     $user_id = $_POST['user_id'];
     $archiveStmt = $conn->prepare("UPDATE login_db SET status = 'inactive' WHERE user_id = ?");
     $archiveStmt->execute([$user_id]);
-    header("Location: ../features/manage-users.php");
+    header("Location: ../features/manage_users.php");
     exit();
 }
 
@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activate_user'])) {
     $user_id = $_POST['user_id'];
     $activateStmt = $conn->prepare("UPDATE login_db SET status = 'active' WHERE user_id = ?");
     $activateStmt->execute([$user_id]);
-    header("Location: ../features/manage-users.php");
+    header("Location: ../features/manage_users.php");
     exit();
 }
 ?>
