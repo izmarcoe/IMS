@@ -15,6 +15,8 @@ if (isset($_SESSION['user_id'])) {
     } elseif ($_SESSION['user_role'] == 'admin') {
         header("Location: dashboards/admin_dashboard.php");
         exit();
+    } else {
+        header("Location: home.php");
     }
 }
 
