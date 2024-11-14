@@ -95,7 +95,7 @@ $totalPages = ceil($totalSales / $limit);
                 <form method="GET" action="salesDateRange.php" class="mb-4">
                     <div class="input-group date-input">
                         <input type="date" id="start_date" name="start_date" class="form-control" value="<?php echo htmlspecialchars($startDate); ?>" max="<?php echo date('Y-m-d'); ?>">
-                        <input type="date" id="end_date" name="end_date" class="form-control" value="<?php echo htmlspecialchars($endDate); ?>" max="<?php echo date('Y-m-d'); ?>">
+                        <input type="date" id="end_date" name="end_date" class="form-control" value="<?php echo htmlspecialchars($endDate); ?>" max="<?php echo date('Y-m-d'); ?>" min="<?php echo htmlspecialchars($startDate); ?>">
                         <button type="submit" class="btn btn-primary">View Sales</button>
                     </div>
                 </form>

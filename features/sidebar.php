@@ -59,7 +59,7 @@
             <div class="collapse" id="reportCollapse">
                 <a class="sidebar-link fs-5 py-3 ps-4 mb-3" href="../features/salesPerDay.php" onclick="setActive(this)">Sales by Date</a>
                 <a class="sidebar-link fs-5 py-3 ps-4 mb-3" href="../features/salesPerMonth.php" onclick="setActive(this)">Sales by Month</a>
-                <a class="sidebar-link fs-5 py-3 ps-4 mb-3" href="../features/salesDate.php" onclick="setActive(this)">Sales by Date Range</a>
+                <a class="sidebar-link fs-5 py-3 ps-4 mb-3" href="../features/salesDateRange.php" onclick="setActive(this)">Sales by Date Range</a>
             </div>
         </div>
     </div>
