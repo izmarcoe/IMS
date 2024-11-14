@@ -12,8 +12,8 @@ if (isset($_SESSION['user_id'])) {
     if ($_SESSION['user_role'] == 'employee') {
         header("Location: dashboards/employee_dashboard.php");
         exit();
-    } else {
-        header("Location: home.php");
+    } elseif ($_SESSION['user_role'] == 'admin') {
+        header("Location: dashboards/admin_dashboard.php");
         exit();
     }
 }
