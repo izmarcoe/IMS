@@ -96,11 +96,11 @@ $recentlyAddedProducts = $recentlyAddedStmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 
 <body>
-     <!-- Header -->
-     <header class="d-flex flex-row">
-        <div class="d-flex justify-content text-center bg-danger align-items-center text-white">
+    <!-- Header -->
+    <header class="d-flex flex-row">
+        <div class="d-flex justify-content text-center align-items-center text-white" style="background-color: #0F7505;">
             <div class="" style="width: 300px">
-                <h4 class="m-0">INVENTORY SYSTEM</h4>
+                <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
             </div>
         </div>
 
@@ -124,7 +124,7 @@ $recentlyAddedProducts = $recentlyAddedStmt->fetchAll(PDO::FETCH_ASSOC);
     </header>
     <!-- Content -->
     <main class="d-flex">
-    
+
         <!-- Sidebar -->
         <?php include '../features/sidebar.php' ?>
 
@@ -192,4 +192,5 @@ $recentlyAddedProducts = $recentlyAddedStmt->fetchAll(PDO::FETCH_ASSOC);
     <script src="../JS/time.js"></script>
     <script src="../JS/preventBack.js"></script>
 </body>
+
 </html>

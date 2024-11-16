@@ -57,9 +57,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activate_user'])) {
 <body>
     <!-- Header -->
     <header class="d-flex flex-row">
-        <div class="d-flex justify-content text-center bg-danger align-items-center text-white">
+        <div class="d-flex justify-content text-center align-items-center text-white" style="background-color: #0F7505;">
             <div class="" style="width: 300px">
-                <h4 class="m-0">INVENTORY SYSTEM</h4>
+                <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
             </div>
         </div>
 
@@ -81,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activate_user'])) {
             </div>
         </div>
     </header>
-    
+
     <main>
         <div class="d-flex">
             <aside>

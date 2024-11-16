@@ -58,11 +58,12 @@ $totalPages = ceil($totalSales / $limit);
 
     <!-- Header -->
     <header class="d-flex flex-row">
-        <div class="d-flex justify-content text-center bg-danger align-items-center text-white">
+        <div class="d-flex justify-content text-center align-items-center text-white" style="background-color: #0F7505;">
             <div class="" style="width: 300px">
-                <h4 class="m-0">INVENTORY SYSTEM</h4>
+                <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
             </div>
         </div>
+
 
         <div class="d-flex align-items-center text-black p-3 flex-grow-1" style="background-color: gray;">
             <div class="d-flex justify-content-start flex-grow-1 text-white">
@@ -144,8 +145,8 @@ $totalPages = ceil($totalSales / $limit);
                     </ul>
                 </nav>
             </div>
-         </div>
-     </main>
+        </div>
+    </main>
 </body>
 
 </html>
