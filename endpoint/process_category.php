@@ -4,7 +4,7 @@
 session_start();
 include('../conn/conn.php');
 
-if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'employee') {
+if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'employee' && $_SESSION['user_role'] != 'admin') {
     header("Location: http://localhost/IMS/");
     exit();
 }
