@@ -187,7 +187,6 @@ $recentlyAddedProducts = $recentlyAddedStmt->fetchAll(PDO::FETCH_ASSOC);
     </main>
 
     <!-- JS -->
-    <script src="../JS/collapseSidebar.js"></script>
     <script src="../JS/employeeAuth.js"></script>
     <script src="../JS/time.js"></script>
     <script src="../JS/preventBack.js"></script>
