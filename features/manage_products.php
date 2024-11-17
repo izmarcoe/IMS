@@ -94,6 +94,25 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="../CSS/dashboard.css">
     <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <script src="../bootstrap/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <style>
+        .pagination .page-link {
+            color: #0F7505;
+        }
+
+        .pagination .page-link:hover {
+            background-color: #0F7505;
+            color: white;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #0F7505;
+            border-color: #0F7505;
+        }
+
+        .pagination .page-link:focus {
+            box-shadow: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -129,7 +148,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </aside>
 
         <main class="flex-grow-1">
-            <div class="container mt-5">
+            <div class="container mt-3">
                 <h2>Manage Products</h2>
 
                 <?php if (isset($_SESSION['notification'])): ?>
@@ -141,9 +160,9 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </div>
                 <?php endif; ?>
 
-                <form method="GET" class="mb-3">
+                <form method="GET" class="mt-2 mb-2">
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" name="search" placeholder="Search by Product Name" value="<?php echo htmlspecialchars($search); ?>">
+                        <input type="text" name="search" placeholder=" Search by Product Name" value="<?php echo htmlspecialchars($search); ?>" style="width: 300px; border-width: 1px;">
                         <button class="btn btn-primary" type="submit">Search</button>
                         <a href="manage_products.php" class="btn btn-secondary">Clear</a>
                     </div>
@@ -151,7 +170,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                 <!-- Sorting dropdown beside the table header -->
                 <form method="GET" class="d-inline-flex align-items-center">
-                    <label class="me-2" for="sort">Sort By:</label>
+                    <label class="me-2" for="sort" style="width:100px">Sort By:</label>
                     <select class="form-select form-select-sm" id="sort" name="sort" onchange="this.form.submit()">
                         <option value="">Select</option>
                         <option value="category_asc" <?php if ($sort == 'category_asc') echo 'selected'; ?>>Category (A-Z)</option>
