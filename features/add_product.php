@@ -92,7 +92,7 @@ $active_add_product = ($current_page == 'add-product.php') ? 'active' : '';
                 </button>
                 <ul class="dropdown-menu">
                     <li><a class="dropdown-item" href="#">Action</a></li>
-                    <li><a class="dropdown-item" href="#">Another action</a></li>
+                    <li><a class="dropdown-item" href="../features/user_settings.php">Settings</a></li>
                     <li><a class="dropdown-item" href="../endpoint/logout.php">Logout</a></li>
                 </ul>
             </div>
@@ -152,9 +152,7 @@ $active_add_product = ($current_page == 'add-product.php') ? 'active' : '';
         </div>
     </main>
     <script src="../JS/time.js"></script>
-
     <script src="../JS/notificationTimer.js"></script>
-
     <script>
         //to handle the dropdown dynamically with AJAX instead of server-side rendering
         function loadCategories() {
@@ -181,7 +179,6 @@ $active_add_product = ($current_page == 'add-product.php') ? 'active' : '';
         // Load categories when the page loads
         document.addEventListener('DOMContentLoaded', loadCategories);
     </script>
-    <script src="../JS/time.js"></script>
 
 </body>
 

@@ -55,8 +55,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activate_user'])) {
 </head>
 
 <body>
-    <!-- Header -->
-    <header class="d-flex flex-row">
+     <!-- Header -->
+     <header class="d-flex flex-row">
         <div class="d-flex justify-content text-center align-items-center text-white" style="background-color: #0F7505;">
             <div class="" style="width: 300px">
                 <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activate_user'])) {
                 </button>
                 <ul class="dropdown-menu">
                     <li><a class="dropdown-item" href="#">Action</a></li>
-                    <li><a class="dropdown-item" href="#">Another action</a></li>
+                    <li><a class="dropdown-item" href="../features/user_settings.php">Settings</a></li>
                     <li><a class="dropdown-item" href="../endpoint/logout.php">Logout</a></li>
                 </ul>
             </div>
@@ -147,7 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activate_user'])) {
                             </tr>
                             <?php if ($user['status'] == 'active'): ?>
                                 <!-- Modal for Editing Role -->
-                                <div class="modal fade" id="editRoleModal<?php echo $user['user_id']; ?>" tabindex="-1" aria-labelledby="editRoleModalLabel<?php echo $user['user_id']; ?>" aria-hidden="true">
+                                <div class="modal fade" id="editRoleModal<?php echo $user['user_id']; ?>" tabindex="-1" aria-labelledby="editRoleModalLabel<?php echo $user['user_id']; ?>" aria-hidden="true" data-bs-backdrop="false">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">

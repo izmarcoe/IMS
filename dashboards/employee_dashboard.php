@@ -96,8 +96,8 @@ $recentlyAddedProducts = $recentlyAddedStmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 
 <body>
-    <!-- Header -->
-    <header class="d-flex flex-row">
+     <!-- Header -->
+     <header class="d-flex flex-row">
         <div class="d-flex justify-content text-center align-items-center text-white" style="background-color: #0F7505;">
             <div class="" style="width: 300px">
                 <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
@@ -116,7 +116,7 @@ $recentlyAddedProducts = $recentlyAddedStmt->fetchAll(PDO::FETCH_ASSOC);
                 </button>
                 <ul class="dropdown-menu">
                     <li><a class="dropdown-item" href="#">Action</a></li>
-                    <li><a class="dropdown-item" href="#">Another action</a></li>
+                    <li><a class="dropdown-item" href="../features/user_settings.php">Settings</a></li>
                     <li><a class="dropdown-item" href="../endpoint/logout.php">Logout</a></li>
                 </ul>
             </div>
