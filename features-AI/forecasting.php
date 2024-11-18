@@ -7,42 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
-    <style>
-        .dashboard {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 20px;
-        }
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        .metric-card {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .metric-title {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 8px;
-        }
-        .metric-value {
-            font-size: 24px;
-            font-weight: bold;
-            color: #2c3e50;
-        }
-        .chart-container {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="../features-AI/css/forecasting.css">
 </head>
 <body>
     <div class="dashboard">
@@ -127,7 +92,7 @@
             });
 
             await model.fit(xs, ys, {
-                epochs: 100,
+                epochs: 50,
                 validationSplit: 0.2,
                 verbose: 0
             });
@@ -135,6 +100,34 @@
             return model;
         }
 
+        /* THIS IF FOR THE TRAINING MODEL, MORE ADVANCED, FOR MORE LAYERS, AND MORE DATA. (GENERATE MORE DATA FIRST IN THE DATABASE)
+        async function trainModel(dates, quantities) {
+        const xs = tf.tensor2d(dates, [dates.length, 1]);
+        const ys = tf.tensor2d(quantities, [quantities.length, 1]);
+
+        const model = tf.sequential();
+        model.add(tf.layers.dense({ units: 128, activation: 'relu', inputShape: [1] }));
+        model.add(tf.layers.dropout({ rate: 0.2 }));
+        model.add(tf.layers.dense({ units: 64, activation: 'relu' }));
+        model.add(tf.layers.dropout({ rate: 0.2 }));
+        model.add(tf.layers.dense({ units: 32, activation: 'relu' }));
+        model.add(tf.layers.dense({ units: 1 }));
+
+        model.compile({
+            optimizer: tf.train.adam(0.001),
+            loss: 'meanSquaredError'
+        });
+
+        await model.fit(xs, ys, {
+            epochs: 200,
+            batchSize: 32,
+            validationSplit: 0.2,
+            verbose: 0
+        });
+
+        return model;
+    }
+        */
         async function main() {
     try {
         const data = await fetchData();
