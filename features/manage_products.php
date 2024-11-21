@@ -115,7 +115,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </style>
 </head>
 
-<body>
+<body style="background-color: #DADBDF;">
     <!-- Header -->
     <header class="d-flex flex-row">
         <div class="d-flex justify-content text-center align-items-center text-white" style="background-color: #0F7505;">
@@ -169,7 +169,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </form>
 
                 <!-- Sorting dropdown beside the table header -->
-                <form method="GET" class="d-inline-flex align-items-center">
+                <form method="GET" class="d-inline-flex align-items-center mb-3">
                     <label class="me-2" for="sort" style="width:100px">Sort By:</label>
                     <select class="form-select form-select-sm" id="sort" name="sort" onchange="this.form.submit()">
                         <option value="">Select</option>

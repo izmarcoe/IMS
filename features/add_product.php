@@ -71,7 +71,7 @@ $active_add_product = ($current_page == 'add-product.php') ? 'active' : '';
     <script src="../bootstrap/js/bootstrap.bundle.min.js"></script>
 </head>
 
-<body>
+<body style="background-color: #DADBDF;">
     <!-- Header -->
     <header class="d-flex flex-row">
         <div class="d-flex justify-content text-center align-items-center text-white" style="background-color: #0F7505;">

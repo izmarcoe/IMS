@@ -94,7 +94,7 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'
             justify-content: center;
         }
 </style>
-<body>
+<body style="background-color: #DADBDF;">
     <!-- Header -->
     <header class="d-flex flex-row">
         <div class="d-flex justify-content text-center align-items-center text-white" style="background-color: #0F7505;">

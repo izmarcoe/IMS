@@ -54,7 +54,7 @@ $totalPages = ceil($totalSales / $limit);
     </style>
 </head>
 
-<body>
+<body style="background-color: #DADBDF;">
 
     <!-- Header -->
     <header class="d-flex flex-row">

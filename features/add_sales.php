@@ -118,7 +118,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
-<body>
+<body style="background-color: #DADBDF;">
     <!-- Header -->
     <header class="d-flex flex-row">
         <div class="d-flex justify-content text-center align-items-center text-white" style="background-color: #0F7505;">

@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activate_user'])) {
     <script src="../bootstrap/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 </head>
 
-<body>
+<body style="background-color: #DADBDF;">
      <!-- Header -->
      <header class="d-flex flex-row">
         <div class="d-flex justify-content text-center align-items-center text-white" style="background-color: #0F7505;">
@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activate_user'])) {
                 <?php include '../features/sidebar.php'; ?>
             </aside>
             <div class="container mt-4 z-3">
-                <h2>Manage Users</h2>
+                <h2 class="mb-4">Manage Users</h2>
                 <table class="table table-bordered">
                     <thead>
                         <tr>
