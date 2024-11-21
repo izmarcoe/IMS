@@ -24,15 +24,29 @@ if (isset($_GET['delete_id'])) {
     }
 }
 
-// Fetch all categories
-$stmt = $conn->prepare("SELECT * FROM product_categories ORDER BY category_name");
+// Pagination setup
+$limit = 10;
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($page - 1) * $limit;
+
+// Fetch all categories with pagination
+$stmt = $conn->prepare("SELECT * FROM product_categories ORDER BY category_name LIMIT :limit OFFSET :offset");
+$stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+$stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
 $stmt->execute();
 $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+// Get total number of categories for pagination
+$total_stmt = $conn->prepare("SELECT COUNT(*) FROM product_categories");
+$total_stmt->execute();
+$total_categories = $total_stmt->fetchColumn();
+$total_pages = ceil($total_categories / $limit);
 
 // If AJAX request, return categories as JSON
 if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
-    $stmt = $conn->prepare("SELECT id, category_name FROM product_categories ORDER BY category_name");
+    $stmt = $conn->prepare("SELECT id, category_name FROM product_categories ORDER BY category_name LIMIT :limit OFFSET :offset");
+    $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+    $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
     $stmt->execute();
     $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
     header('Content-Type: application/json');
@@ -40,6 +54,7 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'
     exit();
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -52,10 +67,36 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'
     <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <script src="../bootstrap/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 </head>
+<style>
+          .pagination .page-link {
+            color: #0F7505;
+        }
 
+        .pagination .page-link:hover {
+            background-color: #0F7505;
+            color: white;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #0F7505;
+            border-color: #0F7505;
+        }
+
+        .pagination .page-link:focus {
+            box-shadow: none;
+        }
+
+        .action-btn {
+            height: 38px;
+            /* Adjust the height as needed */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+</style>
 <body>
-     <!-- Header -->
-     <header class="d-flex flex-row">
+    <!-- Header -->
+    <header class="d-flex flex-row">
         <div class="d-flex justify-content text-center align-items-center text-white" style="background-color: #0F7505;">
             <div class="" style="width: 300px">
                 <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
@@ -126,6 +167,33 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'
                         <?php endforeach; ?>
                     </tbody>
                 </table>
+                <div>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <?php if ($page > 1): ?>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=<?php echo $page - 1; ?>" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                            <?php endif; ?>
+
+                            <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                                <li class="page-item <?php if ($i == $page) echo 'active'; ?>">
+                                    <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                                </li>
+                            <?php endfor; ?>
+
+                            <?php if ($page < $total_pages): ?>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=<?php echo $page + 1; ?>" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            <?php endif; ?>
+                        </ul>
+                    </nav>
+                </div>
             </div>
         </div>
 
