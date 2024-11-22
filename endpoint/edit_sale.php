@@ -16,6 +16,7 @@ if (!isset($_GET['id'])) {
 }
 
 $id = $_GET['id']; // Use 'id' instead of 'sale_id'
+$product_id = isset($_GET['product_id']) ? $_GET['product_id'] : null;
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $product_id = $_POST['product_id'];
