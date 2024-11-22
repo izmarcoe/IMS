@@ -52,7 +52,9 @@
             <a class="sidebar-link fs-5 py-3 ps-4 mb-3" href="../features/salesPerMonth.php" onclick="setActive(this, event)">Sales by Month</a>
             <a class="sidebar-link fs-5 py-3 ps-4 mb-3" href="../features/salesDateRange.php" onclick="setActive(this, event)">Sales by Date Range</a>
         </div>
-
+        <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'admin'): ?>
+            <a class="sidebar-link fs-5 py-3 mb-3 d-flex align-items-center" href="../features-AI/forecasting.php" onclick="setActive(this)">Predictive Analytics</a>
+        <?php endif; ?>
         <script src="../JS/sidebarCollapse.js"></script>
     </div>
 </div>
