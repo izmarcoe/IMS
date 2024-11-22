@@ -10,7 +10,9 @@ qrCodeContainer.style.display = "none";
 function showRegistrationForm() {
   registrationCon.style.display = "";
   loginCon.style.display = "none";
-  scanner.stop();
+  if (scanner) {
+    scanner.stop();
+  }
 }
 
 function startScanner() {
@@ -39,17 +41,18 @@ function startScanner() {
       alert("Camera access error: " + err);
     });
 }
-// Add these functions at the beginning of your file
-function encryptData(data) {
-  return btoa(data); // Base64 encoding
+
+function encryptData(data, secretKey) {
+  return CryptoJS.AES.encrypt(data, secretKey).toString();
 }
 
-function decryptData(data) {
-  return atob(data); // Base64 decoding
+function decryptData(data, secretKey) {
+  const bytes = CryptoJS.AES.decrypt(data, secretKey);
+  return bytes.toString(CryptoJS.enc.Utf8);
 }
+
 function generateRandomCode(length) {
-  const characters =
-    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  const characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
   let randomString = "";
 
   for (let i = 0; i < length; i++) {
@@ -59,49 +62,36 @@ function generateRandomCode(length) {
 
   return randomString;
 }
-// AES Encryption
-function encryptData(data, secretKey) {
-    return CryptoJS.AES.encrypt(data, secretKey).toString();
-}
 
-// AES Decryption
-function decryptData(data, secretKey) {
-    const bytes = CryptoJS.AES.decrypt(data, secretKey);
-    return bytes.toString(CryptoJS.enc.Utf8);
-}
 function generateQrCode() {
-    const registrationInputs = document.querySelector('.hide-registration-inputs');
-    const h2 = document.querySelector('.registration-form > h2');
-    const p = document.querySelector('.registration-form > p');
-    const inputs = document.querySelectorAll('.registration input');
-    const qrImg = document.getElementById('qrImg');
-    const qrBox = document.getElementById('qrBox');
+  const registrationInputs = document.querySelector('.hide-registration-inputs');
+  const h2 = document.querySelector('.registration-form > h2');
+  const p = document.querySelector('.registration-form > p');
+  const qrImg = document.getElementById('qrImg');
+  const qrBox = document.getElementById('qrBox');
 
-    registrationInputs.style.display = 'none';
+  registrationInputs.style.display = 'none';
 
-    let text = generateRandomCode(10);
-    const secretKey = 'your-secret-key'; // Use a secure key
-    const encryptedText = encryptData(text, secretKey); // Encrypt the random string
-    $("#generatedCode").val(encryptedText);
+  let text = generateRandomCode(10);
+  const secretKey = 'your-secret-key'; // Use a secure key
+  const encryptedText = encryptData(text, secretKey); // Encrypt the random string
+  document.getElementById("generatedCode").value = encryptedText;
 
-    if (text === "") {
-        alert("Please enter text to generate a QR code.");
-        return;
-    } else {
-        const apiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(encryptedText)}`;
+  if (text === "") {
+    alert("Please enter text to generate a QR code.");
+    return;
+  } else {
+    const apiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(encryptedText)}`;
 
-        // Generating image
-        qrImg.src = apiUrl;
-        qrBox.setAttribute("id", "qrBoxGenerated");
-        qrCodeContainer.style.display = "";
-        registrationCon.style.display = "";
-        h2.style.display = "none";
-        p.style.display = "none";
-    }
+    // Generating image
+    qrImg.src = apiUrl;
+    qrBox.setAttribute("id", "qrBoxGenerated");
+    qrCodeContainer.style.display = "";
+    registrationCon.style.display = "";
+    h2.style.display = "none";
+    p.style.display = "none";
+  }
 }
-
-// Ensure the scanner starts after the page loads
-document.addEventListener('DOMContentLoaded', startScanner);
 
 // Ensure the scanner starts after the page loads
 document.addEventListener('DOMContentLoaded', startScanner);

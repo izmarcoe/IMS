@@ -1,13 +1,10 @@
 <?php
-// Modified index.php - Add this at the very top
 session_start();
 
-// Add these headers to prevent caching
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
-// If user is already logged in, redirect to appropriate dashboard
 if (isset($_SESSION['user_id'])) {
     if ($_SESSION['user_role'] == 'employee') {
         header("Location: dashboards/employee_dashboard.php");
@@ -19,7 +16,6 @@ if (isset($_SESSION['user_id'])) {
         header("Location: home.php");
     }
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -30,7 +26,6 @@ if (isset($_SESSION['user_id'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventory Management System</title>
     <link rel="stylesheet" href="CSS/index.css">
-    <!-- Bootstrap CSS -->
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 </head>
 
@@ -38,7 +33,6 @@ if (isset($_SESSION['user_id'])) {
 
     <div class="main">
 
-        <!-- Login Area -->
         <div class="container py-5">
             <div class="row justify-content-center">
                 <div class="col-md-6">
@@ -46,61 +40,55 @@ if (isset($_SESSION['user_id'])) {
                         <div class="card-body p-4">
                             <div class="login-container">
                                 <div class="login-form" id="loginForm">
-                                    <div class="login-form" id="loginForm">
-                                        <h2 class="text-center fs-1">LOGIN</h2>
-                                        <img src="icons/zefmaven.png" class="centered-image mx-auto d-block">
+                                    <h2 class="text-center fs-1">LOGIN</h2>
+                                    <img src="icons/zefmaven.png" class="centered-image mx-auto d-block">
 
-                                        <!-- QR Code Scanner Section -->
-                                        <div class="centered-video">
-                                            <video id="interactive" class="viewport" width="415"></video>
-                                        </div>
+                                    <div class="centered-video">
+                                        <video id="interactive" class="viewport" width="415"></video>
+                                    </div>
 
-                                        <div class="qr-detected-container" style="display: none;">
-                                            <form action="./endpoint/login.php" method="POST">
-                                                <h4 class="text-center">QR Code Detected!</h4>
-                                                <input type="hidden" id="detected-qr-code" name="qr-code">
-                                                <button type="submit" class="btn btn-dark form-control">Login</button>
-                                            </form>
-                                        </div>
+                                    <div class="qr-detected-container" style="display: none;">
+                                        <form action="./endpoint/login.php" method="POST">
+                                            <h4 class="text-center">QR Code Detected!</h4>
+                                            <input type="hidden" id="detected-qr-code" name="qr-code">
+                                            <button type="submit" class="btn btn-dark form-control">Login</button>
+                                        </form>
+                                    </div>
 
-                                        <!-- Password Login Section (initially hidden) -->
-                                        <div class="password-login-container mt-4" id="passwordLoginForm" style="display: none;">
-                                            <form action="./endpoint/login.php" method="POST" class="text-center">
-                                                <div class="form-group row justify-content-center">
-                                                    <div class="col-6 text-start py-2">
-                                                        <label for="email">Email</label>
-                                                        <input type="email" class="form-control" id="email" name="email" style="border-radius: 10px;" required>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row justify-content-center">
-                                                    <div class="col-6 text-start py-2">
-                                                        <label for="password">Password</label>
-                                                        <input type="password" class="form-control" id="password" name="password" style="border-radius: 10px;" required>
-                                                    </div>
-                                                </div>
-                                                <button type="submit" class="btn btn-dark my-3" style="width: 25%; background-color: #0F7505">Login</button>
-                                            </form>
-                                        </div>
-                                        <div class="text-center">
-                                            <div>Login using</div>
-                                            <div class="d-flex text-center justify-content-center">
-                                                <!-- Link to toggle QR code login -->
-                                                <div class="text-center">
-                                                    <span class="switch-form-link" id="qrCodeLoginLink" onclick="togglePasswordLogin(true);" style="text-decoration: underline; color: blue;">
-                                                        QR code
-                                                    </span>
-                                                </div>
-                                                <div class="text-center mx-1"> or </div>
-                                                <!-- Link to toggle password login -->
-                                                <div class="text-center" id="passwordLoginLink">
-                                                    <span class="switch-form-link" onclick="togglePasswordLogin(true);" style="text-decoration: underline; color: blue;">
-                                                        Password
-                                                    </span>
+                                    <div class="password-login-container mt-4" id="passwordLoginForm" style="display: none;">
+                                        <form action="./endpoint/login.php" method="POST" class="text-center">
+                                            <div class="form-group row justify-content-center">
+                                                <div class="col-6 text-start py-2">
+                                                    <label for="email">Email</label>
+                                                    <input type="email" class="form-control" id="email" name="email" style="border-radius: 10px;" required>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <p class="mt-3">No Account? Register <span class="switch-form-link" onclick="showRegistrationForm()">Here.</span></p>
+                                            <div class="form-group row justify-content-center">
+                                                <div class="col-6 text-start py-2">
+                                                    <label for="password">Password</label>
+                                                    <input type="password" class="form-control" id="password" name="password" style="border-radius: 10px;" required>
+                                                </div>
+                                            </div>
+                                            <button type="submit" class="btn btn-dark my-3" style="width: 25%; background-color: #0F7505">Login</button>
+                                        </form>
                                     </div>
+                                    <div class="text-center">
+                                        <div>Login using</div>
+                                        <div class="d-flex text-center justify-content-center">
+                                            <div class="text-center">
+                                                <span class="switch-form-link" id="qrCodeLoginLink" onclick="togglePasswordLogin(true);" style="text-decoration: underline; color: blue;">
+                                                    QR code
+                                                </span>
+                                            </div>
+                                            <div class="text-center mx-1"> or </div>
+                                            <div class="text-center" id="passwordLoginLink">
+                                                <span class="switch-form-link" onclick="togglePasswordLogin(true);" style="text-decoration: underline; color: blue;">
+                                                    Password
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p class="mt-3">No Account? Register <span class="switch-form-link" onclick="showRegistrationForm()">Here.</span></p>
                                 </div>
                             </div>
                         </div>
@@ -111,8 +99,6 @@ if (isset($_SESSION['user_id'])) {
     </div>
     <script src="JS/togglePasswordLogin.js"> </script>
 
-
-    <!-- Registration Area -->
     <div class="registration-container">
         <div class="registration-form" id="registrationForm">
             <h2 class="text-center">Registration Form</h2>
@@ -165,9 +151,7 @@ if (isset($_SESSION['user_id'])) {
         </div>
     </div>
 
-    </div>
     <script src="bootstrap/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <!-- instascan Js -->
     <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
     <script src="./JS/QR.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
