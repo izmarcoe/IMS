@@ -14,33 +14,34 @@ function showRegistrationForm() {
     scanner.stop();
   }
 }
+document.addEventListener("DOMContentLoaded", function () {
+  const videoElement = document.getElementById("interactive");
+  const qrDetectedContainer = document.querySelector(".qr-detected-container");
+  const qrInput = document.getElementById("detected-qr-code");
 
-function startScanner() {
-  scanner = new Instascan.Scanner({
-    video: document.getElementById("interactive"),
-  });
-
+  // Initialize Instascan scanner
+  let scanner = new Instascan.Scanner({ video: videoElement });
+  
+  // On successful scan, handle the QR code
   scanner.addListener("scan", function (content) {
-    $("#detected-qr-code").val(content);
-    scanner.stop();
-    document.querySelector(".qr-detected-container").style.display = "";
-    document.querySelector(".viewport").style.display = "none";
+      console.log("QR Code Scanned: ", content);
+      qrInput.value = content; // Set the hidden input value
+      qrDetectedContainer.style.display = "block"; // Show detected container
   });
 
-  Instascan.Camera.getCameras()
-    .then(function (cameras) {
+  // Find available cameras
+  Instascan.Camera.getCameras().then(function (cameras) {
       if (cameras.length > 0) {
-        scanner.start(cameras[0]);
+          // Use the first camera by default
+          scanner.start(cameras[0]);
       } else {
-        console.error("No cameras found.");
-        alert("No cameras found.");
+          console.error("No cameras found.");
       }
-    })
-    .catch(function (err) {
-      console.error("Camera access error:", err);
-      alert("Camera access error: " + err);
-    });
-}
+  }).catch(function (error) {
+      console.error("Error accessing cameras: ", error);
+  });
+});
+
 
 function encryptData(data, secretKey) {
   return CryptoJS.AES.encrypt(data, secretKey).toString();

@@ -48,7 +48,7 @@ if (isset($_SESSION['user_id'])) {
                                     </div>
 
                                     <div class="qr-detected-container" style="display: none;">
-                                        <form action="./endpoint/login.php" method="POST">
+                                        <form action="endpoint/login.php" method="POST">
                                             <h4 class="text-center">QR Code Detected!</h4>
                                             <input type="hidden" id="detected-qr-code" name="qr-code">
                                             <button type="submit" class="btn btn-dark form-control">Login</button>
@@ -99,55 +99,64 @@ if (isset($_SESSION['user_id'])) {
     </div>
     <script src="JS/togglePasswordLogin.js"> </script>
 
-    <div class="registration-container">
-        <div class="registration-form" id="registrationForm">
-            <h2 class="text-center">Registration Form</h2>
-            <p class="text-center">Fill in your personal details.</p>
-            <form action="./endpoint/add-user.php" method="POST">
-                <div class="hide-registration-inputs">
-                    <div class="form-group registration row">
-                        <div class="col-6">
-                            <label for="fname">First Name:</label>
-                            <input type="text" class="form-control" id="fname" name="fname" required>
-                        </div>
-                        <div class="col-6">
-                            <label for="lname">Last Name:</label>
-                            <input type="text" class="form-control" id="lname" name="lname" required>
-                        </div>
-                    </div>
-                    <div class="form-group registration row">
-                        <div class="col-5">
-                            <label for="contactNumber">Contact Number:</label>
-                            <input type="number" class="form-control" id="contactNumber" name="contact_number" maxlength="11" required>
-                        </div>
-                        <div class="col-7">
-                            <label for="email">Email:</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
-                        </div>
-                    </div>
-                    <div class="form-group registration row">
-                        <div class="col-6">
-                            <label for="password">Password:</label>
-                            <input type="password" class="form-control" id="password" name="password" required>
-                        </div>
-                        <div class="col-6">
-                            <label for="confirmPassword">Confirm Password:</label>
-                            <input type="password" class="form-control" id="confirmPassword" name="confirm_password" required>
-                        </div>
-                    </div>
-                    <p>Already have a QR code account? Login <span class="switch-form-link" onclick="location.reload()">Here.</span></p>
-                    <button type="button" class="btn btn-dark login-register form-control" onclick="generateQrCode()">Register and Generate QR Code</button>
-                </div>
+    
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <div class="registration-container">
+                        <div class="registration-form" id="registrationForm">
+                            <h2 class="text-center">Registration Form</h2>
+                            <p class="text-center">Fill in your personal details.</p>
+                            <form action="./endpoint/add-user.php" method="POST">
+                                <div class="hide-registration-inputs">
+                                    <div class="form-group registration row">
+                                        <div class="col-6">
+                                            <label for="fname">First Name:</label>
+                                            <input type="text" class="form-control" id="fname" name="fname" required>
+                                        </div>
+                                        <div class="col-6">
+                                            <label for="lname">Last Name:</label>
+                                            <input type="text" class="form-control" id="lname" name="lname" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group registration row">
+                                        <div class="col-5">
+                                            <label for="contactNumber">Contact Number:</label>
+                                            <input type="number" class="form-control" id="contactNumber" name="contact_number" maxlength="11" required>
+                                        </div>
+                                        <div class="col-7">
+                                            <label for="email">Email:</label>
+                                            <input type="email" class="form-control" id="email" name="email" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group registration row">
+                                        <div class="col-6">
+                                            <label for="password">Password:</label>
+                                            <input type="password" class="form-control" id="password" name="password" required>
+                                        </div>
+                                        <div class="col-6">
+                                            <label for="confirmPassword">Confirm Password:</label>
+                                            <input type="password" class="form-control" id="confirmPassword" name="confirm_password" required>
+                                        </div>
+                                    </div>
+                                    <p>Already have a QR code account? Login <span class="switch-form-link" onclick="location.reload()">Here.</span></p>
+                                    <button type="button" class="btn btn-dark login-register form-control" onclick="generateQrCode()">Register and Generate QR Code</button>
+                                </div>
 
-                <div class="qr-code-container text-center" style="display: none;">
-                    <h3>Take a Picture of your QR Code and Login!</h3>
-                    <input type="hidden" id="generatedCode" name="generated_code">
-                    <div class="m-4" id="qrBox">
-                        <img src="" id="qrImg">
+                                <div class="qr-code-container text-center" style="display: none;">
+                                    <h3>Take a Picture of your QR Code and Login!</h3>
+                                    <input type="hidden" id="generatedCode" name="generated_code">
+                                    <div class="m-4" id="qrBox">
+                                        <img src="" id="qrImg">
+                                    </div>
+                                    <button type="submit" class="btn btn-dark">Back to Login Form.</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-dark">Back to Login Form.</button>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 

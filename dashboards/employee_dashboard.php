@@ -148,22 +148,13 @@ $totalSales = $totalSalesStmt->fetch(PDO::FETCH_ASSOC)['total_sales'];
         <!-- Main Content -->
         <div class="flex-grow-1 p-3">
             <h2 class="text-center">Welcome, <?php echo htmlspecialchars($fname) . ' ' . htmlspecialchars($lname); ?>!</h2>
-            <p class="text-center">This is the admin dashboard.</p>
+            <p class="text-center">This is the Employee dashboard.</p>
 
             <!-- Dashboard Boxes -->
-            <div class="row">
-                <!-- Total Numbers -->
+            <div class="row text-center justify-content-center">
                 <div class="col-md-3">
                     <div class="card mb-4">
-                        <div class="card-header text-white" style="background-color: #B67F97;">Total Users</div>
-                        <div class="card-body">
-                            <p class="card-text"><?php echo htmlspecialchars($totalUsers); ?></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card mb-4">
-                        <div class="card-header text-white" style="background-color: #FF8359;">Total Categories</div>
+                        <div class="card-header text-white" style="background-color: #FF8359;">Total Number of Categories</div>
                         <div class="card-body">
                             <p class="card-text"><?php echo htmlspecialchars($totalCategories); ?></p>
                         </div>
@@ -171,7 +162,7 @@ $totalSales = $totalSalesStmt->fetch(PDO::FETCH_ASSOC)['total_sales'];
                 </div>
                 <div class="col-md-3">
                     <div class="card mb-4">
-                        <div class="card-header text-white" style="background-color: #7789EE;">Total Products</div>
+                        <div class="card-header text-white" style="background-color: #7789EE;">Total Number of Products</div>
                         <div class="card-body">
                             <p class="card-text"><?php echo htmlspecialchars($totalProducts); ?></p>
                         </div>
@@ -179,7 +170,7 @@ $totalSales = $totalSalesStmt->fetch(PDO::FETCH_ASSOC)['total_sales'];
                 </div>
                 <div class="col-md-3">
                     <div class="card mb-4">
-                        <div class="card-header text-white" style="background-color: #A0BE6E;">Total Sales</div>
+                        <div class="card-header text-white" style="background-color: #A0BE6E;">Total Number of Sales</div>
                         <div class="card-body">
                             <p class="card-text"><?php echo htmlspecialchars($totalSales); ?></p>
                         </div>
