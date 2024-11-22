@@ -32,7 +32,6 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'admin')) {
             </div>
         </div>
 
-
         <div class="d-flex align-items-center text-black p-3 flex-grow-1" style="background-color: gray;">
             <div class="d-flex justify-content-start flex-grow-1 text-white">
                 <span class="px-4" id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
@@ -101,7 +100,6 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'admin')) {
         }
 
         function calculateSafetyStock(data) {
-            // Calculate safety stock based on demand variability and lead time
             const quantities = data.map(d => d.quantity);
             const stdDev = calculateStandardDeviation(quantities);
             const leadTime = 7; // Assumed 7 days lead time
@@ -118,67 +116,34 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'admin')) {
         function calculateReorderPoint(avgDailyDemand, leadTime, safetyStock) {
             return Math.ceil(avgDailyDemand * leadTime + safetyStock);
         }
-        /*
+
         async function trainModel(dates, quantities) {
             const xs = tf.tensor2d(dates, [dates.length, 1]);
             const ys = tf.tensor2d(quantities, [quantities.length, 1]);
 
             const model = tf.sequential();
-            model.add(tf.layers.dense({
-                units: 64,
-                activation: 'relu',
-                inputShape: [1]
-            }));
-            model.add(tf.layers.dense({
-                units: 32,
-                activation: 'relu'
-            }));
-            model.add(tf.layers.dense({
-                units: 1
-            }));
+            model.add(tf.layers.dense({ units: 128, activation: 'relu', inputShape: [1] }));
+            model.add(tf.layers.dropout({ rate: 0.2 }));
+            model.add(tf.layers.dense({ units: 64, activation: 'relu' }));
+            model.add(tf.layers.dropout({ rate: 0.2 }));
+            model.add(tf.layers.dense({ units: 32, activation: 'relu' }));
+            model.add(tf.layers.dense({ units: 1 }));
 
             model.compile({
-                optimizer: tf.train.adam(0.01),
+                optimizer: tf.train.adam(0.001),
                 loss: 'meanSquaredError'
             });
 
             await model.fit(xs, ys, {
-                epochs: 50,
+                epochs: 200,
+                batchSize: 32,
                 validationSplit: 0.2,
                 verbose: 0
             });
 
             return model;
         }
-        */
-        // THIS IF FOR THE TRAINING MODEL, MORE ADVANCED, FOR MORE LAYERS, AND MORE DATA. (GENERATE MORE DATA FIRST IN THE DATABASE)
-        async function trainModel(dates, quantities) {
-        const xs = tf.tensor2d(dates, [dates.length, 1]);
-        const ys = tf.tensor2d(quantities, [quantities.length, 1]);
 
-        const model = tf.sequential();
-        model.add(tf.layers.dense({ units: 128, activation: 'relu', inputShape: [1] }));
-        model.add(tf.layers.dropout({ rate: 0.2 }));
-        model.add(tf.layers.dense({ units: 64, activation: 'relu' }));
-        model.add(tf.layers.dropout({ rate: 0.2 }));
-        model.add(tf.layers.dense({ units: 32, activation: 'relu' }));
-        model.add(tf.layers.dense({ units: 1 }));
-
-        model.compile({
-            optimizer: tf.train.adam(0.001),
-            loss: 'meanSquaredError'
-        });
-
-        await model.fit(xs, ys, {
-            epochs: 200,
-            batchSize: 32,
-            validationSplit: 0.2,
-            verbose: 0
-        });
-
-        return model;
-    }
-        
         async function main() {
             try {
                 const data = await fetchData();
