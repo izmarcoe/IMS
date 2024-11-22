@@ -73,14 +73,13 @@ if (isset($_SESSION['user_id'])) {
                                         </form>
                                     </div>
                                     <div class="text-center">
-                                        <div>Login using</div>
+                                        <div>or Login using</div>
                                         <div class="d-flex text-center justify-content-center">
                                             <div class="text-center">
-                                                <span class="switch-form-link" id="qrCodeLoginLink" onclick="togglePasswordLogin(true);" style="text-decoration: underline; color: blue;">
+                                                <span class="switch-form-link" id="qrCodeLoginLink" onclick="togglePasswordLogin(false);" style="text-decoration: underline; display:none; color: blue;">
                                                     QR code
                                                 </span>
                                             </div>
-                                            <div class="text-center mx-1"> or </div>
                                             <div class="text-center" id="passwordLoginLink">
                                                 <span class="switch-form-link" onclick="togglePasswordLogin(true);" style="text-decoration: underline; color: blue;">
                                                     Password

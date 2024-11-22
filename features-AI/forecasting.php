@@ -9,7 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
     <link rel="stylesheet" href="../features-AI/css/forecasting.css">
 </head>
-<body>
+<body style="background-color: #DADBDF;">
     <div class="dashboard">
         <h1>Inventory & Sales Forecast</h1>
         
@@ -34,9 +34,6 @@
         </div>
 
         <!-- Charts -->
-        <div class="chart-container">
-            <canvas id="salesForecastChart"></canvas>
-        </div>
         <div class="chart-container">
             <canvas id="inventoryForecastChart"></canvas>
         </div>
@@ -175,53 +172,7 @@
         document.getElementById('stockOutRisk').textContent = `${(stockOutRisk * 100).toFixed(1)}%`;
         document.getElementById('reorderPoint').textContent = Math.round(reorderPoint);
 
-        // Create sales forecast chart
-        const salesCtx = document.getElementById('salesForecastChart').getContext('2d');
-        new Chart(salesCtx, {
-            type: 'line',
-            data: {
-                datasets: [{
-                    label: 'Historical Sales',
-                    data: data.map(d => ({
-                        x: new Date(d.sale_date),
-                        y: d.quantity
-                    })),
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)'
-                }, {
-                    label: 'Predicted Sales',
-                    data: futureTimestamps.map((date, i) => ({
-                        x: new Date(date),
-                        y: predictedQuantities[i]
-                    })),
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderDash: [5, 5]
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'Sales Forecast'
-                    }
-                },
-                scales: {
-                    x: {
-                        type: 'time',
-                        time: {
-                            unit: 'day'
-                        }
-                    },
-                    y: {
-                        title: {
-                            display: true,
-                            text: 'Quantity'
-                        }
-                    }
-                }
-            }
-        });
+    
 
         // Create inventory forecast chart
         const inventoryCtx = document.getElementById('inventoryForecastChart').getContext('2d');
