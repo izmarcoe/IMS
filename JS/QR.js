@@ -14,6 +14,7 @@ function showRegistrationForm() {
     scanner.stop();
   }
 }
+
 document.addEventListener("DOMContentLoaded", function () {
   const videoElement = document.getElementById("interactive");
   const qrDetectedContainer = document.querySelector(".qr-detected-container");
@@ -41,7 +42,6 @@ document.addEventListener("DOMContentLoaded", function () {
       console.error("Error accessing cameras: ", error);
   });
 });
-
 
 function encryptData(data, secretKey) {
   return CryptoJS.AES.encrypt(data, secretKey).toString();
@@ -74,7 +74,7 @@ function generateQrCode() {
   registrationInputs.style.display = 'none';
 
   let text = generateRandomCode(10);
-  const secretKey = 'your-secret-key'; // Use a secure key
+  const secretKey = 'artificial intelligent'; // Use a secure key
   const encryptedText = encryptData(text, secretKey); // Encrypt the random string
   document.getElementById("generatedCode").value = encryptedText;
 
@@ -91,6 +91,18 @@ function generateQrCode() {
     registrationCon.style.display = "";
     h2.style.display = "none";
     p.style.display = "none";
+
+    // Wait for the image to load before creating the PDF
+    qrImg.onload = function() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      // Add QR code image to PDF
+      doc.addImage(qrImg, 'PNG', 10, 10, 50, 50);
+
+      // Save the PDF
+      doc.save('QRCode.pdf');
+    };
   }
 }
 
