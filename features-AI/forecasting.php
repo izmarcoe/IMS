@@ -118,7 +118,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'admin')) {
         function calculateReorderPoint(avgDailyDemand, leadTime, safetyStock) {
             return Math.ceil(avgDailyDemand * leadTime + safetyStock);
         }
-
+        /*
         async function trainModel(dates, quantities) {
             const xs = tf.tensor2d(dates, [dates.length, 1]);
             const ys = tf.tensor2d(quantities, [quantities.length, 1]);
@@ -150,8 +150,8 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'admin')) {
 
             return model;
         }
-
-        /* THIS IF FOR THE TRAINING MODEL, MORE ADVANCED, FOR MORE LAYERS, AND MORE DATA. (GENERATE MORE DATA FIRST IN THE DATABASE)
+        */
+        // THIS IF FOR THE TRAINING MODEL, MORE ADVANCED, FOR MORE LAYERS, AND MORE DATA. (GENERATE MORE DATA FIRST IN THE DATABASE)
         async function trainModel(dates, quantities) {
         const xs = tf.tensor2d(dates, [dates.length, 1]);
         const ys = tf.tensor2d(quantities, [quantities.length, 1]);
@@ -178,7 +178,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'admin')) {
 
         return model;
     }
-        */
+        
         async function main() {
             try {
                 const data = await fetchData();
