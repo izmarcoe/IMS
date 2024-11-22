@@ -101,9 +101,36 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="../CSS/dashboard.css">
     <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <script src="../bootstrap/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <style>
+        .pagination .page-link {
+            color: #0F7505;
+        }
+
+        .pagination .page-link:hover {
+            background-color: #0F7505;
+            color: white;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #0F7505;
+            border-color: #0F7505;
+        }
+
+        .pagination .page-link:focus {
+            box-shadow: none;
+        }
+
+        .action-btn {
+            height: 38px;
+            /* Adjust the height as needed */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
 </head>
 
-<body>
+<body style="background-color: #DADBDF;">
     <!-- Header -->
     <header class="d-flex flex-row">
         <div class="d-flex justify-content text-center align-items-center text-white" style="background-color: #0F7505;">
@@ -124,7 +151,7 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </button>
                 <ul class="dropdown-menu">
                     <li><a class="dropdown-item" href="#">Action</a></li>
-                    <li><a class="dropdown-item" href="#">Another action</a></li>
+                    <li><a class="dropdown-item" href="../features/user_settings.php">Settings</a></li>
                     <li><a class="dropdown-item" href="../endpoint/logout.php">Logout</a></li>
                 </ul>
             </div>
@@ -137,7 +164,7 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </aside>
 
         <main class="flex-grow-1">
-            <div class="container mt-2">
+            <div class="container mt-3">
                 <h2>Manage Sales</h2>
 
                 <?php if (isset($_SESSION['notification'])): ?>
@@ -149,26 +176,28 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </div>
                 <?php endif; ?>
 
-                <form method="GET" class="mb-3">
+                <form method="GET" class="mt-2 mb-2">
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" name="search" placeholder="Search by Product Name" value="<?php echo htmlspecialchars($search); ?>">
+                        <input type="text" name="search" placeholder=" Search by Product Name" value="<?php echo htmlspecialchars($search); ?>" style="width: 300px; border-width: 1px;">
                         <button class="btn btn-primary" type="submit">Search</button>
-                        <a href="manage_sales.php" class="btn btn-secondary">Clear</a>
+                        <a href="manage_products.php" class="btn btn-secondary">Clear</a>
                     </div>
-                    <div class="input-group mb-3">
-                        <label class="input-group-text" for="sort">Sort By</label>
-                        <select class="form-select" id="sort" name="sort" onchange="this.form.submit()">
-                            <option value="">Select</option>
-                            <option value="category_asc" <?php if ($sort == 'category_asc') echo 'selected'; ?>>Category (A-Z)</option>
-                            <option value="category_desc" <?php if ($sort == 'category_desc') echo 'selected'; ?>>Category (Z-A)</option>
-                            <option value="price_asc" <?php if ($sort == 'price_asc') echo 'selected'; ?>>Price (Low to High)</option>
-                            <option value="price_desc" <?php if ($sort == 'price_desc') echo 'selected'; ?>>Price (High to Low)</option>
-                            <option value="name_asc" <?php if ($sort == 'name_asc') echo 'selected'; ?>>Product Name (A-Z)</option>
-                            <option value="name_desc" <?php if ($sort == 'name_desc') echo 'selected'; ?>>Product Name (Z-A)</option>
-                            <option value="sales_asc" <?php if ($sort == 'sales_asc') echo 'selected'; ?>>Total Sales (Low to High)</option>
-                            <option value="sales_desc" <?php if ($sort == 'sales_desc') echo 'selected'; ?>>Total Sales (High to Low)</option>
-                        </select>
-                    </div>
+                </form>
+
+                <!-- Sorting dropdown beside the table header -->
+                <form method="GET" class="d-inline-flex align-items-center mb-3">
+                    <label class="me-2" for="sort" style="width:100px">Sort By:</label>
+                    <select class="form-select form-select-sm" id="sort" name="sort" onchange="this.form.submit()">
+                        <option value="">Select</option>
+                        <option value="category_asc" <?php if ($sort == 'category_asc') echo 'selected'; ?>>Category (A-Z)</option>
+                        <option value="category_desc" <?php if ($sort == 'category_desc') echo 'selected'; ?>>Category (Z-A)</option>
+                        <option value="price_asc" <?php if ($sort == 'price_asc') echo 'selected'; ?>>Price (Low to High)</option>
+                        <option value="price_desc" <?php if ($sort == 'price_desc') echo 'selected'; ?>>Price (High to Low)</option>
+                        <option value="name_asc" <?php if ($sort == 'name_asc') echo 'selected'; ?>>Product Name (A-Z)</option>
+                        <option value="name_desc" <?php if ($sort == 'name_desc') echo 'selected'; ?>>Product Name (Z-A)</option>
+                        <option value="quantity_asc" <?php if ($sort == 'quantity_asc') echo 'selected'; ?>>Quantity (Low to High)</option>
+                        <option value="quantity_desc" <?php if ($sort == 'quantity_desc') echo 'selected'; ?>>Quantity (High to Low)</option>
+                    </select>
                 </form>
 
                 <table class="table table-striped">
@@ -200,8 +229,8 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <td><?php echo htmlspecialchars($sale['total_sales']); ?></td>
                                     <td><?php echo htmlspecialchars(date('F j, Y', strtotime($sale['sale_date']))); ?></td>
                                     <td>
-                                        <a href="../endpoint/edit_sale.php?id=<?php echo htmlspecialchars($sale['id']); ?>" class="btn btn-warning">Edit</a>
-                                        <button class="btn btn-danger btn-sm" onclick="deleteSale(<?php echo $sale['id']; ?>)">
+                                        <a href="../endpoint/edit_sale.php?id=<?php echo htmlspecialchars($sale['id']); ?>" class="btn btn-warning action-btn">Edit</a>
+                                        <button class="btn btn-danger btn-sm action-btn" onclick="deleteSale(<?php echo $sale['id']; ?>)">
                                             Delete
                                         </button>
                                         <input type="hidden" name="id" value="<?php echo htmlspecialchars($sale['id']); ?>">

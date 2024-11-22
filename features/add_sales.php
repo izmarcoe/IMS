@@ -118,9 +118,9 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
-<body>
-   <!-- Header -->
-   <header class="d-flex flex-row">
+<body style="background-color: #DADBDF;">
+    <!-- Header -->
+    <header class="d-flex flex-row">
         <div class="d-flex justify-content text-center align-items-center text-white" style="background-color: #0F7505;">
             <div class="" style="width: 300px">
                 <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
@@ -139,7 +139,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </button>
                 <ul class="dropdown-menu">
                     <li><a class="dropdown-item" href="#">Action</a></li>
-                    <li><a class="dropdown-item" href="#">Another action</a></li>
+                    <li><a class="dropdown-item" href="../features/user_settings.php">Settings</a></li>
                     <li><a class="dropdown-item" href="../endpoint/logout.php">Logout</a></li>
                 </ul>
             </div>
@@ -209,9 +209,8 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </form>
         </div>
     </main>
-
-    <script src="../JS/notificationTimer.js"></script>
     <script src="../JS/add_salesValidation.js"></script>
+    <script src="../JS/notificationTimer.js"></script>
     <script src="../JS/time.js"></script>
 </body>
 

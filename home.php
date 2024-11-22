@@ -24,9 +24,6 @@ if (isset($_SESSION['user_id'])) {
         
         // Check if the user is a new user
         if ($role === 'new_user') {
-            echo "<h2 class='text-center'>You are a new user! Please wait for the special admin to give you a role.</h2>";
-        } else {
-            // Render the main content for other users
             ?>
             <!DOCTYPE html>
             <html lang="en">
@@ -89,7 +86,6 @@ if (isset($_SESSION['user_id'])) {
 
                     <div class="container text-center">
                         <h1 class="text-center">Welcome <br> <?php echo $user_name; ?>!</h1>
-                        <a class="btn btn-dark" href="endpoint/logout.php">Logout</a>
                     </div>
 
                 </div>
@@ -97,6 +93,10 @@ if (isset($_SESSION['user_id'])) {
             </body>
             </html>
             <?php
+            echo "<h2 class='text-center'>You are a new user! Please wait for the special admin to give you a role.</h2>";
+            echo "<a class='btn btn-dark' href='endpoint/logout.php'>Logout</a>";
+        } else {
+            // Render the main content for other users
         }
     } else {
         // Redirect if user not found

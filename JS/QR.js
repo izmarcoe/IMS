@@ -10,46 +10,50 @@ qrCodeContainer.style.display = "none";
 function showRegistrationForm() {
   registrationCon.style.display = "";
   loginCon.style.display = "none";
-  scanner.stop();
-}
-
-function startScanner() {
-  scanner = new Instascan.Scanner({
-    video: document.getElementById("interactive"),
-  });
-
-  scanner.addListener("scan", function (content) {
-    $("#detected-qr-code").val(content);
+  if (scanner) {
     scanner.stop();
-    document.querySelector(".qr-detected-container").style.display = "";
-    document.querySelector(".viewport").style.display = "none";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  const videoElement = document.getElementById("interactive");
+  const qrDetectedContainer = document.querySelector(".qr-detected-container");
+  const qrInput = document.getElementById("detected-qr-code");
+
+  // Initialize Instascan scanner
+  let scanner = new Instascan.Scanner({ video: videoElement });
+  
+  // On successful scan, handle the QR code
+  scanner.addListener("scan", function (content) {
+      console.log("QR Code Scanned: ", content);
+      qrInput.value = content; // Set the hidden input value
+      qrDetectedContainer.style.display = "block"; // Show detected container
   });
 
-  Instascan.Camera.getCameras()
-    .then(function (cameras) {
+  // Find available cameras
+  Instascan.Camera.getCameras().then(function (cameras) {
       if (cameras.length > 0) {
-        scanner.start(cameras[0]);
+          // Use the first camera by default
+          scanner.start(cameras[0]);
       } else {
-        console.error("No cameras found.");
-        alert("No cameras found.");
+          console.error("No cameras found.");
       }
-    })
-    .catch(function (err) {
-      console.error("Camera access error:", err);
-      alert("Camera access error: " + err);
-    });
-}
-// Add these functions at the beginning of your file
-function encryptData(data) {
-  return btoa(data); // Base64 encoding
+  }).catch(function (error) {
+      console.error("Error accessing cameras: ", error);
+  });
+});
+
+function encryptData(data, secretKey) {
+  return CryptoJS.AES.encrypt(data, secretKey).toString();
 }
 
-function decryptData(data) {
-  return atob(data); // Base64 decoding
+function decryptData(data, secretKey) {
+  const bytes = CryptoJS.AES.decrypt(data, secretKey);
+  return bytes.toString(CryptoJS.enc.Utf8);
 }
+
 function generateRandomCode(length) {
-  const characters =
-    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  const characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
   let randomString = "";
 
   for (let i = 0; i < length; i++) {
@@ -59,49 +63,48 @@ function generateRandomCode(length) {
 
   return randomString;
 }
-// AES Encryption
-function encryptData(data, secretKey) {
-    return CryptoJS.AES.encrypt(data, secretKey).toString();
-}
 
-// AES Decryption
-function decryptData(data, secretKey) {
-    const bytes = CryptoJS.AES.decrypt(data, secretKey);
-    return bytes.toString(CryptoJS.enc.Utf8);
-}
 function generateQrCode() {
-    const registrationInputs = document.querySelector('.hide-registration-inputs');
-    const h2 = document.querySelector('.registration-form > h2');
-    const p = document.querySelector('.registration-form > p');
-    const inputs = document.querySelectorAll('.registration input');
-    const qrImg = document.getElementById('qrImg');
-    const qrBox = document.getElementById('qrBox');
+  const registrationInputs = document.querySelector('.hide-registration-inputs');
+  const h2 = document.querySelector('.registration-form > h2');
+  const p = document.querySelector('.registration-form > p');
+  const qrImg = document.getElementById('qrImg');
+  const qrBox = document.getElementById('qrBox');
 
-    registrationInputs.style.display = 'none';
+  registrationInputs.style.display = 'none';
 
-    let text = generateRandomCode(10);
-    const secretKey = 'your-secret-key'; // Use a secure key
-    const encryptedText = encryptData(text, secretKey); // Encrypt the random string
-    $("#generatedCode").val(encryptedText);
+  let text = generateRandomCode(10);
+  const secretKey = 'artificial intelligent'; // Use a secure key
+  const encryptedText = encryptData(text, secretKey); // Encrypt the random string
+  document.getElementById("generatedCode").value = encryptedText;
 
-    if (text === "") {
-        alert("Please enter text to generate a QR code.");
-        return;
-    } else {
-        const apiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(encryptedText)}`;
+  if (text === "") {
+    alert("Please enter text to generate a QR code.");
+    return;
+  } else {
+    const apiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(encryptedText)}`;
 
-        // Generating image
-        qrImg.src = apiUrl;
-        qrBox.setAttribute("id", "qrBoxGenerated");
-        qrCodeContainer.style.display = "";
-        registrationCon.style.display = "";
-        h2.style.display = "none";
-        p.style.display = "none";
-    }
+    // Generating image
+    qrImg.src = apiUrl;
+    qrBox.setAttribute("id", "qrBoxGenerated");
+    qrCodeContainer.style.display = "";
+    registrationCon.style.display = "";
+    h2.style.display = "none";
+    p.style.display = "none";
+
+    // Wait for the image to load before creating the PDF
+    qrImg.onload = function() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      // Add QR code image to PDF
+      doc.addImage(qrImg, 'PNG', 10, 10, 50, 50);
+
+      // Save the PDF
+      doc.save('QRCode.pdf');
+    };
+  }
 }
-
-// Ensure the scanner starts after the page loads
-document.addEventListener('DOMContentLoaded', startScanner);
 
 // Ensure the scanner starts after the page loads
 document.addEventListener('DOMContentLoaded', startScanner);

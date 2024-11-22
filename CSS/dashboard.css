@@ -29,3 +29,10 @@
     width: 300px; /* or any fixed width you prefer */
     min-height: 100vh; /* Ensure it takes full viewport height */
 }
+
+.sidebar-link.active {
+    background-color: #f0f0f0;
+    /* Change this to your desired active color */
+    color: #000;
+    /* Change this to your desired text color */
+}

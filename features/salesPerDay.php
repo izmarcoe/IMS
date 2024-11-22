@@ -54,7 +54,7 @@ $totalPages = ceil($totalSales / $limit);
     </style>
 </head>
 
-<body>
+<body style="background-color: #DADBDF;">
 
     <!-- Header -->
     <header class="d-flex flex-row">
@@ -76,7 +76,7 @@ $totalPages = ceil($totalSales / $limit);
                 </button>
                 <ul class="dropdown-menu">
                     <li><a class="dropdown-item" href="#">Action</a></li>
-                    <li><a class="dropdown-item" href="#">Another action</a></li>
+                    <li><a class="dropdown-item" href="../features/user_settings.php">Settings</a></li>
                     <li><a class="dropdown-item" href="../endpoint/logout.php">Logout</a></li>
                 </ul>
             </div>
@@ -148,5 +148,6 @@ $totalPages = ceil($totalSales / $limit);
         </div>
     </main>
 </body>
+<script src="../JS/time.js"></script>
 
 </html>

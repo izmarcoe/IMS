@@ -37,11 +37,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </script>
                 ";
             }
+            else if($_SESSION['user_role'] == 'new_user'){
+                echo "
+                <script>
+                    alert('Login Successfully!');
+                    window.location.href = 'http://localhost/IMS/home.php';
+                </script>
+                ";
+            }
         } else {
             // Optionally hide the error for QR code
             echo "
             <script>
-                alert('QR Code account doesn\'t exist or is inactive!'); // You may remove this if you want to hide the message
+                alert('QR Code account doesn't exist or is inactive!'); // You may remove this if you want to hide the message
                 window.location.href = 'http://localhost/IMS/';
             </script>
             ";
@@ -76,7 +84,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     window.location.href = 'http://localhost/IMS/dashboards/admin_dashboard.php';
                 </script>
                 ";
-            } else {
+            } else if ($_SESSION['user_role'] == 'new_user') {
                 echo "
                 <script>
                     alert('Login Successfully!');

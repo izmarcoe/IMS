@@ -12,6 +12,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'employee') {
     exit();
 }
 
+
 // User ID from session
 $user_id = $_SESSION['user_id'];
 
@@ -77,6 +78,23 @@ $recentlyAddedStmt = $conn->prepare("
 ");
 $recentlyAddedStmt->execute();
 $recentlyAddedProducts = $recentlyAddedStmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Fetch total numbers
+$totalUsersStmt = $conn->prepare("SELECT COUNT(*) AS total_users FROM login_db");
+$totalUsersStmt->execute();
+$totalUsers = $totalUsersStmt->fetch(PDO::FETCH_ASSOC)['total_users'];
+
+$totalCategoriesStmt = $conn->prepare("SELECT COUNT(*) AS total_categories FROM product_categories");
+$totalCategoriesStmt->execute();
+$totalCategories = $totalCategoriesStmt->fetch(PDO::FETCH_ASSOC)['total_categories'];
+
+$totalProductsStmt = $conn->prepare("SELECT COUNT(*) AS total_products FROM products");
+$totalProductsStmt->execute();
+$totalProducts = $totalProductsStmt->fetch(PDO::FETCH_ASSOC)['total_products'];
+
+$totalSalesStmt = $conn->prepare("SELECT SUM(quantity) AS total_sales FROM sales");
+$totalSalesStmt->execute();
+$totalSales = $totalSalesStmt->fetch(PDO::FETCH_ASSOC)['total_sales'];
 ?>
 
 <!DOCTYPE html>
@@ -88,14 +106,14 @@ $recentlyAddedProducts = $recentlyAddedStmt->fetchAll(PDO::FETCH_ASSOC);
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Employee Dashboard</title>
+    <title>Admin Dashboard</title>
     <link rel="stylesheet" href="../CSS/dashboard.css">
     <!-- Bootstrap CSS -->
     <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <script src="../bootstrap/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 </head>
 
-<body>
+<body style="background-color: #DADBDF;">
     <!-- Header -->
     <header class="d-flex flex-row">
         <div class="d-flex justify-content text-center align-items-center text-white" style="background-color: #0F7505;">
@@ -103,7 +121,6 @@ $recentlyAddedProducts = $recentlyAddedStmt->fetchAll(PDO::FETCH_ASSOC);
                 <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
             </div>
         </div>
-
 
         <div class="d-flex align-items-center text-black p-3 flex-grow-1" style="background-color: gray;">
             <div class="d-flex justify-content-start flex-grow-1 text-white">
@@ -116,7 +133,7 @@ $recentlyAddedProducts = $recentlyAddedStmt->fetchAll(PDO::FETCH_ASSOC);
                 </button>
                 <ul class="dropdown-menu">
                     <li><a class="dropdown-item" href="#">Action</a></li>
-                    <li><a class="dropdown-item" href="#">Another action</a></li>
+                    <li><a class="dropdown-item" href="../features/user_settings.php">Settings</a></li>
                     <li><a class="dropdown-item" href="../endpoint/logout.php">Logout</a></li>
                 </ul>
             </div>
@@ -124,17 +141,42 @@ $recentlyAddedProducts = $recentlyAddedStmt->fetchAll(PDO::FETCH_ASSOC);
     </header>
     <!-- Content -->
     <main class="d-flex">
-
-        <!-- Sidebar -->
-        <?php include '../features/sidebar.php' ?>
-
+        <div>
+            <!-- Sidebar -->
+            <?php include '../features/sidebar.php' ?>
+        </div>
         <!-- Main Content -->
         <div class="flex-grow-1 p-3">
             <h2 class="text-center">Welcome, <?php echo htmlspecialchars($fname) . ' ' . htmlspecialchars($lname); ?>!</h2>
-            <p class="text-center">This is the employee dashboard.</p>
+            <p class="text-center">This is the Employee dashboard.</p>
 
             <!-- Dashboard Boxes -->
-            <div class="row">
+            <div class="row text-center justify-content-center">
+                <div class="col-md-3">
+                    <div class="card mb-4">
+                        <div class="card-header text-white" style="background-color: #FF8359;">Total Number of Categories</div>
+                        <div class="card-body">
+                            <p class="card-text"><?php echo htmlspecialchars($totalCategories); ?></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card mb-4">
+                        <div class="card-header text-white" style="background-color: #7789EE;">Total Number of Products</div>
+                        <div class="card-body">
+                            <p class="card-text"><?php echo htmlspecialchars($totalProducts); ?></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card mb-4">
+                        <div class="card-header text-white" style="background-color: #A0BE6E;">Total Number of Sales</div>
+                        <div class="card-body">
+                            <p class="card-text"><?php echo htmlspecialchars($totalSales); ?></p>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Highest Selling Products -->
                 <div class="col-md-4">
                     <div class="card mb-4">
@@ -187,7 +229,6 @@ $recentlyAddedProducts = $recentlyAddedStmt->fetchAll(PDO::FETCH_ASSOC);
     </main>
 
     <!-- JS -->
-    <script src="../JS/collapseSidebar.js"></script>
     <script src="../JS/employeeAuth.js"></script>
     <script src="../JS/time.js"></script>
     <script src="../JS/preventBack.js"></script>
