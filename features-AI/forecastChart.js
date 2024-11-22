@@ -163,4 +163,7 @@ function calculateStockOutRisk(predictedDemand, safetyStock) {
     return exceedsSafetyCount / predictedDemand.length;
 }
 
+
+//for trends
+
 window.addEventListener('load', main);

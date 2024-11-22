@@ -57,35 +57,53 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'admin')) {
             <h1>Inventory & Sales Forecast</h1>
 
             <!-- Key Metrics -->
-            <div class="metrics-grid">
-                <div class="metric-card">
-                    <div class="metric-title">Predicted Monthly Sales</div>
-                    <div id="predictedSales" class="metric-value">...</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-title">Recommended Stock Level</div>
-                    <div id="recommendedStock" class="metric-value">...</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-title">Stock Out Risk</div>
-                    <div id="stockOutRisk" class="metric-value">...</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-title">Reorder Point</div>
-                    <div id="reorderPoint" class="metric-value">...</div>
+            <div class="container mt-3 text-center">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card h-100">
+                            <div class="card-body d-flex flex-column">
+                                <div class="card-title">Predicted Monthly Sales</div>
+                                <div id="predictedSales" class="card-text mt-auto">...</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card h-100">
+                            <div class="card-body d-flex flex-column">
+                                <div class="card-title">Recommended Stock Level</div>
+                                <div id="recommendedStock" class="card-text mt-auto">...</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card h-100">
+                            <div class="card-body d-flex flex-column">
+                                <div class="card-title">Stock Out Risk</div>
+                                <div id="stockOutRisk" class="card-text mt-auto">...</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card h-100">
+                            <div class="card-body d-flex flex-column">
+                                <div class="card-title">Reorder Point</div>
+                                <div id="reorderPoint" class="card-text mt-auto">...</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- Charts -->
-            <div class="chart-container">
+            <div class="chart-container mt-4">
                 <canvas id="inventoryForecastChart"></canvas>
             </div>
 
             <div id="error" style="color: red; margin-top: 10px;"></div>
         </div>
     </main>
-
-   <script src="../features-AI/forecastChart.js"></script>
+    <script src="../features-AI/trendsChart.js"></script>
+    <script src="../features-AI/forecastChart.js"></script>
     <script src="../JS/time.js"></script>
 
 </body>
