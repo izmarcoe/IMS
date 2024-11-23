@@ -27,6 +27,30 @@ if (isset($_SESSION['user_id'])) {
     <title>Inventory Management System</title>
     <link rel="stylesheet" href="CSS/index.css">
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <style>
+    body {
+        border-radius: 50px;
+        background: var(--shade-bg, linear-gradient(323deg, #0F7505 25.5%, #0C2809 79.98%));
+        background-size: cover;
+        min-height: 100vh;
+        margin: 0;
+    }
+
+    .row {
+        background: transparent;
+    }
+    .btn:hover { /*button hover effect*/
+    background-color: #8BED14;
+    color: white;
+    border: 2px solid #0F7505;
+    transform: scale(1.2);
+    transition: all 0.3s ease; 
+    
+}
+
+</style>
+
+
 </head>
 
 <body>
@@ -36,11 +60,11 @@ if (isset($_SESSION['user_id'])) {
         <div class="container py-5">
             <div class="row justify-content-center">
                 <div class="col-md-6">
-                    <div class="card shadow-sm">
+                    <div class="card shadow-sm border-style">
                         <div class="card-body p-4">
                             <div class="login-container">
                                 <div class="login-form" id="loginForm">
-                                    <h2 class="text-center fs-1">LOGIN</h2>
+                                    <h2 class="text-center fs-1 font-login">LOGIN</h2>
                                     <img src="icons/zefmaven.png" class="centered-image mx-auto d-block">
 
                                     <div class="centered-video">
@@ -51,7 +75,8 @@ if (isset($_SESSION['user_id'])) {
                                         <form action="endpoint/login.php" method="POST">
                                             <h4 class="text-center">QR Code Detected!</h4>
                                             <input type="hidden" id="detected-qr-code" name="qr-code">
-                                            <button type="submit" class="btn btn-dark form-control">Login</button>
+                                            <button type="submit" class="btn btn-dark my-3" style="border-radius: 10px; background: var(--login-button-shade, linear-gradient(90deg, #0F7505 0%, #8BED14 100%));">Login</button>
+
                                         </form>
                                     </div>
 
@@ -60,7 +85,7 @@ if (isset($_SESSION['user_id'])) {
                                             <div class="form-group row justify-content-center">
                                                 <div class="col-6 text-start py-2">
                                                     <label for="email">Email</label>
-                                                    <input type="email" class="form-control" id="email" name="email" style="border-radius: 10px;" required>
+                                                    <input type="email" class="form-control" id="email" name="email" style="border-radius: 10px;"  required>
                                                 </div>
                                             </div>
                                             <div class="form-group row justify-content-center">
@@ -69,13 +94,13 @@ if (isset($_SESSION['user_id'])) {
                                                     <input type="password" class="form-control" id="password" name="password" style="border-radius: 10px;" required>
                                                 </div>
                                             </div>
-                                            <button type="submit" class="btn btn-dark my-3" style="width: 25%; background-color: #0F7505">Login</button>
+                                            <button type="submit" class="btn btn-dark my-3" style="border-radius: 25px; background: var(--login-button-shade, linear-gradient(90deg, #0F7505 0%, #8BED14 100%));">Login</button>
                                         </form>
                                     </div>
-                                    <div class="text-center">
-                                        <div>or Login using</div>
+                                    <div class="text-center smallerfont-text">
+                                        <div> or Login using</div>
                                         <div class="d-flex text-center justify-content-center">
-                                            <div class="text-center">
+                                            <div class="text-center smallerfont-text">
                                                 <span class="switch-form-link" id="qrCodeLoginLink" onclick="togglePasswordLogin(false);" style="text-decoration: underline; display:none; color: blue;">
                                                     QR code
                                                 </span>
@@ -87,7 +112,7 @@ if (isset($_SESSION['user_id'])) {
                                             </div>
                                         </div>
                                     </div>
-                                    <p class="mt-3">No Account? Register <span class="switch-form-link" onclick="showRegistrationForm()">Here.</span></p>
+                                    <p class="mt-3 smallerfont-text">No Account? Register <span class="switch-form-link" onclick="showRegistrationForm()">Here.</span></p>
                                 </div>
                             </div>
                         </div>
