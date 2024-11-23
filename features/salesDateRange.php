@@ -129,7 +129,7 @@ $totalPages = ceil($totalSales / $limit);
                     </tbody>
                 </table>
 
-                <!-- Pagination controls -->
+                <!-- Pagination controls asdasdasdasdasdas -->
                 <nav>
                     <ul class="pagination d-flex justify-content-center">
                         <?php if ($page > 1): ?>
