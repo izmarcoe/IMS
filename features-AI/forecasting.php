@@ -1,14 +1,3 @@
-<?php
-session_start();
-include '../conn/conn.php';
-
-// Check if the user is logged in and has the appropriate role to manage users
-if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'admin')) {
-    header("Location: http://localhost/");
-    exit();
-}
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -98,11 +87,32 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'admin')) {
             <div class="chart-container mt-4">
                 <canvas id="inventoryForecastChart"></canvas>
             </div>
+            <div class="chart-container mt-4">
+                <canvas id="inventoryVsDemandChart"></canvas>
+            </div>
+            <div class="chart-container mt-4">
+                <canvas id="stockoutOverstockChart"></canvas>
+            </div>
+            <div class="container mt-4">
+                <h2>Dead Stock Identification</h2>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Product Name</th>
+                            <th>Current Stock</th>
+                            <th>Predicted Demand</th>
+                            <th>Dead Stock Value</th>
+                        </tr>
+                    </thead>
+                    <tbody id="deadStockTableBody">
+                        <!-- Dead stock data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
 
             <div id="error" style="color: red; margin-top: 10px;"></div>
         </div>
     </main>
-    <script src="../features-AI/trendsChart.js"></script>
     <script src="../features-AI/forecastChart.js"></script>
     <script src="../JS/time.js"></script>
 
