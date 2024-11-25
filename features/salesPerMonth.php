@@ -50,6 +50,8 @@ $totalPages = ceil($totalSales / $limit);
     <link rel="stylesheet" href="../CSS/dashboard.css">
     <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <script src="../bootstrap/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
     <style>
         .date-input {
             max-width: 600px;
@@ -112,6 +114,9 @@ $totalPages = ceil($totalSales / $limit);
                         <button type="submit" class="btn btn-primary">View Sales</button>
                     </div>
                 </form>
+                <div class="mb-3">
+                    <button id="download-pdf" class="btn btn-danger">Download as PDF</button>
+                </div>
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -165,5 +170,30 @@ $totalPages = ceil($totalSales / $limit);
     </main>
 </body>
 <script src="../JS/time.js"></script>
+<script>
+    document.getElementById('download-pdf').addEventListener('click', function () {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        // Get the current month and year
+        const currentDate = new Date();
+        const month = currentDate.toLocaleString('default', { month: 'long' });
+        const year = currentDate.getFullYear();
+
+        // Add title
+        doc.setFontSize(20);
+        doc.text('ZEFMAVEN COMPUTER PARTS AND ACCESSORIES', doc.internal.pageSize.getWidth() / 2, 20, { align: 'center' });
+
+        // Add month and year
+        doc.setFontSize(16);
+        doc.text(`Sales Report for ${month} ${year}`, doc.internal.pageSize.getWidth() / 2, 30, { align: 'center' });
+
+        // Add table
+        doc.autoTable({ html: 'table', startY: 40 });
+
+        // Save the PDF
+        doc.save('Monthly_Sales_Report.pdf');
+    });
+</script>
 
 </html>

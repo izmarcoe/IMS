@@ -47,6 +47,8 @@ $totalPages = ceil($totalSales / $limit);
     <link rel="stylesheet" href="../CSS/dashboard.css">
     <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <script src="../bootstrap/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
     <style>
         .date-input {
             max-width: 300px;
@@ -94,6 +96,9 @@ $totalPages = ceil($totalSales / $limit);
                     <div class="input-group date-input">
                         <input type="date" name="date" class="form-control" value="<?php echo htmlspecialchars($date); ?>" max="<?php echo date('Y-m-d'); ?>">
                         <button type="submit" class="btn btn-primary">View Sales</button>
+                    </div>
+                    <div class="my-3">
+                        <button id="download-pdf" class="btn btn-danger">Download as PDF</button>
                     </div>
                 </form>
                 <table class="table table-striped">
@@ -147,7 +152,34 @@ $totalPages = ceil($totalSales / $limit);
             </div>
         </div>
     </main>
+    <script src="../JS/time.js"></script>
+    <script>
+        document.getElementById('download-pdf').addEventListener('click', function() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Get the date from PHP
+            const reportDate = '<?php echo $date; ?>';
+            const dateObj = new Date(reportDate);
+            const day = dateObj.toLocaleString('default', { day: '2-digit' });
+            const month = dateObj.toLocaleString('default', { month: 'long' });
+            const year = dateObj.getFullYear();
+
+            // Add title
+            doc.setFontSize(20);
+            doc.text('ZEFMAVEN COMPUTER PARTS AND ACCESSORIES', doc.internal.pageSize.getWidth() / 2, 20, { align: 'center' });
+
+            // Add date
+            doc.setFontSize(16);
+            doc.text(`Sales Report for ${month} ${day}, ${year}`, doc.internal.pageSize.getWidth() / 2, 30, { align: 'center' });
+
+            // Add table
+            doc.autoTable({ html: 'table', startY: 40 });
+
+            // Save the PDF
+            doc.save('Daily_Sales_Report.pdf');
+        });
+    </script>
 </body>
-<script src="../JS/time.js"></script>
 
 </html>

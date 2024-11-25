@@ -50,6 +50,8 @@ $totalPages = ceil($totalSales / $limit);
     <link rel="stylesheet" href="../CSS/dashboard.css">
     <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <script src="../bootstrap/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
     <style>
         .date-input {
             max-width: 600px;
@@ -98,6 +100,9 @@ $totalPages = ceil($totalSales / $limit);
                         <input type="date" id="start_date" name="start_date" class="form-control" value="<?php echo htmlspecialchars($startDate); ?>" max="<?php echo date('Y-m-d'); ?>">
                         <input type="date" id="end_date" name="end_date" class="form-control" value="<?php echo htmlspecialchars($endDate); ?>" max="<?php echo date('Y-m-d'); ?>" min="<?php echo htmlspecialchars($startDate); ?>">
                         <button type="submit" class="btn btn-primary">View Sales</button>
+                    </div>
+                    <div class="my-3">
+                        <button id="download-pdf" class="btn btn-danger">Download as PDF</button>
                     </div>
                 </form>
                 <table class="table table-striped">
@@ -159,6 +164,55 @@ $totalPages = ceil($totalSales / $limit);
         });
     </script>
     <script src="../JS/time.js"></script>
+    <script>
+        document.getElementById('download-pdf').addEventListener('click', function() {
+            const {
+                jsPDF
+            } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Get the date range from PHP
+            const startDate = '<?php echo $startDate; ?>';
+            const endDate = '<?php echo $endDate; ?>';
+            const startDateObj = new Date(startDate);
+            const endDateObj = new Date(endDate);
+            const startDay = startDateObj.toLocaleString('default', {
+                day: '2-digit'
+            });
+            const startMonth = startDateObj.toLocaleString('default', {
+                month: 'long'
+            });
+            const startYear = startDateObj.getFullYear();
+            const endDay = endDateObj.toLocaleString('default', {
+                day: '2-digit'
+            });
+            const endMonth = endDateObj.toLocaleString('default', {
+                month: 'long'
+            });
+            const endYear = endDateObj.getFullYear();
+
+            // Add title
+            doc.setFontSize(20);
+            doc.text('ZEFMAVEN COMPUTER PARTS AND ACCESSORIES', doc.internal.pageSize.getWidth() / 2, 20, {
+                align: 'center'
+            });
+
+            // Add date range
+            doc.setFontSize(16);
+            doc.text(`Sales Report from ${startMonth} ${startDay}, ${startYear} to ${endMonth} ${endDay}, ${endYear}`, doc.internal.pageSize.getWidth() / 2, 30, {
+                align: 'center'
+            });
+
+            // Add table
+            doc.autoTable({
+                html: 'table',
+                startY: 40
+            });
+
+            // Save the PDF
+            doc.save('Sales_Report.pdf');
+        });
+    </script>
 </body>
 
 </html>
