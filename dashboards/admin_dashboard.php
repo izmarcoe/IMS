@@ -11,6 +11,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
     header("Location: http://localhost/IMS/");
     exit();
 }
+$currentMonth = date('F'); // Get the current month name
 
 // User ID from session
 $user_id = $_SESSION['user_id'];
@@ -91,7 +92,13 @@ $totalProductsStmt = $conn->prepare("SELECT COUNT(*) AS total_products FROM prod
 $totalProductsStmt->execute();
 $totalProducts = $totalProductsStmt->fetch(PDO::FETCH_ASSOC)['total_products'];
 
-$totalSalesStmt = $conn->prepare("SELECT SUM(quantity) AS total_sales FROM sales");
+// Fetch total sales for the current month
+$totalSalesStmt = $conn->prepare("
+    SELECT SUM(quantity) AS total_sales
+    FROM sales
+    WHERE MONTH(sale_date) = MONTH(CURRENT_DATE())
+    AND YEAR(sale_date) = YEAR(CURRENT_DATE())
+");
 $totalSalesStmt->execute();
 $totalSales = $totalSalesStmt->fetch(PDO::FETCH_ASSOC)['total_sales'];
 ?>
@@ -154,7 +161,7 @@ $totalSales = $totalSalesStmt->fetch(PDO::FETCH_ASSOC)['total_sales'];
                 <!-- Total Numbers -->
                 <div class="col-md-3">
                     <div class="card mb-4">
-                        <div class="card-header text-white" style="background-color: #B67F97;">Total Users</div>
+                        <div class="card-header text-white" style="background-color: #B67F97;">Total Number of Users</div>
                         <div class="card-body">
                             <p class="card-text"><?php echo htmlspecialchars($totalUsers); ?></p>
                         </div>
@@ -162,7 +169,7 @@ $totalSales = $totalSalesStmt->fetch(PDO::FETCH_ASSOC)['total_sales'];
                 </div>
                 <div class="col-md-3">
                     <div class="card mb-4">
-                        <div class="card-header text-white" style="background-color: #FF8359;">Total Categories</div>
+                        <div class="card-header text-white" style="background-color: #FF8359;">Total Number of Categories</div>
                         <div class="card-body">
                             <p class="card-text"><?php echo htmlspecialchars($totalCategories); ?></p>
                         </div>
@@ -170,7 +177,7 @@ $totalSales = $totalSalesStmt->fetch(PDO::FETCH_ASSOC)['total_sales'];
                 </div>
                 <div class="col-md-3">
                     <div class="card mb-4">
-                        <div class="card-header text-white" style="background-color: #7789EE;">Total Products</div>
+                        <div class="card-header text-white" style="background-color: #7789EE;">Total Number of Products</div>
                         <div class="card-body">
                             <p class="card-text"><?php echo htmlspecialchars($totalProducts); ?></p>
                         </div>
@@ -178,7 +185,7 @@ $totalSales = $totalSalesStmt->fetch(PDO::FETCH_ASSOC)['total_sales'];
                 </div>
                 <div class="col-md-3">
                     <div class="card mb-4">
-                        <div class="card-header text-white" style="background-color: #A0BE6E;">Total Sales</div>
+                        <div class="card-header text-white" style="background-color: #A0BE6E;">Total # of Sales (<?php echo $currentMonth ?>)</div>
                         <div class="card-body">
                             <p class="card-text"><?php echo htmlspecialchars($totalSales); ?></p>
                         </div>

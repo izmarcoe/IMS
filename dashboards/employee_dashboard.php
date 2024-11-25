@@ -12,6 +12,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'employee') {
     exit();
 }
 
+$currentMonth = date('F'); // Get the current month name
 
 // User ID from session
 $user_id = $_SESSION['user_id'];
@@ -170,7 +171,7 @@ $totalSales = $totalSalesStmt->fetch(PDO::FETCH_ASSOC)['total_sales'];
                 </div>
                 <div class="col-md-3">
                     <div class="card mb-4">
-                        <div class="card-header text-white" style="background-color: #A0BE6E;">Total Number of Sales</div>
+                        <div class="card-header text-white" style="background-color: #A0BE6E;">Total # of Sales (<?php echo $currentMonth ?>)</div>
                         <div class="card-body">
                             <p class="card-text"><?php echo htmlspecialchars($totalSales); ?></p>
                         </div>
