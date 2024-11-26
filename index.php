@@ -28,35 +28,34 @@ if (isset($_SESSION['user_id'])) {
     <link rel="stylesheet" href="CSS/index.css">
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <style>
-    body {
-        border-radius: 50px;
-        background: var(--shade-bg, linear-gradient(323deg, #0F7505 25.5%, #0C2809 79.98%));
-        background-size: cover;
-        min-height: 100vh;
-        margin: 0;
-    }
+        body {
+            border-radius: 50px;
+            background: var(--shade-bg, linear-gradient(323deg, #0F7505 25.5%, #0C2809 79.98%));
+            background-size: cover;
+            min-height: 100vh;
+            margin: 0;
+        }
 
-    .row {
-        background: transparent;
-    }
-    .btn:hover { /*button hover effect*/
-    background-color: #8BED14;
-    color: white;
-    border: 2px solid #0F7505;
-    transform: scale(1.2);
-    transition: all 0.3s ease; 
-    
-}
+        .row {
+            background: transparent;
+        }
 
-</style>
+        .btn:hover {
+            /*button hover effect*/
+            background-color: #8BED14;
+            color: white;
+            border: 2px solid #0F7505;
+            transform: scale(1.2);
+            transition: all 0.3s ease;
+
+        }
+    </style>
 
 
 </head>
 
 <body>
-
     <div class="main">
-
         <div class="container py-5">
             <div class="row justify-content-center">
                 <div class="col-md-6">
@@ -85,7 +84,7 @@ if (isset($_SESSION['user_id'])) {
                                             <div class="form-group row justify-content-center">
                                                 <div class="col-6 text-start py-2">
                                                     <label for="email">Email</label>
-                                                    <input type="email" class="form-control" id="email" name="email" style="border-radius: 10px;"  required>
+                                                    <input type="email" class="form-control" id="email" name="email" style="border-radius: 10px;" required>
                                                 </div>
                                             </div>
                                             <div class="form-group row justify-content-center">
@@ -123,7 +122,7 @@ if (isset($_SESSION['user_id'])) {
     </div>
     <script src="JS/togglePasswordLogin.js"> </script>
 
-    
+
     <div class="row justify-content-center mt-5">
         <div class="col-md-6">
             <div class="card shadow-sm">
