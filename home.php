@@ -6,27 +6,28 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
-// Check if the user is logged in
-if (isset($_SESSION['user_id']) && isset($_SESSION['user_role' == 'new_user'])) {
+// Check if the user is logged in and has the role 'new_user'
+if (isset($_SESSION['user_id']) && isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'new_user') {
     $user_id = $_SESSION['user_id'];
 
     // Fetch the user's name and role from the database
     $stmt = $conn->prepare("SELECT `Fname`, `Lname`, `role` FROM `login_db` WHERE `user_id` = :user_id");
     $stmt->bindParam(':user_id', $user_id);
     $stmt->execute();
-    
+
     if ($stmt->rowCount() > 0) {
         $row = $stmt->fetch(PDO::FETCH_ASSOC); // Fetch as associative array
         $fname = $row['Fname'];
         $lname = $row['Lname'];
         $role = $row['role']; // Fetch the user's role
         $user_name = htmlspecialchars($fname . " " . $lname); // Concatenate first and last name
-        
+
         // Check if the user is a new user
         if ($role === 'new_user') {
-            ?>
+?>
             <!DOCTYPE html>
             <html lang="en">
+
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -37,16 +38,22 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['user_role' == 'new_user'])) 
                 <link rel="stylesheet" href="CSS/home.css">
                 <script>
                     // Replace the current history state
-                    window.history.replaceState({ page: 'home' }, '', '');
-                    
+                    window.history.replaceState({
+                        page: 'home'
+                    }, '', '');
+
                     // Add a new history entry
-                    window.history.pushState({ page: 'home' }, '', '');
-                    
+                    window.history.pushState({
+                        page: 'home'
+                    }, '', '');
+
                     // Handle back button
                     window.addEventListener('popstate', function(event) {
                         // If trying to go back, push forward again
-                        window.history.pushState({ page: 'home' }, '', '');
-                        
+                        window.history.pushState({
+                            page: 'home'
+                        }, '', '');
+
                         // Refresh the page to ensure latest state
                         window.location.reload();
                     });
@@ -80,21 +87,22 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['user_role' == 'new_user'])) 
                     });
                 </script>
             </head>
+
             <body>
-                
-                <div class="main">
-
-                    <div class="container text-center">
-                        <h1 class="text-center">Welcome <br> <?php echo $user_name; ?>!</h1>
+                <div class="d-flex">
+                    <div class="main  justify-content-center align-items-center">
+                        <div class="container text-center">
+                            <h1 class="text-center">Welcome, <?php echo $user_name; ?>!</h1>
+                            <h2 class='text-center'>You don't have access to the dashboard yet. Please contact your Admin.</h2>
+                            <a class='btn btn-dark' href='endpoint/logout.php'>Logout</a>
+                        </div>
                     </div>
-
                 </div>
-
             </body>
+
             </html>
-            <?php
-            echo "<h2 class='text-center'>You are a new user! Please wait for the special admin to give you a role.</h2>";
-            echo "<a class='btn btn-dark' href='endpoint/logout.php'>Logout</a>";
+<?php
+
         } else {
             // Render the main content for other users
         }
