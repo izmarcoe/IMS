@@ -40,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 } else if ($_SESSION['user_role'] == 'new_user') {
                     echo "
                     <script>
-                        alert('Login Successfully!');
+                        alert('Welcome!');
                         window.location.href = 'http://localhost/IMS/home.php';
                     </script>
                     ";
@@ -95,7 +95,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 } else if ($_SESSION['user_role'] == 'new_user') {
                     echo "
                     <script>
-                        alert('Login Successfully!');
+                        alert('Welcome!');
                         window.location.href = 'http://localhost/IMS/home.php';
                     </script>
                     ";
