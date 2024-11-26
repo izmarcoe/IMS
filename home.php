@@ -89,13 +89,14 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['user_role']) && $_SESSION['u
             </head>
 
             <body>
-                <div class="d-flex">
-                    <div class="main  justify-content-center align-items-center">
-                        <div class="container text-center">
-                            <h1 class="text-center">Welcome, <?php echo $user_name; ?>!</h1>
-                            <h2 class='text-center'>You don't have access to the dashboard yet. Please contact your Admin.</h2>
-                            <a class='btn btn-dark' href='endpoint/logout.php'>Logout</a>
-                        </div>
+                <div class="main">
+                    <div class="container ">
+                        <h1>Welcome, <?php echo $user_name; ?>!</h1>
+                        <h2>You don't have access to the dashboard yet. Please contact your Admin and try again later.</h2>
+                        <a class='btn btn-dark logout' href='endpoint/logout.php'>Logout</a>
+                    </div>
+                    <div class="image-container">
+                        <img src="icons/noRole.svg" alt="Centered Image">
                     </div>
                 </div>
             </body>

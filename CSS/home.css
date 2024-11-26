@@ -5,3 +5,43 @@
     padding: 0;
     font-family: 'Poppins', sans-serif;
 }
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh; /* Ensure the height spans the entire viewport */
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    justify-content: center; /* Centers content vertically */
+    align-items: center; /* Centers content horizontally */
+    background: linear-gradient(to bottom, #004d00, #0f8500); /* Optional background gradient */
+}
+
+.image-container img {
+    max-width: 100%; /* Ensures the image scales properly */
+    height: auto; /* Maintains the aspect ratio */
+    display: block;
+    margin: 0 auto; /* Center horizontally if needed */
+}
+
+.container {
+    text-align: center; /* Aligns text within the container */
+    color: white;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 4em;
+}
+
+h2 {
+    font-size: 3em;
+    width: 1200px;
+    max-width: 100%; /* Ensures responsive width */
+}
+
+a.btn {
+    margin-top: 20px;
+    font-size: 3em;
+    color: #356DFA;
+    text-decoration: none;
+}
