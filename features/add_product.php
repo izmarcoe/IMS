@@ -2,13 +2,11 @@
 session_start();
 include('../conn/conn.php'); // Database connection file
 
-
 // Check if the user is logged in and has the appropriate role to add products
 if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'employee' && $_SESSION['user_role'] != 'admin')) {
     header("Location: http://localhost/IMS/");
     exit();
 }
-
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $product_name = trim($_POST['product_name']);
@@ -34,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt->bindParam(':new_quantity', $newQuantity, PDO::PARAM_INT);
                 $stmt->bindParam(':product_id', $existingProduct['product_id'], PDO::PARAM_INT);
                 $stmt->execute();
-                $success = "Product quantity updated successfully!";
+                $_SESSION['notification'] = "Product quantity updated successfully!";
             } else {
                 // Insert as new product if name and price combination is new
                 $stmt = $conn->prepare("INSERT INTO products (product_name, category_id, price, quantity) VALUES (:product_name, :category_id, :price, :quantity)");
@@ -43,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt->bindParam(':price', $price, PDO::PARAM_STR);
                 $stmt->bindParam(':quantity', $quantity, PDO::PARAM_INT);
                 $stmt->execute();
-                $success = "New product added successfully!";
+                $_SESSION['notification'] = "New product added successfully!";
             }
         } catch (PDOException $e) {
             $error = "Database error: " . $e->getMessage();
@@ -51,14 +49,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-
 // Determine the active page
 $current_page = basename($_SERVER['PHP_SELF']); // Get the current script name
 // Define active class based on the current page
 $active_add_product = ($current_page == 'add-product.php') ? 'active' : '';
 
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -79,7 +75,6 @@ $active_add_product = ($current_page == 'add-product.php') ? 'active' : '';
                 <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
             </div>
         </div>
-
 
         <div class="d-flex align-items-center text-black p-3 flex-grow-1" style="background-color: gray;">
             <div class="d-flex justify-content-start flex-grow-1 text-white">
@@ -154,7 +149,7 @@ $active_add_product = ($current_page == 'add-product.php') ? 'active' : '';
     <script src="../JS/time.js"></script>
     <script src="../JS/notificationTimer.js"></script>
     <script>
-        //to handle the dropdown dynamically with AJAX instead of server-side rendering
+        // Function to load categories dynamically with AJAX
         function loadCategories() {
             fetch('../features/category.php', {
                     headers: {

@@ -44,7 +44,7 @@ $total_pages = ceil($total_categories / $limit);
 
 // If AJAX request, return categories as JSON
 if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
-    $stmt = $conn->prepare("SELECT id, category_name FROM product_categories ORDER BY category_name LIMIT :limit OFFSET :offset");
+    $stmt = $conn->prepare("SELECT id, category_name FROM product_categories ORDER BY category_name");
     $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
     $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
     $stmt->execute();
