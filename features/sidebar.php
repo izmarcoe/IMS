@@ -1,5 +1,6 @@
 <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="../CSS/dashboard.css">
+<link rel="stylesheet" href="../CSS/sidebar.css">
 
 <div class="bg-dark text-white min-vh-100 p-1" style="width: 300px;">
     <div class="pt-5">
