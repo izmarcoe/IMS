@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_role'])) {
 // Handle user archive
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['inactive_user'])) {
     $user_id = $_POST['user_id'];
-    $archiveStmt = $conn->prepare("UPDATE login_db SET status = 'inactive' WHERE user_id = ?");
+    $archiveStmt = $conn->prepare("UPDATE login_db SET status = 'deactivated' WHERE user_id = ?");
     $archiveStmt->execute([$user_id]);
     header("Location: ../features/manage_users.php");
     exit();
