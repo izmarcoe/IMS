@@ -74,7 +74,7 @@ function generateQrCode() {
   registrationInputs.style.display = 'none';
 
   let text = generateRandomCode(10);
-  const secretKey = 'artificial intelligent'; // Use a secure key
+  const secretKey = 'artificial intelligence'; // Use a secure key
   const encryptedText = encryptData(text, secretKey); // Encrypt the random string
   document.getElementById("generatedCode").value = encryptedText;
 

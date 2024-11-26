@@ -15,41 +15,50 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $accountExist = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($accountExist && $accountExist['status'] == 'active') {
-            session_start();
-            $_SESSION['user_id'] = $accountExist['user_id'];
-            $_SESSION['user_role'] = $accountExist['role'];
-            $_SESSION['qr-code'] = $qrCode;
-    
-            // Check the user role for redirection
-            if ($_SESSION['user_role'] == 'employee') {
+        if ($accountExist) {
+            if ($accountExist['status'] == 'active') {
+                session_start();
+                $_SESSION['user_id'] = $accountExist['user_id'];
+                $_SESSION['user_role'] = $accountExist['role'];
+                $_SESSION['qr-code'] = $qrCode;
+
+                // Check the user role for redirection
+                if ($_SESSION['user_role'] == 'employee') {
+                    echo "
+                    <script>
+                        alert('Login Successfully!');
+                        window.location.href = 'http://localhost/IMS/dashboards/employee_dashboard.php';
+                    </script>
+                    ";
+                } else if ($_SESSION['user_role'] == 'admin') {
+                    echo "
+                    <script>
+                        alert('Login Successfully!');
+                        window.location.href = 'http://localhost/IMS/dashboards/admin_dashboard.php';
+                    </script>
+                    ";
+                } else if ($_SESSION['user_role'] == 'new_user') {
+                    echo "
+                    <script>
+                        alert('Login Successfully!');
+                        window.location.href = 'http://localhost/IMS/home.php';
+                    </script>
+                    ";
+                }
+            } else {
+                // Handle the case when the account is inactive
                 echo "
                 <script>
-                    alert('Login Successfully!');
-                    window.location.href = 'http://localhost/IMS/dashboards/employee_dashboard.php';
-                </script>
-                ";
-            } else if  ($_SESSION['user_role'] == 'admin'){
-                echo "
-                <script>
-                    alert('Login Successfully!');
-                    window.location.href = 'http://localhost/IMS/dashboards/admin_dashboard.php';
-                </script>
-                ";
-            }
-            else if($_SESSION['user_role'] == 'new_user'){
-                echo "
-                <script>
-                    alert('Login Successfully!');
-                    window.location.href = 'http://localhost/IMS/home.php';
+                    alert('Account deactivated. Contact your admin.');
+                    window.location.href = 'http://localhost/IMS/';
                 </script>
                 ";
             }
         } else {
-            // Optionally hide the error for QR code
+            // Handle the case when the QR code account doesn't exist
             echo "
             <script>
-                alert('QR Code account doesn't exist or is inactive!'); // You may remove this if you want to hide the message
+                alert('Invalid QR code!');
                 window.location.href = 'http://localhost/IMS/';
             </script>
             ";
@@ -62,41 +71,49 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($user && password_verify($password, $user['password']) && $user['status'] == 'active') {
-            session_start();
-            $_SESSION['user_id'] = $user['user_id'];
-            $_SESSION['user_role'] = $user['role'];
-    
-            // Check the user role for redirection
-            if ($_SESSION['user_role'] == 'employee') {
+        if ($user && password_verify($password, $user['password'])) {
+            if ($user['status'] == 'active') {
+                session_start();
+                $_SESSION['user_id'] = $user['user_id'];
+                $_SESSION['user_role'] = $user['role'];
+
+                // Check the user role for redirection
+                if ($_SESSION['user_role'] == 'employee') {
+                    echo "
+                    <script>
+                        alert('Login Successfully!');
+                        window.location.href = 'http://localhost/IMS/dashboards/employee_dashboard.php';
+                    </script>
+                    ";
+                } else if ($_SESSION['user_role'] == 'admin') {
+                    echo "
+                    <script>
+                        alert('Login Successfully!');
+                        window.location.href = 'http://localhost/IMS/dashboards/admin_dashboard.php';
+                    </script>
+                    ";
+                } else if ($_SESSION['user_role'] == 'new_user') {
+                    echo "
+                    <script>
+                        alert('Login Successfully!');
+                        window.location.href = 'http://localhost/IMS/home.php';
+                    </script>
+                    ";
+                }
+            } else {
+                // Handle the case when the account is inactive
                 echo "
                 <script>
-                    alert('Login Successfully!');
-                    window.location.href = 'http://localhost/IMS/dashboards/employee_dashboard.php';
-                </script>
-                ";
-            } 
-            // Check the user role for redirection
-            else if ($_SESSION['user_role'] == 'admin') {
-                echo "
-                <script>
-                    alert('Login Successfully!');
-                    window.location.href = 'http://localhost/IMS/dashboards/admin_dashboard.php';
-                </script>
-                ";
-            } else if ($_SESSION['user_role'] == 'new_user') {
-                echo "
-                <script>
-                    alert('Login Successfully!');
-                    window.location.href = 'http://localhost/IMS/home.php';
+                    alert('Account deactivated. Please contact your admin.');
+                    window.location.href = 'http://localhost/IMS/';
                 </script>
                 ";
             }
         } else {
-            // Hide the error message
+            // Handle the case when the email/password is invalid
             echo "
             <script>
-                // alert('Invalid email or password or account is inactive!'); // Comment this out to hide
+                alert('Invalid email or password!');
                 window.location.href = 'http://localhost/IMS/';
             </script>
             ";

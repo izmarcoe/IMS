@@ -7,7 +7,7 @@ header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
 // Check if the user is logged in
-if (isset($_SESSION['user_id'])) {
+if (isset($_SESSION['user_id']) && isset($_SESSION['user_role' == 'new_user'])) {
     $user_id = $_SESSION['user_id'];
 
     // Fetch the user's name and role from the database
