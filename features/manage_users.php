@@ -51,9 +51,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activate_user'])) {
     <title>Manage Users</title>
     <link rel="stylesheet" href="../CSS/dashboard.css">
     <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link rel="stylesheet" href="../CSS/manage_users.css">
     <script src="../bootstrap/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 </head>
-
+<style>
+    .table-secondary {
+    background-color: gray !important;
+    color: gray;
+}
+    </style>
 <body style="background-color: #DADBDF;">
      <!-- Header -->
      <header class="d-flex flex-row">
@@ -62,7 +68,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activate_user'])) {
                 <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
             </div>
         </div>
-
 
         <div class="d-flex align-items-center text-black p-3 flex-grow-1" style="background-color: gray;">
             <div class="d-flex justify-content-start flex-grow-1 text-white">
@@ -102,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activate_user'])) {
                     </thead>
                     <tbody>
                         <?php foreach ($users as $user): ?>
-                            <tr class="<?php echo $user['status'] == 'inactive' ? 'table-secondary' : ''; ?>">
+                            <tr class="<?php echo $user['status'] == 'deactivated' ? 'table-secondary' : ''; ?>">
                                 <td><?php echo htmlspecialchars($user['user_id']); ?></td>
                                 <td><?php echo htmlspecialchars($user['Fname']); ?></td>
                                 <td><?php echo htmlspecialchars($user['Lname']); ?></td>
