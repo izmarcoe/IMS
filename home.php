@@ -96,7 +96,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['user_role']) && $_SESSION['u
                         <a class='btn btn-dark logout' href='endpoint/logout.php'>Logout</a>
                     </div>
                     <div class="image-container">
-                        <img src="icons/noRole.svg" alt="Centered Image">
+                        <img src="icons/noRole.svg" alt="Unauthorized Access">
                     </div>
                 </div>
             </body>
