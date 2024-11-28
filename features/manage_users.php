@@ -79,7 +79,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activate_user'])) {
                     user
                 </button>
                 <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">Action</a></li>
                     <li><a class="dropdown-item" href="../features/user_settings.php">Settings</a></li>
                     <li><a class="dropdown-item" href="../endpoint/logout.php">Logout</a></li>
                 </ul>
@@ -139,7 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activate_user'])) {
                                         <!-- Archive Button -->
                                         <form method="POST" class="d-inline">
                                             <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($user['user_id']); ?>">
-                                            <button type="submit" name="inactive_user" class="btn btn-warning btn-sm">Archive</button>
+                                            <button type="submit" name="inactive_user" class="btn btn-warning btn-sm">Deactivate</button>
                                         </form>
                                     <?php else: ?>
                                         <!-- Activate Button -->
