@@ -45,13 +45,10 @@ if (isset($_SESSION['user_id'])) {
             background-color: #8BED14;
             color: white;
             border: 2px solid #0F7505;
-            transform: scale(1.2);
+            transform: scale(1.1);
             transition: all 0.3s ease;
-
         }
     </style>
-
-
 </head>
 
 <body>
@@ -75,7 +72,6 @@ if (isset($_SESSION['user_id'])) {
                                             <h4 class="text-center">QR Code Detected!</h4>
                                             <input type="hidden" id="detected-qr-code" name="qr-code">
                                             <button type="submit" class="btn btn-dark my-3" style="border-radius: 10px; background: var(--login-button-shade, linear-gradient(90deg, #0F7505 0%, #8BED14 100%));">Login</button>
-
                                         </form>
                                     </div>
 
@@ -122,7 +118,6 @@ if (isset($_SESSION['user_id'])) {
     </div>
     <script src="JS/togglePasswordLogin.js"> </script>
 
-
     <div class="row justify-content-center mt-5">
         <div class="col-md-6">
             <div class="card shadow-sm">
@@ -131,7 +126,7 @@ if (isset($_SESSION['user_id'])) {
                         <div class="registration-form" id="registrationForm">
                             <h2 class="text-center">Registration Form</h2>
                             <p class="text-center">Fill in your personal details.</p>
-                            <form action="./endpoint/add-user.php" method="POST">
+                            <form action="./endpoint/add-user.php" method="POST" id="registrationForm">
                                 <div class="hide-registration-inputs">
                                     <div class="form-group registration row">
                                         <div class="col-6">
@@ -163,8 +158,8 @@ if (isset($_SESSION['user_id'])) {
                                             <input type="password" class="form-control" id="confirmPassword" name="confirm_password" required>
                                         </div>
                                     </div>
-                                    <p>Already have a QR code account? Login <span class="switch-form-link" onclick="location.reload()">Here.</span></p>
-                                    <button type="button" class="btn btn-dark login-register form-control" onclick="generateQrCode()">Register and Generate QR Code</button>
+                                    <p>Already have a QR code account? Login <span class="switch-form-link" onclick="location.href='index.php'">Here.</span></p>
+                                    <button type="button" class="btn btn-dark login-register form-control" id="registerButton" onclick="generateQrCode()" disabled>Register and Generate QR Code</button>
                                 </div>
 
                                 <div class="qr-code-container text-center" style="display: none;">
@@ -188,7 +183,24 @@ if (isset($_SESSION['user_id'])) {
     <script src="./JS/QR.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const registerButton = document.getElementById('registerButton');
+            const formInputs = document.querySelectorAll('#registrationForm input[required]');
 
+            formInputs.forEach(input => {
+                input.addEventListener('input', () => {
+                    let allFilled = true;
+                    formInputs.forEach(input => {
+                        if (!input.value) {
+                            allFilled = false;
+                        }
+                    });
+                    registerButton.disabled = !allFilled;
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>

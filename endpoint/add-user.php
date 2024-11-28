@@ -53,7 +53,7 @@ if (isset($_POST['fname'], $_POST['lname'], $_POST['contact_number'], $_POST['em
             echo "
             <script>
                 alert('Registered Successfully!');
-                window.location.href = 'http://localhost/IMS/';
+                window.location.href = 'http://localhost/IMS/index.php';
             </script>
             ";
         } else {
