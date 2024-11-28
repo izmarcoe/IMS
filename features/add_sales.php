@@ -77,8 +77,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bindParam(':sale_date', $sales_date);
         $stmt->bindParam(':total_sales', $total_sales);
 
-
-
         $stmt->execute();
 
         // Commit transaction
@@ -212,6 +210,37 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <script src="../JS/add_salesValidation.js"></script>
     <script src="../JS/notificationTimer.js"></script>
     <script src="../JS/time.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const productSelect = document.getElementById('product');
+            const categoryInput = document.getElementById('category');
+            const priceInput = document.getElementById('price');
+            const quantityInput = document.getElementById('quantity');
+            const totalAmountDiv = document.getElementById('totalAmount');
+            const stockInfo = document.getElementById('stockInfo');
+
+            productSelect.addEventListener('change', function () {
+                const selectedOption = productSelect.options[productSelect.selectedIndex];
+                const categoryName = selectedOption.getAttribute('data-category-name');
+                const price = selectedOption.getAttribute('data-price');
+                const stock = selectedOption.getAttribute('data-stock');
+
+                categoryInput.value = categoryName;
+                priceInput.value = price;
+                stockInfo.textContent = `Available stock: ${stock}`;
+                updateTotalAmount();
+            });
+
+            quantityInput.addEventListener('input', updateTotalAmount);
+
+            function updateTotalAmount() {
+                const price = parseFloat(priceInput.value) || 0;
+                const quantity = parseInt(quantityInput.value) || 0;
+                const totalAmount = price * quantity;
+                totalAmountDiv.textContent = totalAmount.toFixed(2);
+            }
+        });
+    </script>
 </body>
 
 </html>
