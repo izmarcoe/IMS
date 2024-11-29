@@ -1,68 +1,146 @@
-<link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link href="../src/output.css" rel="stylesheet">
 <link rel="stylesheet" href="../CSS/dashboard.css">
 <link rel="stylesheet" href="../CSS/sidebar.css">
 
-<div class="bg-dark text-white min-vh-100 p-1" style="width: 300px;">
-    <div class="pt-5">
-        <?php
-        $current_page = basename($_SERVER['PHP_SELF']);
-        ?>
+<!-- Include AlpineJS -->
+<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-        <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'admin'): ?>
-            <a class="sidebar-link fs-5 py-3 mb-3 d-flex align-items-center <?php echo ($current_page == 'admin_dashboard.php') ? 'active' : ''; ?>" href="../dashboards/admin_dashboard.php" onclick="setActive(this)">
-                <img src="../icons/dashboard.svg" style="height:25px; margin-right: 10px;"> Dashboard
-            </a>
-        <?php elseif (isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'employee'): ?>
-            <a class="sidebar-link fs-5 py-3 mb-3 d-flex align-items-center <?php echo ($current_page == 'employee_dashboard.php') ? 'active' : ''; ?>" href="../dashboards/employee_dashboard.php" onclick="setActive(this)">
-                <img src="../icons/dashboard.svg" style="height:25px; margin-right: 10px;"> Dashboard
-            </a>
-        <?php endif; ?>
+<div x-data="{ sidebarOpen: true }" class="relative">
+    <!-- Mobile Toggle Button -->
+    <button @click="sidebarOpen = !sidebarOpen"
+        class="fixed top-4 left-4 z-50 p-2 bg-gray-800 rounded-md text-white hover:bg-gray-700">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path x-show="!sidebarOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            <path x-show="sidebarOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+    </button>
 
-        <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'admin'): ?>
-            <a class="sidebar-link fs-5 py-3 mb-3 d-flex align-items-center <?php echo ($current_page == 'manage_users.php') ? 'active' : ''; ?>" href="../features/manage_users.php" onclick="setActive(this)">
-                <img src="../icons/usermanagement.svg" style="height:25px; margin-right: 10px;"> User Management
-            </a>
-        <?php else: ?>
-            <a class="sidebar-link fs-5 py-3 mb-3 d-flex align-items-center" href="#" style="pointer-events: none; color: gray;">
-                <img src="../icons/usermanagement.svg" style="height:25px; margin-right: 10px;"> User Management
-            </a>
-        <?php endif; ?>
-
-        <a class="sidebar-link fs-5 py-3 mb-3 d-flex align-items-center <?php echo ($current_page == 'category.php') ? 'active' : ''; ?>" href="../features/category.php" onclick="setActive(this)">
-            <img src="../icons/categories.svg" style="height:25px; margin-right: 10px;"> Categories
-        </a>
-
-        <!-- Products Collapse Dropdown -->
-        <a class="sidebar-link fs-5 py-3 mb-3 d-flex align-items-center <?php echo ($current_page == 'manage_products.php' || $current_page == 'add_product.php') ? 'active' : ''; ?>" href="#productsCollapse" data-bs-toggle="collapse" aria-expanded="false" aria-controls="productsCollapse" onclick="setActive(this, event)">
-            <img src="../icons/cart.svg" style="height:25px; margin-right: 10px;"> Products
-        </a>
-        <div class="collapse <?php echo ($current_page == 'manage_products.php' || $current_page == 'add_product.php') ? 'show' : ''; ?>" id="productsCollapse">
-            <a class="sidebar-link fs-5 py-3 ps-4 mb-3 <?php echo ($current_page == 'manage_products.php') ? 'active' : ''; ?>" href="../features/manage_products.php" onclick="setActive(this, event)">Manage Products</a>
-            <a class="sidebar-link fs-5 py-3 ps-4 mb-3 <?php echo ($current_page == 'add_product.php') ? 'active' : ''; ?>" href="../features/add_product.php" onclick="setActive(this, event)">Add Products</a>
-        </div>
-
-        <!-- Sales Collapse Dropdown -->
-        <a class="sidebar-link fs-5 py-3 mb-3 d-flex align-items-center <?php echo ($current_page == 'manage_sales.php' || $current_page == 'add_sales.php') ? 'active' : ''; ?>" href="#salesCollapse" data-bs-toggle="collapse" aria-expanded="false" aria-controls="salesCollapse" onclick="setActive(this, event)">
-            <img src="../icons/sales.svg" style="height:35px; margin-right: 10px;"> Sales
-        </a>
-        <div class="collapse <?php echo ($current_page == 'manage_sales.php' || $current_page == 'add_sales.php') ? 'show' : ''; ?>" id="salesCollapse">
-            <a class="sidebar-link fs-5 py-3 ps-4 mb-3 <?php echo ($current_page == 'manage_sales.php') ? 'active' : ''; ?>" href="../features/manage_sales.php" onclick="setActive(this, event)">Manage Sales</a>
-            <a class="sidebar-link fs-5 py-3 ps-4 mb-3 <?php echo ($current_page == 'add_sales.php') ? 'active' : ''; ?>" href="../features/add_sales.php" onclick="setActive(this, event)">Add Sales</a>
-        </div>
-
-        <!-- Sales Report Collapse Dropdown -->
-        <a class="sidebar-link fs-5 py-3 mb-3 d-flex align-items-center <?php echo in_array($current_page, ['salesPerDay.php', 'salesPerMonth.php', 'salesDateRange.php', 'forecasting.php']) ? 'active' : ''; ?>" href="#reportCollapse" data-bs-toggle="collapse" aria-expanded="false" aria-controls="reportCollapse" onclick="setActive(this, event)">
-            <img src="../icons/salesreport.svg" style="height:25px; margin-right: 10px;">Sales Report
-        </a>
-        <div class="collapse <?php echo in_array($current_page, ['salesPerDay.php', 'salesPerMonth.php', 'salesDateRange.php', 'forecasting.php']) ? 'show' : ''; ?>" id="reportCollapse">
-            <a class="sidebar-link fs-5 py-3 ps-4 mb-3 <?php echo ($current_page == 'salesPerDay.php') ? 'active' : ''; ?>" href="../features/salesPerDay.php" onclick="setActive(this, event)">Sales by Date</a>
-            <a class="sidebar-link fs-5 py-3 ps-4 mb-3 <?php echo ($current_page == 'salesPerMonth.php') ? 'active' : ''; ?>" href="../features/salesPerMonth.php" onclick="setActive(this, event)">Sales by Month</a>
-            <a class="sidebar-link fs-5 py-3 ps-4 mb-3 <?php echo ($current_page == 'salesDateRange.php') ? 'active' : ''; ?>" href="../features/salesDateRange.php" onclick="setActive(this, event)">Sales by Date Range</a>
-            <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'admin'): ?>
-                <a class="sidebar-link fs-5 py-3 ps-4 mb-3 <?php echo ($current_page == 'forecasting.php') ? 'active' : ''; ?>" href="../features-AI/forecasting.php" onclick="setActive(this, event)">Predictive Analytics</a>
-            <?php endif; ?>
-        </div>
-
-        <script src="../JS/sidebarCollapse.js"></script>
+    <!-- Backdrop -->
+    <div x-show="sidebarOpen"
+        @click="sidebarOpen = false"
+        class="fixed inset-0 bg-black bg-opacity-50 transition-opacity md:hidden z-40">
     </div>
+
+    <!-- Sidebar -->
+    <div x-show="sidebarOpen"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="-translate-x-full"
+        x-transition:enter-end="translate-x-0"
+        x-transition:leave="transition ease-in duration-300"
+        x-transition:leave-start="translate-x-0"
+        x-transition:leave-end="-translate-x-full"
+        class="fixed top-0 left-0 bottom-0 w-[300px] bg-gray-800 text-white transform md:translate-x-0 md:relative z-50">
+
+        <div class="bg-gray-800 text-white min-h-screen w-[300px] p-1">
+            <div class="pt-5">
+                <?php
+                $current_page = basename($_SERVER['PHP_SELF']);
+                ?>
+
+                <!-- Dashboard Link -->
+                <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'admin'): ?>
+                    <a class="flex items-center py-3 mb-3 px-4 text-lg hover:bg-gray-700 transition-all duration-200 <?php echo ($current_page == 'admin_dashboard.php') ? 'bg-gray-700' : ''; ?>"
+                        href="../dashboards/admin_dashboard.php">
+                        <img src="../icons/dashboard.svg" class="h-6 w-6 mr-3">
+                        <span>Dashboard</span>
+                    </a>
+                <?php elseif (isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'employee'): ?>
+                    <a class="flex items-center py-3 mb-3 px-4 text-lg hover:bg-gray-700 transition-all duration-200 <?php echo ($current_page == 'employee_dashboard.php') ? 'bg-gray-700' : ''; ?>"
+                        href="../dashboards/employee_dashboard.php">
+                        <img src="../icons/dashboard.svg" class="h-6 w-6 mr-3">
+                        <span>Dashboard</span>
+                    </a>
+                <?php endif; ?>
+
+                <!-- User Management -->
+                <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'admin'): ?>
+                    <a class="flex items-center py-3 mb-3 px-4 text-lg hover:bg-gray-700 transition-all duration-200 <?php echo ($current_page == 'manage_users.php') ? 'bg-gray-700' : ''; ?>"
+                        href="../features/manage_users.php">
+                        <img src="../icons/usermanagement.svg" class="h-6 w-6 mr-3">
+                        <span>User Management</span>
+                    </a>
+                <?php else: ?>
+                    <a class="flex items-center py-3 mb-3 px-4 text-lg cursor-not-allowed text-gray-500">
+                        <img src="../icons/usermanagement.svg" class="h-6 w-6 mr-3">
+                        <span>User Management</span>
+                    </a>
+                <?php endif; ?>
+
+                <!-- Categories -->
+                <a class="flex items-center py-3 mb-3 px-4 text-lg hover:bg-gray-700 transition-all duration-200 <?php echo ($current_page == 'category.php') ? 'bg-gray-700' : ''; ?>"
+                    href="../features/category.php">
+                    <img src="../icons/categories.svg" class="h-6 w-6 mr-3">
+                    <span>Categories</span>
+                </a>
+
+                <!-- Products Dropdown -->
+                <div x-data="{ open: <?php echo ($current_page == 'manage_products.php' || $current_page == 'add_product.php') ? 'true' : 'false' ?> }">
+                    <button @click="open = !open"
+                        class="w-full flex items-center py-3 mb-3 px-4 text-lg hover:bg-gray-700 transition-all duration-200 <?php echo ($current_page == 'manage_products.php' || $current_page == 'add_product.php') ? 'bg-gray-700' : ''; ?>">
+                        <img src="../icons/cart.svg" class="h-6 w-6 mr-3">
+                        <span>Products</span>
+                        <svg class="w-4 h-4 ml-auto transform transition-transform duration-200"
+                            :class="{'rotate-180': open}"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div x-show="open" class="ml-6 space-y-2">
+                        <a class="block py-2 px-4 text-lg hover:bg-gray-700 transition-all duration-200 <?php echo ($current_page == 'manage_products.php') ? 'bg-gray-700' : ''; ?>"
+                            href="../features/manage_products.php">Manage Products</a>
+                        <a class="block py-2 px-4 text-lg hover:bg-gray-700 transition-all duration-200 <?php echo ($current_page == 'add_product.php') ? 'bg-gray-700' : ''; ?>"
+                            href="../features/add_product.php">Add Products</a>
+                    </div>
+                </div>
+
+                <!-- Sales Dropdown -->
+                <div x-data="{ open: <?php echo ($current_page == 'manage_sales.php' || $current_page == 'add_sales.php') ? 'true' : 'false' ?> }">
+                    <button @click="open = !open"
+                        class="w-full flex items-center py-3 mb-3 px-4 text-lg hover:bg-gray-700 transition-all duration-200 <?php echo ($current_page == 'manage_sales.php' || $current_page == 'add_sales.php') ? 'bg-gray-700' : ''; ?>">
+                        <img src="../icons/sales.svg" class="h-6 w-6 mr-3">
+                        <span>Sales</span>
+                        <svg class="w-4 h-4 ml-auto transform transition-transform duration-200"
+                            :class="{'rotate-180': open}"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div x-show="open" class="ml-6 space-y-2">
+                        <a class="block py-2 px-4 text-lg hover:bg-gray-700 transition-all duration-200 <?php echo ($current_page == 'manage_sales.php') ? 'bg-gray-700' : ''; ?>"
+                            href="../features/manage_sales.php">Manage Sales</a>
+                        <a class="block py-2 px-4 text-lg hover:bg-gray-700 transition-all duration-200 <?php echo ($current_page == 'add_sales.php') ? 'bg-gray-700' : ''; ?>"
+                            href="../features/add_sales.php">Add Sales</a>
+                    </div>
+                </div>
+
+                <!-- Sales Report Dropdown -->
+                <div x-data="{ open: <?php echo in_array($current_page, ['salesPerDay.php', 'salesPerMonth.php', 'salesDateRange.php', 'forecasting.php']) ? 'true' : 'false' ?> }">
+                    <button @click="open = !open"
+                        class="w-full flex items-center py-3 mb-3 px-4 text-lg hover:bg-gray-700 transition-all duration-200 <?php echo in_array($current_page, ['salesPerDay.php', 'salesPerMonth.php', 'salesDateRange.php', 'forecasting.php']) ? 'bg-gray-700' : ''; ?>">
+                        <img src="../icons/salesreport.svg" class="h-6 w-6 mr-3">
+                        <span>Sales Report</span>
+                        <svg class="w-4 h-4 ml-auto transform transition-transform duration-200"
+                            :class="{'rotate-180': open}"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div x-show="open" class="ml-6 space-y-2">
+                        <a class="block py-2 px-4 text-lg hover:bg-gray-700 transition-all duration-200 <?php echo ($current_page == 'salesPerDay.php') ? 'bg-gray-700' : ''; ?>"
+                            href="../features/salesPerDay.php">Sales by Date</a>
+                        <a class="block py-2 px-4 text-lg hover:bg-gray-700 transition-all duration-200 <?php echo ($current_page == 'salesPerMonth.php') ? 'bg-gray-700' : ''; ?>"
+                            href="../features/salesPerMonth.php">Sales by Month</a>
+                        <a class="block py-2 px-4 text-lg hover:bg-gray-700 transition-all duration-200 <?php echo ($current_page == 'salesDateRange.php') ? 'bg-gray-700' : ''; ?>"
+                            href="../features/salesDateRange.php">Sales by Date Range</a>
+                        <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'admin'): ?>
+                            <a class="block py-2 px-4 text-lg hover:bg-gray-700 transition-all duration-200 <?php echo ($current_page == 'forecasting.php') ? 'bg-gray-700' : ''; ?>"
+                                href="../features-AI/forecasting.php">Predictive Analytics</a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../JS/sidebarCollapse.js"></script>
+</div>
 </div>

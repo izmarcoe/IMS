@@ -108,28 +108,26 @@ $totalSales = $totalSalesStmt->fetch(PDO::FETCH_ASSOC)['total_sales'];
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Employee Dashboard</title>
-    <link rel="stylesheet" href="../CSS/dashboard.css">
-    <!-- Bootstrap CSS -->
-    <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-    <script src="../bootstrap/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../src/output.css">
 </head>
 
-<body style="background-color: #DADBDF;">
+<body class="bg-gray-200">
     <!-- Header -->
-    <header class="d-flex flex-row">
-        <div class="d-flex justify-content text-center align-items-center text-white" style="background-color: #0F7505;">
-            <div class="" style="width: 300px">
-                <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
-            </div>
+    <header class="flex flex-row">
+        <div class="flex justify-center items-center text-white bg-green-800" style="width: 300px;">
+            <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
         </div>
 
-        <div class="d-flex align-items-center text-black p-3 flex-grow-1" style="background-color: gray;">
-            <div class="d-flex justify-content-start flex-grow-1 text-white">
-                <span class="px-4" id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
+        <div class="flex items-center text-black p-3 flex-grow bg-gray-600">
+            <div class="ml-6 flex flex-start text-white">
+                <h2 class="text-[1.5rem] font-bold">Employee Dashboard</h2>
             </div>
-            <div class="d-flex justify-content-end">
+            <div class="flex justify-end flex-grow text-white">
+                <span class="px-4 font-bold text-[1rem]" id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
+            </div>
+            <div class="flex justify-end text-white mx-8">
                 <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <span><img src="../icons/user.svg" alt="User Icon" style="width: 20px; height: 20px; margin-right: 5px;"></span>
+                    <span><img src="../icons/user.svg" alt="User Icon" class="w-5 h-5 mr-1"></span>
                     user
                 </button>
                 <ul class="dropdown-menu">
@@ -140,93 +138,111 @@ $totalSales = $totalSalesStmt->fetch(PDO::FETCH_ASSOC)['total_sales'];
         </div>
     </header>
     <!-- Content -->
-    <main class="d-flex">
+    <main class="flex">
         <div>
             <!-- Sidebar -->
             <?php include '../features/sidebar.php' ?>
         </div>
         <!-- Main Content -->
-        <div class="flex-grow-1 p-3">
-            <h2 class="text-center">Welcome, <?php echo htmlspecialchars($fname) . ' ' . htmlspecialchars($lname); ?>!</h2>
-            <p class="text-center">This is the Employee dashboard.</p>
+        <div class="flex-grow p-3">
+            <h2 class="text-center text-5xl my-5">Welcome, <?php echo htmlspecialchars($fname) . ' ' . htmlspecialchars($lname); ?>!</h2>
 
-            <!-- Dashboard Boxes -->
-            <div class="row text-center justify-content-center">
-                <div class="col-md-3">
-                    <div class="card mb-4">
-                        <div class="card-header text-white" style="background-color: #FF8359;">Total Number of Categories</div>
-                        <div class="card-body">
-                            <p class="card-text"><?php echo htmlspecialchars($totalCategories); ?></p>
-                        </div>
+            <div class="flex flex-wrap justify-center items-center gap-6 mt-5">
+                <!-- Total Number of categories -->
+                <div class="flex flex-col justify-between text-white p-8 bg-orange-600 rounded-lg shadow-md h-full w-80">
+                    <!-- Label -->
+                    <div class="flex items-center justify-center bg-orange-600 text-white p-4 rounded-full h-[40%]">
+                        <img src="../icons/Category.svg" alt="User Icon" class="w-24 h-24 object-contain">
                     </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card mb-4">
-                        <div class="card-header text-white" style="background-color: #7789EE;">Total Number of Products</div>
-                        <div class="card-body">
-                            <p class="card-text"><?php echo htmlspecialchars($totalProducts); ?></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card mb-4">
-                        <div class="card-header text-white" style="background-color: #A0BE6E;">Total # of Sales (<?php echo $currentMonth ?>)</div>
-                        <div class="card-body">
-                            <p class="card-text"><?php echo htmlspecialchars($totalSales); ?></p>
-                        </div>
+                    <!-- Value and Label -->
+                    <div class="flex flex-col items-center  text-white p-4 rounded-lg h-[60%]">
+                        <span class="text-2xl font-bold"><?php echo htmlspecialchars($totalCategories); ?></span>
+                        <span class="text-md">Categories</span>
                     </div>
                 </div>
 
+                <!-- Total Number of products -->
+                <div class="flex flex-col justify-between text-white p-8 bg-blue-600 rounded-lg shadow-md h-full w-80">
+                    <!-- Label -->
+                    <div class="flex items-center justify-center bg-blue-600 text-white p-4 rounded-full h-[40%]">
+                        <img src="../icons/cart 4.svg" alt="User Icon" class="w-24 h-24 object-contain">
+                    </div>
+                    <!-- Value and Label -->
+                    <div class="flex flex-col items-center  text-white p-4 rounded-lg h-[60%]">
+                        <span class="text-2xl font-bold"><?php echo htmlspecialchars($totalProducts); ?></span>
+                        <span class="text-md">Products</span>
+                    </div>
+                </div>
+
+                <!-- Total Number of sales -->
+                <div class="flex flex-col justify-between p-8 bg-green-600 rounded-lg shadow-md h-full w-80">
+                    <!-- Label -->
+                    <div class="flex items-center justify-center bg-green-600 text-white p-4 rounded-full h-[40%]">
+                        <img src="../icons/pesosign.svg" alt="User Icon" class="w-24 h-24 object-contain">
+                    </div>
+                    <!-- Value and Label -->
+                    <div class="flex flex-col items-center text-white p-4 rounded-lg h-[60%]">
+                        <span class="text-2xl font-bold"><?php echo htmlspecialchars($totalSales); ?></span>
+                        <span class="text-md">Sales</span>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Grid Container -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
                 <!-- Highest Selling Products -->
-                <div class="col-md-4">
-                    <div class="card mb-4">
-                        <div class="card-header bg-primary text-white">Highest Selling Products</div>
-                        <div class="card-body">
-                            <ul class="list-group">
-                                <?php foreach ($highestSellingProducts as $product): ?>
-                                    <li class="list-group-item">
-                                        <?php echo htmlspecialchars($product['product_name']) . ' - ' . htmlspecialchars($product['total_quantity']) . ' units'; ?>
-                                    </li>
-                                <?php endforeach; ?>
-                            </ul>
-                        </div>
+                <div class="bg-white rounded-lg shadow-lg p-4">
+                    <h2 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-3">Highest Selling Products</h2>
+                    <div class="overflow-y-auto max-h-64">
+                        <ul class="divide-y divide-gray-200">
+                            <?php foreach ($highestSellingProducts as $product): ?>
+                                <li class="py-2 px-3 hover:bg-gray-50 flex justify-between items-center">
+                                    <span class="text-sm text-gray-700"><?php echo htmlspecialchars($product['product_name']); ?></span>
+                                    <span class="text-sm text-green-600 font-medium"><?php echo htmlspecialchars($product['total_quantity']); ?> units</span>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
                     </div>
                 </div>
 
                 <!-- Latest Sales -->
-                <div class="col-md-4">
-                    <div class="card mb-4">
-                        <div class="card-header bg-success text-white">Latest Sales</div>
-                        <div class="card-body">
-                            <ul class="list-group">
-                                <?php foreach ($latestSales as $sale): ?>
-                                    <li class="list-group-item">
-                                        <?php echo htmlspecialchars($sale['product_name']) . ' - ' . htmlspecialchars($sale['quantity']) . ' units on ' . htmlspecialchars($sale['sale_date']); ?>
-                                    </li>
-                                <?php endforeach; ?>
-                            </ul>
-                        </div>
+                <div class="bg-white rounded-lg shadow-lg p-4">
+                    <h2 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-3">Latest Sales</h2>
+                    <div class="overflow-y-auto max-h-64">
+                        <ul class="divide-y divide-gray-200">
+                            <?php foreach ($latestSales as $sale): ?>
+                                <li class="py-2 px-3 hover:bg-gray-50">
+                                    <p class="text-sm text-gray-700"><?php echo htmlspecialchars($sale['product_name']); ?></p>
+                                    <span class="text-xs text-green-600 font-bold">
+                                        <?php echo htmlspecialchars($sale['quantity']); ?> units -
+                                        <?php echo date('M d, Y', strtotime($sale['sale_date'])); ?>
+                                    </span>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
                     </div>
                 </div>
 
                 <!-- Recently Added Products -->
-                <div class="col-md-4">
-                    <div class="card mb-4">
-                        <div class="card-header bg-warning text-white">Recently Added Products</div>
-                        <div class="card-body">
-                            <ul class="list-group">
-                                <?php foreach ($recentlyAddedProducts as $product): ?>
-                                    <li class="list-group-item">
-                                        <?php echo htmlspecialchars($product['product_name']) . ' - added on ' . htmlspecialchars($product['created_at']); ?>
-                                    </li>
-                                <?php endforeach; ?>
-                            </ul>
-                        </div>
+                <div class="bg-white rounded-lg shadow-lg p-4">
+                    <h2 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-3">Recently Added Products</h2>
+                    <div class="overflow-y-auto max-h-64">
+                        <ul class="divide-y divide-gray-200">
+                            <?php foreach ($recentlyAddedProducts as $product): ?>
+                                <li class="py-2 px-3 hover:bg-gray-50">
+                                    <p class="text-sm text-gray-700"><?php echo htmlspecialchars($product['product_name']); ?></p>
+                                    <span class="text-xs text-green-600 font-bold">
+                                        Added <?php echo date('M d, Y', strtotime($product['created_at'])); ?>
+                                    </span>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
                     </div>
                 </div>
             </div>
-        </div>
     </main>
+
 
     <!-- JS -->
     <script src="../JS/employeeAuth.js"></script>
