@@ -1,11 +1,11 @@
-<!--THIS IS FOR CATEGORY.PHP-->
-
 <?php
 session_start();
 include('../conn/conn.php');
 
+header('Content-Type: application/json');
+
 if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'employee' && $_SESSION['user_role'] != 'admin') {
-    header("Location: http://localhost/IMS/");
+    echo json_encode(['status' => 'error', 'message' => 'Unauthorized access']);
     exit();
 }
 
@@ -21,6 +21,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->bindParam(':name', $category_name);
             $stmt->bindParam(':description', $description);
             $stmt->execute();
+
+            echo json_encode([
+                'status' => 'success', 
+                'message' => 'Category added successfully',
+                'category' => [
+                    'id' => $conn->lastInsertId(),
+                    'category_name' => $category_name,
+                    'description' => $description
+                ]
+            ]);
         } 
         elseif ($action == 'edit') {
             $id = $_POST['id'];
@@ -32,12 +42,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->bindParam(':description', $description);
             $stmt->bindParam(':id', $id);
             $stmt->execute();
+
+            echo json_encode([
+                'status' => 'success', 
+                'message' => 'Category updated successfully',
+                'category' => [
+                    'id' => $id,
+                    'category_name' => $category_name,
+                    'description' => $description
+                ]
+            ]);
+        }
+        elseif ($action == 'delete') {
+            $id = $_POST['id'];
+
+            $stmt = $conn->prepare("DELETE FROM product_categories WHERE id = :id");
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+
+            echo json_encode([
+                'status' => 'success', 
+                'message' => 'Category deleted successfully',
+                'id' => $id
+            ]);
         }
     } catch (PDOException $e) {
-        $_SESSION['error'] = "Error: " . $e->getMessage();
+        echo json_encode([
+            'status' => 'error', 
+            'message' => "Error: " . $e->getMessage()
+        ]);
     }
+    exit();
 }
-
-header("Location: ../features/category.php");
-exit();
 ?>

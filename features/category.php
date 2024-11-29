@@ -30,7 +30,7 @@ $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
 // Fetch all categories with pagination
-$stmt = $conn->prepare("SELECT * FROM product_categories ORDER BY category_name LIMIT :limit OFFSET :offset");
+$stmt = $conn->prepare("SELECT * FROM product_categories ORDER BY category_name ASC LIMIT :limit OFFSET :offset");
 $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
 $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
 $stmt->execute();
@@ -65,9 +65,11 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'
     <title>Product Categories</title>
     <link rel="stylesheet" href="../CSS/dashboard.css">
     <link href="../src/output.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-<body> 
-          <!-- Header -->
+
+<body>
+    <!-- Header -->
     <header class="flex flex-row">
         <div class="flex justify-center items-center text-white bg-green-800" style="width: 300px;">
             <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
@@ -98,14 +100,14 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'
         </aside>
 
         <!-- Table Container -->
-        <div class="p-4 md:p-8 bg-white rounded-lg shadow-md w-full max-w-[95vw] mx-auto">
+        <div class="p-4 md:p-8 bg-white rounded-lg shadow-md w-full max-w-[95vw] mx-auto flex-col">
             <!-- Header with Add Button -->
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-xl md:text-2xl font-semibold text-gray-800">Categories</h2>
-                <button onclick="openAddModal()" 
-                        class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 md:px-4 md:py-2 rounded-lg flex items-center text-sm md:text-base">
+                <button onclick="openAddModal()"
+                    class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 md:px-4 md:py-2 rounded-lg flex items-center text-sm md:text-base">
                     <svg class="w-4 h-4 md:w-5 md:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
                     Add New Category
                 </button>
@@ -113,7 +115,7 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'
 
             <!-- Table with responsive container -->
             <div class="overflow-x-auto relative">
-                <div class="max-h-[70vh] overflow-y-auto">
+                <div class="w-full"> <!-- Removed max-height and overflow -->
                     <table class="w-full divide-y divide-gray-200 table-auto">
                         <thead class="bg-gray-50 sticky top-0 z-10">
                             <tr>
@@ -130,30 +132,62 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             <?php foreach ($categories as $category): ?>
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-4 md:px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm md:text-base text-gray-900"><?php echo htmlspecialchars($category['category_name']); ?></div>
-                                </td>
-                                <td class="px-4 md:px-6 py-4">
-                                    <div class="text-sm md:text-base text-gray-900 break-words"><?php echo htmlspecialchars($category['description']); ?></div>
-                                </td>
-                                <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm md:text-base">
-                                    <div class="flex space-x-2">
-                                        <button onclick="openEditModal(<?php echo htmlspecialchars(json_encode($category)); ?>)" 
+                                <tr id="category-<?php echo $category['id']; ?>" class="hover:bg-gray-50">
+                                    <td class="px-4 md:px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm md:text-base text-gray-900"><?php echo htmlspecialchars($category['category_name']); ?></div>
+                                    </td>
+                                    <td class="px-4 md:px-6 py-4">
+                                        <div class="text-sm md:text-base text-gray-900 break-words"><?php echo htmlspecialchars($category['description']); ?></div>
+                                    </td>
+                                    <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm md:text-base">
+                                        <div class="flex space-x-2">
+                                            <button onclick="openEditModal(<?php echo htmlspecialchars(json_encode($category)); ?>)"
                                                 class="bg-blue-500 hover:bg-blue-600 text-white px-2 md:px-3 py-1 rounded-md text-sm">
-                                            Edit
-                                        </button>
-                                        <button onclick="openDeleteModal(<?php echo $category['id']; ?>)" 
+                                                Edit
+                                            </button>
+                                            <button onclick="openDeleteModal(<?php echo $category['id']; ?>)"
                                                 class="bg-red-500 hover:bg-red-600 text-white px-2 md:px-3 py-1 rounded-md text-sm">
-                                            Delete
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
                             <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
+            </div>
+
+            <div class="flex justify-center items-center mt-4 space-x-2">
+                <?php if ($page > 1): ?>
+                    <a href="?page=1" class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+                        First
+                    </a>
+                    <a href="?page=<?php echo $page - 1; ?>" class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+                        Previous
+                    </a>
+                <?php endif; ?>
+
+                <?php
+                // Calculate the range of page numbers to display
+                $start = max(1, $page - 2);
+                $end = min($total_pages, $page + 2);
+
+                for ($i = $start; $i <= $end; $i++): ?>
+                    <a href="?page=<?php echo $i; ?>"
+                        class="px-3 py-2 <?php echo $i == $page ? 'bg-green-600 text-white' : 'bg-gray-200 hover:bg-gray-300'; ?> rounded-md">
+                        <?php echo $i; ?>
+                    </a>
+                <?php endfor; ?>
+
+                <?php if ($page < $total_pages): ?>
+                    <a href="?page=<?php echo $page + 1; ?>" class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+                        Next
+                    </a>
+                    <a href="?page=<?php echo $total_pages; ?>" class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+                        Last
+                    </a>
+                <?php endif; ?>
             </div>
         </div>
 
@@ -162,23 +196,23 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'
             <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white z-50">
                 <div class="mt-3">
                     <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Add New Category</h3>
-                    <form action="../endpoint/process_category.php" method="POST">
+                    <form id="addCategoryForm" action="../endpoint/process_category.php" method="POST">
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2">Category Name</label>
                             <input type="text" name="category_name" required
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500">
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500">
                         </div>
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2">Description</label>
                             <textarea name="description" rows="3"
-                                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"></textarea>
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"></textarea>
                         </div>
                         <input type="hidden" name="action" value="add">
                         <div class="flex justify-end gap-2">
                             <button type="button" onclick="closeAddModal()"
-                                    class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Cancel</button>
+                                class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Cancel</button>
                             <button type="submit"
-                                    class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Add</button>
+                                class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Add</button>
                         </div>
                     </form>
                 </div>
@@ -190,24 +224,24 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'
             <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white z-50">
                 <div class="mt-3">
                     <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Edit Category</h3>
-                    <form action="../endpoint/process_category.php" method="POST">
+                    <form id="editCategoryForm" action="../endpoint/process_category.php" method="POST">
                         <input type="hidden" id="edit_id" name="id">
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2">Category Name</label>
                             <input type="text" id="edit_category_name" name="category_name" required
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500">
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500">
                         </div>
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2">Description</label>
                             <textarea id="edit_description" name="description" rows="3"
-                                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"></textarea>
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"></textarea>
                         </div>
                         <input type="hidden" name="action" value="edit">
                         <div class="flex justify-end gap-2">
                             <button type="button" onclick="closeEditModal()"
-                                    class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Cancel</button>
+                                class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Cancel</button>
                             <button type="submit"
-                                    class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Save Changes</button>
+                                class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Save Changes</button>
                         </div>
                     </form>
                 </div>
@@ -220,10 +254,10 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'
                 <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Delete Category</h3>
                 <p class="mb-4 text-sm text-gray-500">Are you sure you want to delete this category? This action cannot be undone.</p>
                 <div class="flex justify-end gap-2">
-                    <button onclick="closeDeleteModal()" 
-                            class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Cancel</button>
-                    <button onclick="confirmDelete()" 
-                            class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Delete</button>
+                    <button onclick="closeDeleteModal()"
+                        class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Cancel</button>
+                    <button  onclick="confirmDelete()"
+                        class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Delete</button>
                 </div>
             </div>
         </div>
