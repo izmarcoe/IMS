@@ -64,53 +64,25 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Categories</title>
     <link rel="stylesheet" href="../CSS/dashboard.css">
-    <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-    <script src="../bootstrap/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <link href="../src/output.css" rel="stylesheet">
 </head>
-<style>
-          .pagination .page-link {
-            color: #0F7505;
-        }
-
-        .pagination .page-link:hover {
-            background-color: #0F7505;
-            color: white;
-        }
-
-        .pagination .page-item.active .page-link {
-            background-color: #0F7505;
-            border-color: #0F7505;
-        }
-
-        .pagination .page-link:focus {
-            box-shadow: none;
-        }
-
-        .action-btn {
-            height: 38px;
-            /* Adjust the height as needed */
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-</style>
-<body style="background-color: #DADBDF;">
-    <!-- Header -->
-    <header class="d-flex flex-row">
-        <div class="d-flex justify-content text-center align-items-center text-white" style="background-color: #0F7505;">
-            <div class="" style="width: 300px">
-                <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
-            </div>
+<body> 
+          <!-- Header -->
+    <header class="flex flex-row">
+        <div class="flex justify-center items-center text-white bg-green-800" style="width: 300px;">
+            <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
         </div>
 
-
-        <div class="d-flex align-items-center text-black p-3 flex-grow-1" style="background-color: gray;">
-            <div class="d-flex justify-content-start flex-grow-1 text-white">
-                <span class="px-4" id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
+        <div class="flex items-center text-black p-3 flex-grow bg-gray-600">
+            <div class="ml-6 flex flex-start text-white">
+                <h2 class="text-[1.5rem] font-bold">Admin Dashboard</h2>
             </div>
-            <div class="d-flex justify-content-end">
+            <div class="flex justify-end flex-grow text-white">
+                <span class="px-4 font-bold text-[1rem]" id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
+            </div>
+            <div class="flex justify-end text-white mx-8">
                 <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <span><img src="../icons/user.svg" alt="User Icon" style="width: 20px; height: 20px; margin-right: 5px;"></span>
+                    <span><img src="../icons/user.svg" alt="User Icon" class="w-5 h-5 mr-1"></span>
                     user
                 </button>
                 <ul class="dropdown-menu">
@@ -120,105 +92,93 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'
             </div>
         </div>
     </header>
-
-    <!-- Content -->
-    <main class="d-flex">
+    <main class="flex">
         <aside>
-            <!-- Sidebar -->
-            <?php include '../features/sidebar.php'; ?>
+            <?php include('../features/sidebar.php'); ?>
         </aside>
-        <div class="container mt-5">
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <h2>Product Categories</h2>
-                </div>
-                <div class="col-md-6 text-end">
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
-                        Add New Category
-                    </button>
-                </div>
+
+        <!-- Table Container -->
+        <div class="p-4 md:p-8 bg-white rounded-lg shadow-md w-full max-w-[95vw] mx-auto">
+            <!-- Header with Add Button -->
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl md:text-2xl font-semibold text-gray-800">Categories</h2>
+                <button onclick="openAddModal()" 
+                        class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 md:px-4 md:py-2 rounded-lg flex items-center text-sm md:text-base">
+                    <svg class="w-4 h-4 md:w-5 md:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                    </svg>
+                    Add New Category
+                </button>
             </div>
 
-            <!-- Categories Table -->
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Category Name</th>
-                            <th>Description</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($categories as $category): ?>
+            <!-- Table with responsive container -->
+            <div class="overflow-x-auto relative">
+                <div class="max-h-[70vh] overflow-y-auto">
+                    <table class="w-full divide-y divide-gray-200 table-auto">
+                        <thead class="bg-gray-50 sticky top-0 z-10">
                             <tr>
-                                <td><?php echo htmlspecialchars($category['category_name']); ?></td>
-                                <td><?php echo htmlspecialchars($category['description']); ?></td>
-                                <td>
-                                    <button class="btn btn-warning btn-sm" onclick="editCategory(<?php echo htmlspecialchars(json_encode($category)); ?>)">
-                                        Edit
-                                    </button>
-                                    <button class="btn btn-danger btn-sm" onclick="deleteCategory(<?php echo $category['id']; ?>)">
-                                        Delete
-                                    </button>
+                                <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider w-1/3">
+                                    Category Name
+                                </th>
+                                <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider w-1/2">
+                                    Description
+                                </th>
+                                <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider">
+                                    Actions
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <?php foreach ($categories as $category): ?>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 md:px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm md:text-base text-gray-900"><?php echo htmlspecialchars($category['category_name']); ?></div>
+                                </td>
+                                <td class="px-4 md:px-6 py-4">
+                                    <div class="text-sm md:text-base text-gray-900 break-words"><?php echo htmlspecialchars($category['description']); ?></div>
+                                </td>
+                                <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm md:text-base">
+                                    <div class="flex space-x-2">
+                                        <button onclick="openEditModal(<?php echo htmlspecialchars(json_encode($category)); ?>)" 
+                                                class="bg-blue-500 hover:bg-blue-600 text-white px-2 md:px-3 py-1 rounded-md text-sm">
+                                            Edit
+                                        </button>
+                                        <button onclick="openDeleteModal(<?php echo $category['id']; ?>)" 
+                                                class="bg-red-500 hover:bg-red-600 text-white px-2 md:px-3 py-1 rounded-md text-sm">
+                                            Delete
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-                <div>
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination justify-content-center">
-                            <?php if ($page > 1): ?>
-                                <li class="page-item">
-                                    <a class="page-link" href="?page=<?php echo $page - 1; ?>" aria-label="Previous">
-                                        <span aria-hidden="true">&laquo;</span>
-                                    </a>
-                                </li>
-                            <?php endif; ?>
-
-                            <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-                                <li class="page-item <?php if ($i == $page) echo 'active'; ?>">
-                                    <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
-                                </li>
-                            <?php endfor; ?>
-
-                            <?php if ($page < $total_pages): ?>
-                                <li class="page-item">
-                                    <a class="page-link" href="?page=<?php echo $page + 1; ?>" aria-label="Next">
-                                        <span aria-hidden="true">&raquo;</span>
-                                    </a>
-                                </li>
-                            <?php endif; ?>
-                        </ul>
-                    </nav>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
 
         <!-- Add Category Modal -->
-        <div class="modal fade" id="addCategoryModal" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Add New Category</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
+        <div id="addModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+            <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white z-50">
+                <div class="mt-3">
+                    <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Add New Category</h3>
                     <form action="../endpoint/process_category.php" method="POST">
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="category_name" class="form-label">Category Name</label>
-                                <input type="text" class="form-control" id="category_name" name="category_name" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="description" class="form-label">Description</label>
-                                <textarea class="form-control" id="description" name="description" rows="3"></textarea>
-                            </div>
-                            <input type="hidden" name="action" value="add">
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Category Name</label>
+                            <input type="text" name="category_name" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500">
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Add Category</button>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Description</label>
+                            <textarea name="description" rows="3"
+                                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"></textarea>
+                        </div>
+                        <input type="hidden" name="action" value="add">
+                        <div class="flex justify-end gap-2">
+                            <button type="button" onclick="closeAddModal()"
+                                    class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Cancel</button>
+                            <button type="submit"
+                                    class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Add</button>
                         </div>
                     </form>
                 </div>
@@ -226,29 +186,28 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'
         </div>
 
         <!-- Edit Category Modal -->
-        <div class="modal fade" id="editCategoryModal" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Edit Category</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
+        <div id="editModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+            <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white z-50">
+                <div class="mt-3">
+                    <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Edit Category</h3>
                     <form action="../endpoint/process_category.php" method="POST">
-                        <div class="modal-body">
-                            <input type="hidden" id="edit_id" name="id">
-                            <div class="mb-3">
-                                <label for="edit_category_name" class="form-label">Category Name</label>
-                                <input type="text" class="form-control" id="edit_category_name" name="category_name" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="edit_description" class="form-label">Description</label>
-                                <textarea class="form-control" id="edit_description" name="description" rows="3"></textarea>
-                            </div>
-                            <input type="hidden" name="action" value="edit">
+                        <input type="hidden" id="edit_id" name="id">
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Category Name</label>
+                            <input type="text" id="edit_category_name" name="category_name" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500">
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Description</label>
+                            <textarea id="edit_description" name="description" rows="3"
+                                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"></textarea>
+                        </div>
+                        <input type="hidden" name="action" value="edit">
+                        <div class="flex justify-end gap-2">
+                            <button type="button" onclick="closeEditModal()"
+                                    class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Cancel</button>
+                            <button type="submit"
+                                    class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Save Changes</button>
                         </div>
                     </form>
                 </div>
@@ -256,50 +215,58 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'
         </div>
 
         <!-- Delete Confirmation Modal -->
-        <div class="modal fade" id="deleteCategoryModal" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Delete Category</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p>Are you sure you want to delete this category? All associated products will also be deleted.</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
-                    </div>
+        <div id="deleteModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+            <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white z-50">
+                <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Delete Category</h3>
+                <p class="mb-4 text-sm text-gray-500">Are you sure you want to delete this category? This action cannot be undone.</p>
+                <div class="flex justify-end gap-2">
+                    <button onclick="closeDeleteModal()" 
+                            class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Cancel</button>
+                    <button onclick="confirmDelete()" 
+                            class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Delete</button>
                 </div>
             </div>
         </div>
-    </main>
 
+    </main>
     <script src="../JS/time.js"></script>
     <script>
-        // Initialize modals
-        const editCategoryModal = new bootstrap.Modal(document.getElementById('editCategoryModal'));
-        const deleteCategoryModal = new bootstrap.Modal(document.getElementById('deleteCategoryModal'));
-        let categoryToDelete = null;
+    let categoryToDelete = null;
 
-        function editCategory(category) {
-            document.getElementById('edit_id').value = category.id;
-            document.getElementById('edit_category_name').value = category.category_name;
-            document.getElementById('edit_description').value = category.description;
-            editCategoryModal.show();
+    function openAddModal() {
+        document.getElementById('addModal').classList.remove('hidden');
+    }
+
+    function closeAddModal() {
+        document.getElementById('addModal').classList.add('hidden');
+    }
+
+    function openEditModal(category) {
+        document.getElementById('edit_id').value = category.id;
+        document.getElementById('edit_category_name').value = category.category_name;
+        document.getElementById('edit_description').value = category.description;
+        document.getElementById('editModal').classList.remove('hidden');
+    }
+
+    function closeEditModal() {
+        document.getElementById('editModal').classList.add('hidden');
+    }
+
+    function openDeleteModal(id) {
+        categoryToDelete = id;
+        document.getElementById('deleteModal').classList.remove('hidden');
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.add('hidden');
+        categoryToDelete = null;
+    }
+
+    function confirmDelete() {
+        if (categoryToDelete) {
+            window.location.href = `category.php?delete_id=${categoryToDelete}`;
         }
-
-        function deleteCategory(id) {
-            categoryToDelete = id;
-            deleteCategoryModal.show();
-        }
-
-        // Handle delete confirmation
-        document.getElementById('confirmDelete').addEventListener('click', function() {
-            if (categoryToDelete) {
-                window.location.href = `../features/category.php?delete_id=${categoryToDelete}`;
-            }
-        });
+    }
     </script>
 </body>
 
