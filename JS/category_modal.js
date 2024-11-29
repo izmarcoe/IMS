@@ -15,44 +15,69 @@ document.addEventListener('DOMContentLoaded', function() {
                 addNewCategoryToTable(data.category);
                 closeAddModal();
                 this.reset();
-            }
+                }
+            });
         });
     });
 
-    // Edit Category Form Submission
-    document.getElementById('editCategoryForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const formData = new FormData(this);
-        
-        fetch('../endpoint/process_category.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                // Update row in table
-                const row = document.getElementById(`category-${data.category.id}`);
-                if (row) {
-                    row.querySelector('td:nth-child(1) div').textContent = data.category.category_name;
-                    row.querySelector('td:nth-child(2) div').textContent = data.category.description;
-                    
-                    // Update edit button's onclick to pass updated category data
-                    const editButton = row.querySelector('button:first-child');
-                    editButton.setAttribute('onclick', `openEditModal(${JSON.stringify(data.category)})`);
-                }
+   // Edit Category Form Submission
+document.getElementById('editCategoryForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    fetch('../endpoint/process_category.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // Update row in table
+            const row = document.querySelector(`#category-${data.category.id}`);
+            if (row) {
+                // Update the row content
+                row.innerHTML = `
+                    <td class="px-4 md:px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm md:text-base text-gray-900">${data.category.category_name}</div>
+                    </td>
+                    <td class="px-4 md:px-6 py-4">
+                        <div class="text-sm md:text-base text-gray-900 break-words">${data.category.description}</div>
+                    </td>
+                    <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm md:text-base">
+                        <div class="flex space-x-2">
+                            <button onclick='openEditModal(${JSON.stringify(data.category)})' 
+                                    class="bg-blue-500 hover:bg-blue-600 text-white px-2 md:px-3 py-1 rounded-md text-sm">
+                                Edit
+                            </button>
+                            <button onclick="openDeleteModal(${data.category.id})" 
+                                    class="bg-red-500 hover:bg-red-600 text-white px-2 md:px-3 py-1 rounded-md text-sm">
+                                Delete
+                            </button>
+                        </div>
+                    </td>
+                `;
                 
                 // Close modal
                 closeEditModal();
-            } else {
-                alert(data.message);
+
+                // Show success message
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: 'Category updated successfully',
+                    confirmButtonColor: '#16a34a',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while updating the category.');
-        });
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while updating the category.');
     });
 });
 
@@ -139,8 +164,9 @@ function addNewCategoryToTable(category) {
     const rows = Array.from(tableBody.children);
     const newRow = document.createElement('tr');
     
+    newRow.id = `category-${category.id}`;
+    newRow.className = 'hover:bg-gray-50';
     newRow.innerHTML = `
-        <tr id="category-${category.id}" class="hover:bg-gray-50">
             <td class="px-4 md:px-6 py-4 whitespace-nowrap">
                 <div class="text-sm md:text-base text-gray-900">${category.category_name}</div>
             </td>
@@ -159,7 +185,6 @@ function addNewCategoryToTable(category) {
                     </button>
                 </div>
             </td>
-        </tr>
     `;
 
     // Find correct position for new category
