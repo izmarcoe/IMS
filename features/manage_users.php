@@ -50,32 +50,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activate_user'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Users</title>
     <link rel="stylesheet" href="../CSS/dashboard.css">
-    <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <link rel="stylesheet" href="../CSS/manage_users.css">
-    <script src="../bootstrap/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../src/output.css">
 </head>
 <style>
     .table-secondary {
-    background-color: gray !important;
-    color: gray;
-}
-    </style>
+        background-color: gray !important;
+        color: gray;
+    }
+</style>
+
 <body style="background-color: #DADBDF;">
-     <!-- Header -->
-     <header class="d-flex flex-row">
-        <div class="d-flex justify-content text-center align-items-center text-white" style="background-color: #0F7505;">
-            <div class="" style="width: 300px">
-                <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
-            </div>
+    <!-- Header -->
+    <header class="flex flex-row">
+        <div class="flex justify-center items-center text-white bg-green-800" style="width: 300px;">
+            <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
         </div>
 
-        <div class="d-flex align-items-center text-black p-3 flex-grow-1" style="background-color: gray;">
-            <div class="d-flex justify-content-start flex-grow-1 text-white">
-                <span class="px-4" id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
+        <div class="flex items-center text-black p-3 flex-grow bg-gray-600">
+            <div class="ml-6 flex flex-start text-white">
+                <h2 class="text-[1.5rem] font-bold">Admin Dashboard</h2>
             </div>
-            <div class="d-flex justify-content-end">
+            <div class="flex justify-end flex-grow text-white">
+                <span class="px-4 font-bold text-[1rem]" id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
+            </div>
+            <div class="flex justify-end text-white mx-8">
                 <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <span><img src="../icons/user.svg" alt="User Icon" style="width: 20px; height: 20px; margin-right: 5px;"></span>
+                    <span><img src="../icons/user.svg" alt="User Icon" class="w-5 h-5 mr-1"></span>
                     user
                 </button>
                 <ul class="dropdown-menu">
@@ -86,31 +87,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activate_user'])) {
         </div>
     </header>
 
-    <main>
-        <div class="d-flex">
+    <main class="flex flex-row">
+        <div class="flex">
             <aside>
                 <?php include '../features/sidebar.php'; ?>
             </aside>
-            <div class="container mt-4 z-3">
-                <h2 class="mb-4">Manage Users</h2>
-                <table class="table table-bordered">
+            <div class="container mx-auto mt-4 z-30 px-8 max-w-7xl">
+                <h2 class="mt-6 text-5xl font-bold">Manage Users</h2>
+                <table class="mt-6 w-full border-collapse border-2 border-gray-500 min-w-[1024px]">
                     <thead>
-                        <tr>
-                            <th>User ID</th>
-                            <th>First Name</th>
-                            <th>Last Name</th>
-                            <th>Role</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                        <tr class="bg-gray-200">
+                            <th class="border border-gray-100 px-6 py-3">User ID</th>
+                            <th class="border border-gray-100 px-6 py-3">First Name</th>
+                            <th class="border border-gray-100 px-6 py-3">Last Name</th>
+                            <th class="border border-gray-100 px-6 py-3">Role</th>
+                            <th class="border border-gray-100 px-6 py-3">Status</th>
+                            <th class="border border-gray-100 px-6 py-3">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($users as $user): ?>
-                            <tr class="<?php echo $user['status'] == 'deactivated' ? 'table-secondary' : ''; ?>">
-                                <td><?php echo htmlspecialchars($user['user_id']); ?></td>
-                                <td><?php echo htmlspecialchars($user['Fname']); ?></td>
-                                <td><?php echo htmlspecialchars($user['Lname']); ?></td>
-                                <td>
+                            <tr class="<?php echo $user['status'] == 'deactivated' ? 'bg-gray-400' : ''; ?>">
+                                <td class="border border-gray-300 px-4 py-2"><?php echo htmlspecialchars($user['user_id']); ?></td>
+                                <td class="border border-gray-300 px-4 py-2"><?php echo htmlspecialchars($user['Fname']); ?></td>
+                                <td class="border border-gray-300 px-4 py-2"><?php echo htmlspecialchars($user['Lname']); ?></td>
+                                <td class="border border-gray-300 px-4 py-2">
                                     <?php
                                     switch ($user['role']) {
                                         case 'admin':
@@ -127,50 +128,93 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activate_user'])) {
                                     }
                                     ?>
                                 </td>
-                                <td><?php echo htmlspecialchars($user['status']); ?></td>
-                                <td>
+                                <td class="border border-gray-300 px-4 py-2"><?php echo htmlspecialchars($user['status']); ?></td>
+                                <td class="border border-gray-300 px-4 py-2">
                                     <?php if ($user['status'] == 'active'): ?>
-                                        <!-- Edit Button to trigger modal -->
-                                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editRoleModal<?php echo $user['user_id']; ?>">
-                                            Edit
+                                        <button type="button" class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600" onclick="openModal('editRoleModal<?php echo $user['user_id']; ?>')">
+                                            Edit Role
                                         </button>
-
-                                        <!-- Archive Button -->
-                                        <form method="POST" class="d-inline">
-                                            <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($user['user_id']); ?>">
-                                            <button type="submit" name="inactive_user" class="btn btn-warning btn-sm">Deactivate</button>
-                                        </form>
+                                        
+                                        <button type="button" 
+                                                onclick="updateUserStatus(<?php echo $user['user_id']; ?>, 'deactivate')" 
+                                                class="bg-yellow-500 text-white px-3 py-1 rounded text-sm hover:bg-yellow-600 ml-2">
+                                            Deactivate
+                                        </button>
                                     <?php else: ?>
-                                        <!-- Activate Button -->
-                                        <form method="POST" class="d-inline">
-                                            <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($user['user_id']); ?>">
-                                            <button type="submit" name="activate_user" class="btn btn-success btn-sm">Activate</button>
-                                        </form>
+                                        <button type="button" 
+                                                onclick="updateUserStatus(<?php echo $user['user_id']; ?>, 'activate')" 
+                                                class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600">
+                                            Activate
+                                        </button>
                                     <?php endif; ?>
                                 </td>
                             </tr>
                             <?php if ($user['status'] == 'active'): ?>
-                                <!-- Modal for Editing Role -->
-                                <div class="modal fade" id="editRoleModal<?php echo $user['user_id']; ?>" tabindex="-1" aria-labelledby="editRoleModalLabel<?php echo $user['user_id']; ?>" aria-hidden="true" data-bs-backdrop="false">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="editRoleModalLabel<?php echo $user['user_id']; ?>">Edit Role for <?php echo htmlspecialchars($user['Fname']) . ' ' . htmlspecialchars($user['Lname']); ?></h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <form method="POST">
-                                                    <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($user['user_id']); ?>">
-                                                    <div class="mb-3">
-                                                        <label for="role" class="form-label">Role</label>
-                                                        <select name="role" class="form-select">
-                                                            <option value="admin" <?php if ($user['role'] == 'admin') echo 'selected'; ?>>Admin</option>
-                                                            <option value="employee" <?php if ($user['role'] == 'employee') echo 'selected'; ?>>Employee</option>
-                                                            <option value="new_user" <?php if ($user['role'] == 'new_user') echo 'selected'; ?>>New User</option>
-                                                        </select>
+                                <div id="editRoleModal<?php echo $user['user_id']; ?>" class="hidden fixed inset-0 z-50">
+                                    <!-- Modal Backdrop -->
+                                    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+                                    
+                                    <!-- Modal Content -->
+                                    <div class="fixed inset-0 z-10 overflow-y-auto">
+                                        <div class="flex min-h-full items-center justify-center p-4 text-center">
+                                            <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                                                <!-- Modal Header -->
+                                                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                                                    <div class="flex items-start justify-between">
+                                                        <h3 class="text-lg font-medium leading-6 text-gray-900">
+                                                            Edit Role for <?php echo htmlspecialchars($user['Fname'] . ' ' . $user['Lname']); ?>
+                                                        </h3>
+                                                        <button onclick="closeModal('editRoleModal<?php echo $user['user_id']; ?>')" 
+                                                                class="ml-auto bg-white rounded-md text-gray-400 hover:text-gray-500">
+                                                            <span class="sr-only">Close</span>
+                                                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                            </svg>
+                                                        </button>
                                                     </div>
-                                                    <button type="submit" name="update_role" class="btn btn-primary">Save changes</button>
-                                                </form>
+                                                </div>
+
+                                                <!-- Modal Body -->
+                                                <div class="bg-white px-4 pb-4 sm:p-6 sm:pb-4">
+                                                    <form method="POST">
+                                                        <input type="hidden" name="user_id" 
+                                                               value="<?php echo htmlspecialchars($user['user_id']); ?>">
+                                                        
+                                                        <div class="mb-4">
+                                                            <label for="role<?php echo $user['user_id']; ?>" 
+                                                                   class="block text-sm font-medium text-gray-700 mb-2">
+                                                                Select Role
+                                                            </label>
+                                                            <select id="role<?php echo $user['user_id']; ?>" 
+                                                                    name="role" 
+                                                                    class="mt-1 block w-full rounded-md border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500">
+                                                                <option value="admin" <?php echo ($user['role'] == 'admin') ? 'selected' : ''; ?>>
+                                                                    Admin
+                                                                </option>
+                                                                <option value="employee" <?php echo ($user['role'] == 'employee') ? 'selected' : ''; ?>>
+                                                                    Employee
+                                                                </option>
+                                                                <option value="new_user" <?php echo ($user['role'] == 'new_user') ? 'selected' : ''; ?>>
+                                                                    New User
+                                                                </option>
+                                                            </select>
+                                                        </div>
+
+                                                        <!-- Modal Footer -->
+                                                        <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                                                            <button type="submit" 
+                                                                    name="update_role" 
+                                                                    class="inline-flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm">
+                                                                Save Changes
+                                                            </button>
+                                                            <button type="button" 
+                                                                    onclick="closeModal('editRoleModal<?php echo $user['user_id']; ?>')"
+                                                                    class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                                                                Cancel
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -184,6 +228,70 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activate_user'])) {
     </main>
 
     <script src="../JS/time.js"></script>
+    <script src="../JS/manage_users_modal.js"></script>
+        <script>
+    function updateUserStatus(userId, action) {
+        const formData = new FormData();
+        formData.append('user_id', userId);
+        formData.append('action', action);
+    
+        fetch('../endpoint/update_user_status.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                // Find and update the user's row
+                const row = document.querySelector(`tr:has(button[onclick*="${userId}"])`);
+                if(row) {
+                    // Update row background
+                    if(data.status === 'deactivated') {
+                        row.classList.add('bg-gray-400');
+                    } else {
+                        row.classList.remove('bg-gray-400');
+                    }
+                    
+                    // Update status cell
+                    const statusCell = row.querySelector('td:nth-child(5)');
+                    if(statusCell) {
+                        statusCell.textContent = data.status;
+                    }
+                    
+                    // Update action buttons
+                    const actionCell = row.querySelector('td:last-child');
+                    if(actionCell) {
+                        if(data.status === 'deactivated') {
+                            actionCell.innerHTML = `
+                                <button type="button" 
+                                    onclick="updateUserStatus(${userId}, 'activate')" 
+                                    class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600">
+                                    Activate
+                                </button>`;
+                        } else {
+                            actionCell.innerHTML = `
+                                <button type="button" class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600" 
+                                    onclick="openModal('editRoleModal${userId}')">
+                                    Edit Role
+                                </button>
+                                <button type="button" 
+                                    onclick="updateUserStatus(${userId}, 'deactivate')" 
+                                    class="bg-yellow-500 text-white px-3 py-1 rounded text-sm hover:bg-yellow-600 ml-2">
+                                    Deactivate
+                                </button>`;
+                        }
+                    }
+                }
+            } else {
+                alert('Error updating user status');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error updating user status');
+        });
+    }
+    </script>
 </body>
 
 </html>
