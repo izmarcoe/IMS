@@ -1,4 +1,5 @@
 <?php
+header('Content-Type: application/json');
 session_start();
 include('../conn/conn.php'); 
 
@@ -11,18 +12,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_id'])) {
         $stmt->bindParam(':product_id', $product_id, PDO::PARAM_INT);
         $stmt->execute();
 
-        // Set a session notification and redirect back to the products page
-        $_SESSION['notification'] = "Product deleted successfully.";
-        header("Location: ../features/manage_products.php");
-        exit();
+        // Return JSON response instead of redirecting
+        echo json_encode([
+            'status' => 'success',
+            'message' => 'Product deleted successfully'
+        ]);
+        
     } catch (PDOException $e) {
-        // If there's an error, store it in the session and redirect
-        $_SESSION['notification'] = "Error deleting product: " . $e->getMessage();
-        header("Location:  ../features/manage_products.php");
-        exit();
+        http_response_code(500);
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Error deleting product: ' . $e->getMessage()
+        ]);
     }
 } else {
-    // Redirect if accessed improperly
-    header("Location:  ../features/manage_products.php");
-    exit();
+    http_response_code(400);
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'Invalid request'
+    ]);
 }

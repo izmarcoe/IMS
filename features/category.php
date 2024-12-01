@@ -68,7 +68,7 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
-<body>
+<body class="bg-[#DADBDF]">
     <!-- Header -->
     <header class="flex flex-row">
         <div class="flex justify-center items-center text-white bg-green-800" style="width: 300px;">
