@@ -94,7 +94,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </style>
 </head>
 
-<body class="bg-[#DADBDF] h-screen overflow-hidden">
+<body class="bg-[#DADBDF] h-screen">
     <!-- Header -->
     <header class="flex flex-row">
         <div class="flex justify-center items-center text-white bg-green-800" style="width: 300px;">
@@ -124,151 +124,153 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <aside>
             <?php include '../features/sidebar.php' ?>
         </aside>
-        <div class="container mt-3 p-4">
-            <h2 class="text-2xl font-bold mb-4">Manage Products</h2>
+        <div class="p-4 md:p-8 rounded-lg shadow-md w-full max-w-[95vw] mx-auto flex-col">
+            <div class="container mt-3 p-4 mx-auto">
+                <h2 class="text-2xl font-bold mb-4">Manage Products</h2>
 
-            <?php if (isset($_SESSION['notification'])): ?>
-                <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative mb-4" id="notification">
-                    <?php
-                    echo $_SESSION['notification'];
-                    unset($_SESSION['notification']);
-                    ?>
-                </div>
-            <?php endif; ?>
+                <?php if (isset($_SESSION['notification'])): ?>
+                    <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative mb-4" id="notification">
+                        <?php
+                        echo $_SESSION['notification'];
+                        unset($_SESSION['notification']);
+                        ?>
+                    </div>
+                <?php endif; ?>
 
-            <form method="GET" class="mb-4">
-                <div class="flex gap-2">
-                    <input type="text" name="search" placeholder="Search by Product Name"
-                        value="<?php echo htmlspecialchars($search); ?>"
-                        class="w-[300px] border border-gray-300 rounded px-3 py-2">
-                    <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded" type="submit">Search</button>
-                    <a href="manage_products.php" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Clear</a>
-                </div>
-            </form>
+                <form method="GET" class="mb-4">
+                    <div class="flex gap-2">
+                        <input type="text" name="search" placeholder="Search by Product Name"
+                            value="<?php echo htmlspecialchars($search); ?>"
+                            class="w-[300px] border border-gray-300 rounded px-3 py-2">
+                        <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded" type="submit">Search</button>
+                        <a href="manage_products.php" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Clear</a>
+                    </div>
+                </form>
 
-            <div class="overflow-x-auto">
-                <table class="w-full border-collapse bg-white shadow-sm rounded-lg text-sm">
-                    <thead>
-                        <tr class="bg-gray-100">
-                            <th class="px-3 py-3 text-left">
-                                <div class="flex items-center gap-1">
-                                    Product Name
-                                    <div class="flex flex-col text-xs text-gray-400 ml-1">
-                                        <a href="?sort=product_name&order=asc" class="hover:text-black">
-                                            <i class="fas fa-caret-up"></i>
-                                        </a>
-                                        <a href="?sort=product_name&order=desc" class="hover:text-black" style="margin-top:-3px;">
-                                            <i class="fas fa-caret-down"></i>
-                                        </a>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse bg-white shadow-sm rounded-lg text-sm">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="px-3 py-3 text-left">
+                                    <div class="flex items-center gap-1">
+                                        Product Name
+                                        <div class="flex flex-col text-xs text-gray-400 ml-1">
+                                            <a href="?sort=product_name&order=asc" class="hover:text-black">
+                                                <i class="fas fa-caret-up"></i>
+                                            </a>
+                                            <a href="?sort=product_name&order=desc" class="hover:text-black" style="margin-top:-3px;">
+                                                <i class="fas fa-caret-down"></i>
+                                            </a>
+                                        </div>
                                     </div>
-                                </div>
-                            </th>
-                            <th class="px-3 py-3 text-left">
-                                <div class="flex items-center gap-1">
-                                    Category
-                                    <div class="flex flex-col text-xs text-gray-400 ml-1">
-                                        <a href="?sort=category_name&order=asc" class="hover:text-black">
-                                            <i class="fas fa-caret-up"></i>
-                                        </a>
-                                        <a href="?sort=category_name&order=desc" class="hover:text-black" style="margin-top:-3px;">
-                                            <i class="fas fa-caret-down"></i>
-                                        </a>
+                                </th>
+                                <th class="px-3 py-3 text-left">
+                                    <div class="flex items-center gap-1">
+                                        Category
+                                        <div class="flex flex-col text-xs text-gray-400 ml-1">
+                                            <a href="?sort=category_name&order=asc" class="hover:text-black">
+                                                <i class="fas fa-caret-up"></i>
+                                            </a>
+                                            <a href="?sort=category_name&order=desc" class="hover:text-black" style="margin-top:-3px;">
+                                                <i class="fas fa-caret-down"></i>
+                                            </a>
+                                        </div>
                                     </div>
-                                </div>
-                            </th>
-                            <th class="px-3 py-3 text-left">
-                                <div class="flex items-center gap-1">
-                                    Price
-                                    <div class="flex flex-col text-xs text-gray-400 ml-1">
-                                        <a href="?sort=price&order=asc" class="hover:text-black">
-                                            <i class="fas fa-caret-up"></i>
-                                        </a>
-                                        <a href="?sort=price&order=desc" class="hover:text-black" style="margin-top:-3px;">
-                                            <i class="fas fa-caret-down"></i>
-                                        </a>
+                                </th>
+                                <th class="px-3 py-3 text-left">
+                                    <div class="flex items-center gap-1">
+                                        Price
+                                        <div class="flex flex-col text-xs text-gray-400 ml-1">
+                                            <a href="?sort=price&order=asc" class="hover:text-black">
+                                                <i class="fas fa-caret-up"></i>
+                                            </a>
+                                            <a href="?sort=price&order=desc" class="hover:text-black" style="margin-top:-3px;">
+                                                <i class="fas fa-caret-down"></i>
+                                            </a>
+                                        </div>
                                     </div>
-                                </div>
-                            </th>
-                            <th class="px-3 py-3 text-left">
-                                <div class="flex items-center gap-1">
-                                    Quantity
-                                    <div class="flex flex-col text-xs text-gray-400 ml-1">
-                                        <a href="?sort=quantity&order=asc" class="hover:text-black">
-                                            <i class="fas fa-caret-up"></i>
-                                        </a>
-                                        <a href="?sort=quantity&order=desc" class="hover:text-black" style="margin-top:-3px;">
-                                            <i class="fas fa-caret-down"></i>
-                                        </a>
+                                </th>
+                                <th class="px-3 py-3 text-left">
+                                    <div class="flex items-center gap-1">
+                                        Quantity
+                                        <div class="flex flex-col text-xs text-gray-400 ml-1">
+                                            <a href="?sort=quantity&order=asc" class="hover:text-black">
+                                                <i class="fas fa-caret-up"></i>
+                                            </a>
+                                            <a href="?sort=quantity&order=desc" class="hover:text-black" style="margin-top:-3px;">
+                                                <i class="fas fa-caret-down"></i>
+                                            </a>
+                                        </div>
                                     </div>
-                                </div>
-                            </th>
-                            <th class="px-3 py-3 text-left">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (empty($products)): ?>
-                            <tr>
-                                <td colspan="6" class="px-3 py-2 text-center">No products found.</td>
+                                </th>
+                                <th class="px-3 py-3 text-left">Actions</th>
                             </tr>
-                        <?php else: ?>
-                            <?php foreach ($products as $product): ?>
-                                <tr class="border-t hover:bg-gray-50" data-product-id="<?php echo $product['product_id']; ?>">
-                                    <td class="px-3 py-4"><?php echo htmlspecialchars($product['product_name']); ?></td>
-                                    <td class="px-3 py-4"><?php echo htmlspecialchars($product['category_name'] ?? 'No Category'); ?></td>
-                                    <td class="px-3 py-4"><?php echo htmlspecialchars($product['price']); ?></td>
-                                    <td class="px-3 py-4"><?php echo htmlspecialchars($product['quantity']); ?></td>
-                                    <td class="px-3 py-4">
-                                        <button onclick="openEditModal(<?php echo htmlspecialchars(json_encode($product)); ?>)"
-                                            class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-md text-xs">
-                                            Edit
-                                        </button>
-                                        <button onclick="openDeleteModal(<?php echo $product['product_id']; ?>)"
-                                            class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md text-xs">
-                                            Delete
-                                        </button>
-                                    </td>
+                        </thead>
+                        <tbody>
+                            <?php if (empty($products)): ?>
+                                <tr>
+                                    <td colspan="6" class="px-3 py-2 text-center">No products found.</td>
                                 </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
+                            <?php else: ?>
+                                <?php foreach ($products as $product): ?>
+                                    <tr class="border-t hover:bg-gray-50" data-product-id="<?php echo $product['product_id']; ?>">
+                                        <td class="px-3 py-4"><?php echo htmlspecialchars($product['product_name']); ?></td>
+                                        <td class="px-3 py-4"><?php echo htmlspecialchars($product['category_name'] ?? 'No Category'); ?></td>
+                                        <td class="px-3 py-4"><?php echo htmlspecialchars($product['price']); ?></td>
+                                        <td class="px-3 py-4"><?php echo htmlspecialchars($product['quantity']); ?></td>
+                                        <td class="px-3 py-4">
+                                            <button onclick="openEditModal(<?php echo htmlspecialchars(json_encode($product)); ?>)"
+                                                class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-md text-xs">
+                                                Edit
+                                            </button>
+                                            <button onclick="openDeleteModal(<?php echo $product['product_id']; ?>)"
+                                                class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md text-xs">
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
 
-            <!-- Pagination -->
-            <div class="flex justify-center items-center mt-4 space-x-2">
-                <?php if ($page > 1): ?>
-                    <a href="?page=1&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
-                        class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
-                        First
-                    </a>
-                    <a href="?page=<?php echo $page - 1; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
-                        class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
-                        Previous
-                    </a>
-                <?php endif; ?>
+                <!-- Pagination -->
+                <div class="flex justify-center items-center mt-4 space-x-2">
+                    <?php if ($page > 1): ?>
+                        <a href="?page=1&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
+                            class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+                            First
+                        </a>
+                        <a href="?page=<?php echo $page - 1; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
+                            class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+                            Previous
+                        </a>
+                    <?php endif; ?>
 
-                <?php
-                // Calculate the range of page numbers to display
-                $start = max(1, $page - 2);
-                $end = min($totalPages, $page + 2);
+                    <?php
+                    // Calculate the range of page numbers to display
+                    $start = max(1, $page - 2);
+                    $end = min($totalPages, $page + 2);
 
-                for ($i = $start; $i <= $end; $i++): ?>
-                    <a href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
-                        class="px-3 py-2 <?php echo $i == $page ? 'bg-green-600 text-white' : 'bg-gray-200 hover:bg-gray-300'; ?> rounded-md">
-                        <?php echo $i; ?>
-                    </a>
-                <?php endfor; ?>
+                    for ($i = $start; $i <= $end; $i++): ?>
+                        <a href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
+                            class="px-3 py-2 <?php echo $i == $page ? 'bg-green-600 text-white' : 'bg-gray-200 hover:bg-gray-300'; ?> rounded-md">
+                            <?php echo $i; ?>
+                        </a>
+                    <?php endfor; ?>
 
-                <?php if ($page < $totalPages): ?>
-                    <a href="?page=<?php echo $page + 1; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
-                        class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
-                        Next
-                    </a>
-                    <a href="?page=<?php echo $totalPages; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
-                        class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
-                        Last
-                    </a>
-                <?php endif; ?>
+                    <?php if ($page < $totalPages): ?>
+                        <a href="?page=<?php echo $page + 1; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
+                            class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+                            Next
+                        </a>
+                        <a href="?page=<?php echo $totalPages; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
+                            class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+                            Last
+                        </a>
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
     </main>
