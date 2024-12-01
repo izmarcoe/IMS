@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $price = $_POST['price'];
     $quantity = $_POST['quantity'];
     $category_name = $_POST['category_name'];
-    $sales_date = $_POST['sales_date']; // Get sales_date from the form
+    $sales_date = $_POST['sale_date']; // Get sales_date from the form
 
     try {
         // Start transaction
@@ -94,9 +94,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 // Fetch products with current stock information
 $stmt = $conn->prepare("
-    SELECT p.product_id, p.product_name, p.category_id, p.quantity, p.price, pc.category_name 
-    FROM products p 
-    LEFT JOIN product_categories pc ON p.category_id = pc.id
+    SELECT 
+        p.product_id,
+        p.product_name,
+        p.price,
+        p.quantity,
+        pc.category_name
+    FROM products p
+    LEFT JOIN product_categories pc ON p.category_id = pc.id 
+    WHERE p.quantity > 0
     ORDER BY p.product_name
 ");
 $stmt->execute();
@@ -118,21 +124,21 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <body style="background-color: #DADBDF;">
     <!-- Header -->
-    <header class="d-flex flex-row">
-        <div class="d-flex justify-content text-center align-items-center text-white" style="background-color: #0F7505;">
-            <div class="" style="width: 300px">
-                <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
-            </div>
+    <header class="flex flex-row">
+        <div class="flex justify-center items-center text-white bg-green-800" style="width: 300px;">
+            <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
         </div>
 
-
-        <div class="d-flex align-items-center text-black p-3 flex-grow-1" style="background-color: gray;">
-            <div class="d-flex justify-content-start flex-grow-1 text-white">
-                <span class="px-4" id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
+        <div class="flex items-center text-black p-3 flex-grow bg-gray-600">
+            <div class="ml-6 flex flex-start text-white">
+                <h2 class="text-[1.5rem] font-bold">Admin Dashboard</h2>
             </div>
-            <div class="d-flex justify-content-end">
+            <div class="flex justify-end flex-grow text-white">
+                <span class="px-4 font-bold text-[1rem]" id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
+            </div>
+            <div class="flex justify-end text-white mx-8">
                 <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <span><img src="../icons/user.svg" alt="User Icon" style="width: 20px; height: 20px; margin-right: 5px;"></span>
+                    <span><img src="../icons/user.svg" alt="User Icon" class="w-5 h-5 mr-1"></span>
                     user
                 </button>
                 <ul class="dropdown-menu">
@@ -143,102 +149,133 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </header>
 
-    <main class="d-flex">
+    <main class="flex">
         <aside>
             <?php include '../features/sidebar.php' ?>
         </aside>
-        <div class="container mt-5">
-            <h2>Add New Sale</h2>
+        <div class="p-4 md:p-8 rounded-lg shadow-md w-full max-w-[95vw] mx-auto flex-col">
+            <div class="container mt-3 p-4 mx-auto">
+                <h2 class="text-2xl font-bold mb-4">Add New Sale</h2>
 
-            <?php if (isset($_SESSION['notification'])): ?>
-                <div class="alert alert-info" id="notification">
-                    <?php
-                    echo $_SESSION['notification'];
-                    unset($_SESSION['notification']);
-                    ?>
-                </div>
-            <?php endif; ?>
+                <?php if (isset($_SESSION['notification'])): ?>
+                    <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative mb-4" id="notification">
+                        <?php
+                        echo $_SESSION['notification'];
+                        unset($_SESSION['notification']);
+                        ?>
+                    </div>
+                <?php endif; ?>
 
-            <form method="POST" action="add_sales.php" id="saleForm">
-                <div class="mb-3">
-                    <label for="product" class="form-label">Product</label>
-                    <select class="form-control" id="product" name="product_id" required>
-                        <option value="" disabled selected>Select a product</option>
-                        <?php foreach ($products as $product): ?>
-                            <option value="<?php echo htmlspecialchars($product['product_id']); ?>"
-                                data-category-name="<?php echo htmlspecialchars($product['category_name']); ?>"
-                                data-price="<?php echo htmlspecialchars($product['price']); ?>"
-                                data-stock="<?php echo htmlspecialchars($product['quantity']); ?>">
-                                <?php echo htmlspecialchars($product['product_name']); ?>
-                                (Stock: <?php echo htmlspecialchars($product['quantity']); ?>)
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
+                <form method="POST" action="add_sales.php" id="saleForm" class="space-y-6">
+                    <div class="mb-4">
+                        <label for="product" class="block text-gray-700 text-sm font-bold mb-2">Product</label>
+                        <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                            id="product" 
+                            name="product_id" 
+                            required>
+                            <option value="" disabled selected>Select a product</option>
+                            <?php foreach ($products as $product): ?>
+                                <option value="<?php echo htmlspecialchars($product['product_id']); ?>"
+                                    data-category-name="<?php echo htmlspecialchars($product['category_name'] ?? 'No Category'); ?>"
+                                    data-price="<?php echo htmlspecialchars($product['price']); ?>"
+                                    data-stock="<?php echo htmlspecialchars($product['quantity']); ?>">
+                                    <?php echo htmlspecialchars($product['product_name']); ?>
+                                    (Stock: <?php echo htmlspecialchars($product['quantity']); ?>)
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
 
-                <div class="mb-3">
-                    <label for="category" class="form-label">Category</label>
-                    <input type="text" class="form-control" id="category" name="category_name" readonly>
-                </div>
+                    <div class="mb-4">
+                        <label for="category" class="block text-gray-700 text-sm font-bold mb-2">Category</label>
+                        <input type="text"
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-gray-100"
+                            id="category"
+                            readonly>
+                    </div>
 
-                <div class="mb-3">
-                    <label for="price" class="form-label">Price</label>
-                    <input type="number" step="0.01" class="form-control" id="price" name="price" readonly>
-                </div>
+                    <input type="hidden" id="category_name" name="category_name">
 
-                <div class="mb-3">
-                    <label for="quantity" class="form-label">Quantity</label>
-                    <input type="number" class="form-control" id="quantity" name="quantity" required>
-                    <small class="text-muted" id="stockInfo"></small>
-                </div>
+                    <div class="mb-4">
+                        <label for="price" class="block text-gray-700 text-sm font-bold mb-2">Price</label>
+                        <input type="number" step="0.01" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-gray-100"
+                            id="price"
+                            name="price"
+                            readonly>
+                    </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Total Amount</label>
-                    <div id="totalAmount" class="form-control" readonly>0.00</div>
-                </div>
+                    <div class="mb-4">
+                        <label for="quantity" class="block text-gray-700 text-sm font-bold mb-2">Quantity</label>
+                        <input type="number" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            id="quantity"
+                            name="quantity"
+                            min="1"
+                            required>
+                        <small id="stockInfo" class="text-gray-500"></small>
+                    </div>
 
-                <div class="mb-3">
-                    <label for="sales_date" class="form-label">Sales Date</label>
-                    <input type="date" class="form-control" id="sales_date" name="sales_date" required>
-                </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Total Amount</label>
+                        <div id="totalAmount" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 bg-gray-100">
+                            0.00
+                        </div>
+                    </div>
 
-                <button type="submit" class="btn btn-primary">Add Sale</button>
-            </form>
+                    <div class="mb-4">
+                        <label for="sale_date" class="block text-gray-700 text-sm font-bold mb-2">Sale Date</label>
+                        <input type="date"
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            id="sale_date"
+                            name="sale_date"
+                            value="<?php echo date('Y-m-d'); ?>"
+                            max="<?php echo date('Y-m-d'); ?>"
+                            required>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                            Add Sale
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </main>
     <script src="../JS/add_salesValidation.js"></script>
     <script src="../JS/notificationTimer.js"></script>
     <script src="../JS/time.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const productSelect = document.getElementById('product');
-            const categoryInput = document.getElementById('category');
-            const priceInput = document.getElementById('price');
-            const quantityInput = document.getElementById('quantity');
-            const totalAmountDiv = document.getElementById('totalAmount');
-            const stockInfo = document.getElementById('stockInfo');
+       document.addEventListener('DOMContentLoaded', function() {
+    const productSelect = document.getElementById('product');
+    const categoryInput = document.getElementById('category');
+    const categoryNameInput = document.getElementById('category_name');
+    const priceInput = document.getElementById('price');
+    const quantityInput = document.getElementById('quantity');
+    const totalAmountDiv = document.getElementById('totalAmount');
+    const stockInfo = document.getElementById('stockInfo');
 
-            productSelect.addEventListener('change', function () {
-                const selectedOption = productSelect.options[productSelect.selectedIndex];
-                const categoryName = selectedOption.getAttribute('data-category-name');
-                const price = selectedOption.getAttribute('data-price');
-                const stock = selectedOption.getAttribute('data-stock');
+    productSelect.addEventListener('change', function() {
+        const selectedOption = productSelect.options[productSelect.selectedIndex];
+        const categoryName = selectedOption.getAttribute('data-category-name') || 'No Category';
+        const price = selectedOption.getAttribute('data-price');
+        const stock = selectedOption.getAttribute('data-stock');
 
-                categoryInput.value = categoryName;
-                priceInput.value = price;
-                stockInfo.textContent = `Available stock: ${stock}`;
-                updateTotalAmount();
-            });
+        categoryInput.value = categoryName;
+        categoryNameInput.value = categoryName;
+        priceInput.value = price;
+        stockInfo.textContent = `Available stock: ${stock}`;
+        updateTotalAmount();
+    });
 
-            quantityInput.addEventListener('input', updateTotalAmount);
+    quantityInput.addEventListener('input', updateTotalAmount);
 
-            function updateTotalAmount() {
-                const price = parseFloat(priceInput.value) || 0;
-                const quantity = parseInt(quantityInput.value) || 0;
-                const totalAmount = price * quantity;
-                totalAmountDiv.textContent = totalAmount.toFixed(2);
-            }
-        });
+    function updateTotalAmount() {
+        const price = parseFloat(priceInput.value) || 0;
+        const quantity = parseInt(quantityInput.value) || 0;
+        const totalAmount = price * quantity;
+        totalAmountDiv.textContent = totalAmount.toFixed(2);
+    }
+});
     </script>
 </body>
 
