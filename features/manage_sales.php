@@ -99,8 +99,9 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Sales</title>
     <link rel="stylesheet" href="../CSS/dashboard.css">
-    <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-    <script src="../bootstrap/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../src/output.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .pagination .page-link {
             color: #0F7505;
@@ -132,21 +133,21 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <body style="background-color: #DADBDF;">
     <!-- Header -->
-    <header class="d-flex flex-row">
-        <div class="d-flex justify-content text-center align-items-center text-white" style="background-color: #0F7505;">
-            <div class="" style="width: 300px">
-                <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
-            </div>
+    <header class="flex flex-row">
+        <div class="flex justify-center items-center text-white bg-green-800" style="width: 300px;">
+            <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
         </div>
 
-
-        <div class="d-flex align-items-center text-black p-3 flex-grow-1" style="background-color: gray;">
-            <div class="d-flex justify-content-start flex-grow-1 text-white">
-                <span class="px-4" id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
+        <div class="flex items-center text-black p-3 flex-grow bg-gray-600">
+            <div class="ml-6 flex flex-start text-white">
+                <h2 class="text-[1.5rem] font-bold">Admin Dashboard</h2>
             </div>
-            <div class="d-flex justify-content-end">
+            <div class="flex justify-end flex-grow text-white">
+                <span class="px-4 font-bold text-[1rem]" id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
+            </div>
+            <div class="flex justify-end text-white mx-8">
                 <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <span><img src="../icons/user.svg" alt="User Icon" style="width: 20px; height: 20px; margin-right: 5px;"></span>
+                    <span><img src="../icons/user.svg" alt="User Icon" class="w-5 h-5 mr-1"></span>
                     user
                 </button>
                 <ul class="dropdown-menu">
@@ -157,17 +158,16 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </header>
 
-    <div class="d-flex">
+    <main class="flex">
         <aside>
             <?php include '../features/sidebar.php' ?>
         </aside>
-
-        <main class="flex-grow-1">
-            <div class="container mt-3">
-                <h2>Manage Sales</h2>
+        <div class="p-4 md:p-8 rounded-lg shadow-md w-full max-w-[95vw] mx-auto flex-col">
+            <div class="container mt-3 p-4 mx-auto">
+                <h2 class="text-2xl font-bold mb-4">Manage Sales</h2>
 
                 <?php if (isset($_SESSION['notification'])): ?>
-                    <div class="alert alert-info" id="notification">
+                    <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative mb-4" id="notification">
                         <?php
                         echo $_SESSION['notification'];
                         unset($_SESSION['notification']);
@@ -175,140 +175,234 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </div>
                 <?php endif; ?>
 
-                <form method="GET" class="mt-2 mb-2">
-                    <div class="input-group mb-3">
-                        <input type="text" name="search" placeholder=" Search by Product Name" value="<?php echo htmlspecialchars($search); ?>" style="width: 300px; border-width: 1px;">
-                        <button class="btn btn-primary" type="submit">Search</button>
-                        <a href="manage_products.php" class="btn btn-secondary">Clear</a>
+                <!-- Search Form -->
+                <form method="GET" class="mb-4">
+                    <div class="flex gap-2">
+                        <input type="text" name="search" placeholder="Search by Product Name"
+                            value="<?php echo htmlspecialchars($search); ?>"
+                            class="w-[300px] border border-gray-300 rounded px-3 py-2">
+                        <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded" type="submit">Search</button>
+                        <a href="manage_sales.php" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Clear</a>
                     </div>
                 </form>
 
-                <!-- Sorting dropdown beside the table header -->
-                <form method="GET" class="d-inline-flex align-items-center mb-3">
-                    <label class="me-2" for="sort" style="width:100px">Sort By:</label>
-                    <select class="form-select form-select-sm" id="sort" name="sort" onchange="this.form.submit()">
-                        <option value="">Select</option>
-                        <option value="category_asc" <?php if ($sort == 'category_asc') echo 'selected'; ?>>Category (A-Z)</option>
-                        <option value="price_asc" <?php if ($sort == 'price_asc') echo 'selected'; ?>>Price (Low to High)</option>
-                        <option value="price_desc" <?php if ($sort == 'price_desc') echo 'selected'; ?>>Price (High to Low)</option>
-                        <option value="name_asc" <?php if ($sort == 'name_asc') echo 'selected'; ?>>Product Name (A-Z)</option>
-                        <option value="quantity_asc" <?php if ($sort == 'quantity_asc') echo 'selected'; ?>>Quantity (Low to High)</option>
-                        <option value="quantity_desc" <?php if ($sort == 'quantity_desc') echo 'selected'; ?>>Quantity (High to Low)</option>
-                    </select>
-                </form>
-
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Sales ID</th>
-                            <th>Product Name</th>
-                            <th>Category</th>
-                            <th>Price</th>
-                            <th>Quantity</th>
-                            <th>Total Sales</th>
-                            <th>Sale Date</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (empty($sales)): ?>
-                            <tr>
-                                <td colspan="8" class="text-center">No sales records found.</td>
+                <!-- Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse bg-white shadow-sm rounded-lg text-sm">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="px-3 py-3 text-left">
+                                    <div class="flex items-center gap-1">
+                                        Sales ID
+                                    </div>
+                                </th>
+                                <th class="px-3 py-3 text-left">
+                                    <div class="flex items-center gap-1">
+                                        Product Name
+                                        <div class="flex flex-col text-xs text-gray-400 ml-1">
+                                            <a href="?sort=name_asc" class="hover:text-black">
+                                                <i class="fas fa-caret-up"></i>
+                                            </a>
+                                            <a href="?sort=name_desc" class="hover:text-black" style="margin-top:-3px;">
+                                                <i class="fas fa-caret-down"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th class="px-3 py-3 text-left">
+                                    <div class="flex items-center gap-1">
+                                        Category
+                                        <div class="flex flex-col text-xs text-gray-400 ml-1">
+                                            <a href="?sort=category_asc" class="hover:text-black">
+                                                <i class="fas fa-caret-up"></i>
+                                            </a>
+                                            <a href="?sort=category_desc" class="hover:text-black" style="margin-top:-3px;">
+                                                <i class="fas fa-caret-down"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th class="px-3 py-3 text-left">
+                                    <div class="flex items-center gap-1">
+                                        Price
+                                        <div class="flex flex-col text-xs text-gray-400 ml-1">
+                                            <a href="?sort=price_asc" class="hover:text-black">
+                                                <i class="fas fa-caret-up"></i>
+                                            </a>
+                                            <a href="?sort=price_desc" class="hover:text-black" style="margin-top:-3px;">
+                                                <i class="fas fa-caret-down"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th class="px-3 py-3 text-left">
+                                    <div class="flex items-center gap-1">
+                                        Quantity
+                                        <div class="flex flex-col text-xs text-gray-400 ml-1">
+                                            <a href="?sort=quantity_asc" class="hover:text-black">
+                                                <i class="fas fa-caret-up"></i>
+                                            </a>
+                                            <a href="?sort=quantity_desc" class="hover:text-black" style="margin-top:-3px;">
+                                                <i class="fas fa-caret-down"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th class="px-3 py-3 text-left">
+                                    <div class="flex items-center gap-1">
+                                        Total Sales
+                                        <div class="flex flex-col text-xs text-gray-400 ml-1">
+                                            <a href="?sort=sales_asc" class="hover:text-black">
+                                                <i class="fas fa-caret-up"></i>
+                                            </a>
+                                            <a href="?sort=sales_desc" class="hover:text-black" style="margin-top:-3px;">
+                                                <i class="fas fa-caret-down"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th class="px-3 py-3 text-left">
+                                    <div class="flex items-center gap-1">
+                                        Sale Date
+                                        <div class="flex flex-col text-xs text-gray-400 ml-1">
+                                            <a href="?sort=date_asc" class="hover:text-black">
+                                                <i class="fas fa-caret-up"></i>
+                                            </a>
+                                            <a href="?sort=date_desc" class="hover:text-black" style="margin-top:-3px;">
+                                                <i class="fas fa-caret-down"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th class="px-3 py-3 text-left">Actions</th>
                             </tr>
-                        <?php else: ?>
-                            <?php foreach ($sales as $sale): ?>
+                        </thead>
+
+                        <tbody>
+                            <?php if (empty($sales)): ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($sale['id']); ?></td>
-                                    <td><?php echo htmlspecialchars($sale['product_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($sale['category_name'] ?? 'No Category'); ?></td>
-                                    <td><?php echo htmlspecialchars($sale['price']); ?></td>
-                                    <td><?php echo htmlspecialchars($sale['quantity']); ?></td>
-                                    <td><?php echo htmlspecialchars($sale['total_sales']); ?></td>
-                                    <td><?php echo htmlspecialchars(date('F j, Y', strtotime($sale['sale_date']))); ?></td>
-                                    <td>
-                                        <a href="../endpoint/edit_sale.php?id=<?php echo htmlspecialchars($sale['id']); ?>" class="btn btn-warning action-btn">Edit</a>
-                                        <button class="btn btn-danger btn-sm action-btn" onclick="deleteSale(<?php echo $sale['id']; ?>)">
-                                            Delete
-                                        </button>
-                                        <input type="hidden" name="id" value="<?php echo htmlspecialchars($sale['id']); ?>">
-                                        </form>
-                                    </td>
+                                    <td colspan="8" class="px-3 py-2 text-center">No sales records found.</td>
                                 </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
+                            <?php else: ?>
+                                <?php foreach ($sales as $sale): ?>
+                                    <tr class="border-t hover:bg-gray-50" data-sale-id="<?php echo htmlspecialchars($sale['id']); ?>">
+                                        <td class="px-3 py-4 sale-id"><?php echo htmlspecialchars($sale['id']); ?></td>
+                                        <td class="px-3 py-4 product-name"><?php echo htmlspecialchars($sale['product_name']); ?></td>
+                                        <td class="px-3 py-4 category-name"><?php echo htmlspecialchars($sale['category_name'] ?? 'No Category'); ?></td>
+                                        <td class="px-3 py-4 price"><?php echo htmlspecialchars($sale['price']); ?></td>
+                                        <td class="px-3 py-4 quantity"><?php echo htmlspecialchars($sale['quantity']); ?></td>
+                                        <td class="px-3 py-4 total-sales"><?php echo htmlspecialchars($sale['total_sales']); ?></td>
+                                        <td class="px-3 py-4 sale-date"><?php echo htmlspecialchars(date('F j, Y', strtotime($sale['sale_date']))); ?></td>
+                                        <td class="px-3 py-4">
+                                            <button onclick='openEditModal(<?php echo json_encode($sale); ?>)'
+                                                class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-md text-xs">
+                                                Edit
+                                            </button>
+                                            <button onclick="deleteSale(<?php echo $sale['id']; ?>)"
+                                                class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md text-xs">
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
 
-                <!-- Pagination Controls -->
-                <nav aria-label="Page navigation">
-                    <ul class="pagination justify-content-center">
-                        <?php if ($page > 1): ?>
-                            <li class="page-item">
-                                <a class="page-link" href="?page=<?php echo $page - 1; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>" aria-label="Previous">
-                                    <span aria-hidden="true">&laquo;</span>
-                                </a>
-                            </li>
-                        <?php endif; ?>
+                <!-- Pagination -->
+                <div class="flex justify-center items-center mt-4 space-x-2">
+                    <?php if ($page > 1): ?>
+                        <a href="?page=1&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
+                            class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+                            First
+                        </a>
+                        <a href="?page=<?php echo $page - 1; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
+                            class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+                            Previous
+                        </a>
+                    <?php endif; ?>
 
-                        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                            <li class="page-item <?php if ($i == $page) echo 'active'; ?>">
-                                <a class="page-link" href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"><?php echo $i; ?></a>
-                            </li>
-                        <?php endfor; ?>
+                    <?php
+                    $start = max(1, $page - 2);
+                    $end = min($totalPages, $page + 2);
 
-                        <?php if ($page < $totalPages): ?>
-                            <li class="page-item">
-                                <a class="page-link" href="?page=<?php echo $page + 1; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>" aria-label="Next">
-                                    <span aria-hidden="true">&raquo;</span>
-                                </a>
-                            </li>
-                        <?php endif; ?>
-                    </ul>
-                </nav>
-            </div>
+                    for ($i = $start; $i <= $end; $i++): ?>
+                        <a href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
+                            class="px-3 py-2 <?php echo $i == $page ? 'bg-green-600 text-white' : 'bg-gray-200 hover:bg-gray-300'; ?> rounded-md">
+                            <?php echo $i; ?>
+                        </a>
+                    <?php endfor; ?>
 
-            <!-- Delete Confirmation Modal -->
-            <div class="modal fade" id="deleteSaleModal" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Delete Sale</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p>Are you sure you want to delete this sale record?</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
-                        </div>
-                    </div>
+                    <?php if ($page < $totalPages): ?>
+                        <a href="?page=<?php echo $page + 1; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
+                            class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+                            Next
+                        </a>
+                        <a href="?page=<?php echo $totalPages; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
+                            class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+                            Last
+                        </a>
+                    <?php endif; ?>
                 </div>
             </div>
+        </div>
 
-        </main>
-    </div>
 
+
+        <!-- Edit Sales Modal -->
+        <div id="editSalesModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+            <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                <div class="mt-3">
+                    <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Edit Sale</h3>
+                    <form id="editSaleForm" method="POST" action="../endpoint/update_sale.php">
+                        <input type="hidden" name="sale_id" id="editSaleId">
+                        <input type="hidden" name="old_quantity" id="editOldQuantity">
+                        <input type="hidden" name="product_id" id="editProductId">
+
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="editProductName">Product</label>
+                            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 bg-gray-100 leading-tight focus:outline-none focus:shadow-outline"
+                                id="editProductName" name="product_name" readonly>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="editPrice">Price</label>
+                            <input type="number" step="0.01" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 bg-gray-100 leading-tight focus:outline-none focus:shadow-outline"
+                                id="editPrice" name="price" readonly>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="editQuantity">Quantity</label>
+                            <input type="number" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                id="editQuantity" name="quantity" min="1" required>
+                            <small id="stockInfo" class="text-gray-500"></small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="editTotalSales">Total Amount</label>
+                            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 bg-gray-100 leading-tight focus:outline-none focus:shadow-outline"
+                                id="editTotalSales" readonly>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="editSaleDate">Sale Date</label>
+                            <input type="date" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                id="editSaleDate" name="sale_date" required>
+                        </div>
+
+                        <div class="flex justify-end gap-2">
+                            <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded" onclick="closeEditModal()">Cancel</button>
+                            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Update Sale</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="../JS/manage_sales.js"></script>
     <script src="../JS/notificationTimer.js"></script>
     <script src="../JS/time.js"></script>
-
-    <script>
-        // Initialize modals
-        const deleteSaleModal = new bootstrap.Modal(document.getElementById('deleteSaleModal'));
-        let saleToDelete = null;
-
-        function deleteSale(id) {
-            saleToDelete = id;
-            deleteSaleModal.show();
-        }
-
-        // Handle delete confirmation
-        document.getElementById('confirmDelete').addEventListener('click', function() {
-            if (saleToDelete) {
-                window.location.href = `manage_sales.php?delete_id=${saleToDelete}`;
-            }
-        });
-    </script>
 
 </body>
 
