@@ -68,7 +68,7 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
-<body class="bg-[#DADBDF]">
+<body class="bg-[#DADBDF] h-screen overflow-hidden">
     <!-- Header -->
     <header class="flex flex-row">
         <div class="flex justify-center items-center text-white bg-green-800" style="width: 300px;">
@@ -100,7 +100,7 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'
         </aside>
 
         <!-- Table Container -->
-        <div class="p-4 md:p-8 bg-white rounded-lg shadow-md w-full max-w-[95vw] mx-auto flex-col">
+        <div class="p-4 md:p-8 rounded-lg shadow-md w-full max-w-[95vw] mx-auto flex-col">
             <!-- Header with Add Button -->
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-xl md:text-2xl font-semibold text-gray-800">Categories</h2>
