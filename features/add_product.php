@@ -109,7 +109,7 @@ $active_add_product = ($current_page == 'add-product.php') ? 'active' : '';
     <!-- Content -->
     <main class="flex">
 
-        <aside class="sticky">
+        <aside>
             <?php include '../features/sidebar.php' ?>
         </aside>
         <!--ADD-->
