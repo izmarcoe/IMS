@@ -63,26 +63,40 @@ $active_add_product = ($current_page == 'add-product.php') ? 'active' : '';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Product</title>
     <link rel="stylesheet" href="../CSS/dashboard.css">
-    <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-    <script src="../bootstrap/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="../src/output.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
+<style>
+    /* Remove spinner arrows for Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Remove spinner arrows for Firefox */
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+</style>
 
 <body style="background-color: #DADBDF;">
     <!-- Header -->
-    <header class="d-flex flex-row">
-        <div class="d-flex justify-content text-center align-items-center text-white" style="background-color: #0F7505;">
-            <div class="" style="width: 300px">
-                <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
-            </div>
+    <header class="flex flex-row sticky top-0 z-50">
+        <div class="flex justify-center items-center text-white bg-green-800" style="width: 300px;">
+            <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
         </div>
 
-        <div class="d-flex align-items-center text-black p-3 flex-grow-1" style="background-color: gray;">
-            <div class="d-flex justify-content-start flex-grow-1 text-white">
-                <span class="px-4" id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
+        <div class="flex items-center text-black p-3 flex-grow bg-gray-600">
+            <div class="ml-6 flex flex-start text-white">
+                <h2 class="text-[1.5rem] font-bold">Admin Dashboard</h2>
             </div>
-            <div class="d-flex justify-content-end">
+            <div class="flex justify-end flex-grow text-white">
+                <span class="px-4 font-bold text-[1rem]" id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
+            </div>
+            <div class="flex justify-end text-white mx-8">
                 <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <span><img src="../icons/user.svg" alt="User Icon" style="width: 20px; height: 20px; margin-right: 5px;"></span>
+                    <span><img src="../icons/user.svg" alt="User Icon" class="w-5 h-5 mr-1"></span>
                     user
                 </button>
                 <ul class="dropdown-menu">
@@ -93,17 +107,17 @@ $active_add_product = ($current_page == 'add-product.php') ? 'active' : '';
         </div>
     </header>
     <!-- Content -->
-    <main class="d-flex">
+    <main class="flex">
 
-        <aside>
+        <aside class="sticky">
             <?php include '../features/sidebar.php' ?>
         </aside>
         <!--ADD-->
-        <div class="container mt-5">
-            <h2>Add New Product</h2>
+        <div class="p-4 md:p-8 rounded-lg shadow-md w-full max-w-[95vw] mx-auto">
+            <h2 class="text-2xl font-bold my-6">Add New Product</h2>
 
             <?php if (isset($_SESSION['notification'])): ?>
-                <div class="alert alert-info" id="notification">
+                <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative mb-4" id="notification">
                     <?php
                     echo $_SESSION['notification'];
                     unset($_SESSION['notification']);
@@ -111,15 +125,19 @@ $active_add_product = ($current_page == 'add-product.php') ? 'active' : '';
                 </div>
             <?php endif; ?>
 
-            <form method="POST">
-                <div class="mb-3">
-                    <label for="product_name" class="form-label">Product Name</label>
-                    <input type="text" class="form-control" id="product_name" name="product_name" required>
+            <form method="POST" class="space-y-6" id="addProductForm" onsubmit="return validateForm(event)">
+                <div class="mb-4">
+                    <label for="product_name" class="block text-gray-700 text-sm font-bold mb-2">Product Name</label>
+                    <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        id="product_name" name="product_name">
                 </div>
-                <div class="mb-3">
-                    <label for="category" class="form-label">Category</label>
-                    <select class="form-control" id="category" name="category_id" required>
-                        <option value="">Select a category</option>
+                <div class="mb-4">
+                    <label for="category" class="block text-gray-700 text-sm font-bold mb-2">Category</label>
+                    <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                        id="category"
+                        name="category_id"
+                        >
+                        <option value="" disabled selected>Select a category</option>
                         <?php
                         // Fetch categories
                         $stmt = $conn->prepare("SELECT id, category_name FROM product_categories ORDER BY category_name");
@@ -133,15 +151,19 @@ $active_add_product = ($current_page == 'add-product.php') ? 'active' : '';
                         ?>
                     </select>
                 </div>
-                <div class="mb-3">
-                    <label for="price" class="form-label">Price</label>
-                    <input type="number" step="0.01" class="form-control" id="price" name="price" required>
+                <div class="mb-4">
+                    <label for="price" class="block text-gray-700 text-sm font-bold mb-2">Price</label>
+                    <input type="number" step="0.01" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        id="price" name="price">
                 </div>
-                <div class="mb-3">
-                    <label for="quantity" class="form-label">Quantity</label>
-                    <input type="number" class="form-control" id="quantity" name="quantity" required>
+                <div class="mb-4">
+                    <label for="quantity" class="block text-gray-700 text-sm font-bold mb-2">Quantity</label>
+                    <input type="number" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        id="quantity" name="quantity">
                 </div>
-                <button type="submit" class="btn btn-primary">Add Product</button>
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Add Product
+                </button>
             </form>
         </div>
     </main>
@@ -173,7 +195,56 @@ $active_add_product = ($current_page == 'add-product.php') ? 'active' : '';
         // Load categories when the page loads
         document.addEventListener('DOMContentLoaded', loadCategories);
     </script>
+    <script>
+        function validateForm(event) {
+            event.preventDefault();
 
+            const price = parseFloat(document.getElementById('price').value);
+            const quantity = parseInt(document.getElementById('quantity').value);
+            const productName = document.getElementById('product_name').value.trim();
+            const category = document.getElementById('category').value;
+
+            if (!productName) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Input',
+                    text: 'Product name cannot be empty!'
+                });
+                return false;
+            }
+
+            if (!category) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Input',
+                    text: 'Please select a category!'
+                });
+                return false;
+            }
+
+            if (isNaN(price) || price <= 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Price',
+                    text: 'Price must be greater than 0!'
+                });
+                return false;
+            }
+
+            if (isNaN(quantity) || quantity <= 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Quantity',
+                    text: 'Quantity must be greater than 0!'
+                });
+                return false;
+            }
+
+            // If validation passes, submit the form
+            document.getElementById('addProductForm').submit();
+            return true;
+        }
+    </script>
 </body>
 
 </html>
