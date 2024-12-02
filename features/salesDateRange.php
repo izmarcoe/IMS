@@ -96,8 +96,8 @@ $totalPages = ceil($totalSales / $limit);
         <aside>
             <?php include '../features/sidebar.php'; ?>
         </aside>
-        <div>
-            <div class="container mx-auto mt-8 px-4">
+        <div class="w-full">
+            <div class="container max-w-7xl mx-auto mt-8 px-4">
                 <h2 class="text-2xl font-bold mb-4">Sales Report from <?php echo htmlspecialchars($startDate); ?> to <?php echo htmlspecialchars($endDate); ?></h2>
                 <form method="GET" action="salesDateRange.php" class="mb-6">
                     <div class="flex flex-wrap gap-4 max-w-2xl">
@@ -109,35 +109,64 @@ $totalPages = ceil($totalSales / $limit);
                         <button id="download-pdf" class="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">Download as PDF</button>
                     </div>
                 </form>
-                <div class="overflow-x-auto w-full">
-                    <table class="min-w-full bg-white shadow-md rounded-lg table-auto">
-                        <thead class="bg-gray-100">
-                            <tr>
-                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Sale ID</th>
-                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Product</th>
-                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Category</th>
-                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Quantity</th>
-                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Price</th>
-                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Total Amount</th>
-                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Sales Date</th>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse bg-white shadow-sm rounded-lg text-sm">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="px-3 py-3 text-left">
+                                    <div class="flex items-center gap-1">
+                                        Sale ID
+                                    </div>
+                                </th>
+                                <th class="px-3 py-3 text-left">
+                                    <div class="flex items-center gap-1">
+                                        Product
+                                    </div>
+                                </th>
+                                <th class="px-3 py-3 text-left">
+                                    <div class="flex items-center gap-1">
+                                        Category
+                                    </div>
+                                </th>
+                                <th class="px-3 py-3 text-left">
+                                    <div class="flex items-center gap-1">
+                                        Quantity
+                                    </div>
+                                </th>
+                                <th class="px-3 py-3 text-left">
+                                    <div class="flex items-center gap-1">
+                                        Price
+                                    </div>
+                                </th>
+                                <th class="px-3 py-3 text-left">
+                                    <div class="flex items-center gap-1">
+                                        Total Amount
+                                    </div>
+                                </th>
+                                <th class="px-3 py-3 text-left">
+                                    <div class="flex items-center gap-1">
+                                        Sales Date
+                                    </div>
+                                </th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-200">
+                        <tbody>
                             <?php if (empty($sales)): ?>
                                 <tr>
-                                    <td colspan="7" class="px-6 py-4 text-center text-gray-500">No sales found.</td>
+                                    <td colspan="7" class="px-3 py-2 text-center text-gray-500">No sales found.</td>
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($sales as $sale):
                                     $totalAmount = $sale['quantity'] * $sale['price'];
                                 ?>
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="px-6 py-4"><?php echo htmlspecialchars($sale['id']); ?></td>
-                                        <td class="px-6 py-4"><?php echo htmlspecialchars($sale['product_name']); ?></td>
-                                        <td class="px-6 py-4"><?php echo htmlspecialchars($sale['category_name']); ?></td>                                        <td class="px-6 py-4"><?php echo htmlspecialchars($sale['quantity']); ?></td>
-                                        <td class="px-6 py-4">₱<?php echo number_format($sale['price'], 2); ?></td>
-                                        <td class="px-6 py-4 font-semibold">₱<?php echo number_format($totalAmount, 2); ?></td>
-                                        <td class="px-6 py-4"><?php echo htmlspecialchars($sale['sale_date']); ?></td>
+                                    <tr class="border-t hover:bg-gray-50">
+                                        <td class="px-3 py-4"><?php echo htmlspecialchars($sale['id']); ?></td>
+                                        <td class="px-3 py-4"><?php echo htmlspecialchars($sale['product_name']); ?></td>
+                                        <td class="px-3 py-4"><?php echo htmlspecialchars($sale['category_name']); ?></td>
+                                        <td class="px-3 py-4"><?php echo htmlspecialchars($sale['quantity']); ?></td>
+                                        <td class="px-3 py-4">₱<?php echo number_format($sale['price'], 2); ?></td>
+                                        <td class="px-3 py-4 font-semibold">₱<?php echo number_format($totalAmount, 2); ?></td>
+                                        <td class="px-3 py-4"><?php echo htmlspecialchars($sale['sale_date']); ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php endif; ?>
@@ -145,7 +174,7 @@ $totalPages = ceil($totalSales / $limit);
                     </table>
                 </div>
 
-                <!-- Pagination controls asdasdasdasdasdas -->
+                <!-- Pagination controls -->
                 <nav class="flex justify-center mt-6">
                     <ul class="flex space-x-2">
                         <?php if ($page > 1): ?>
@@ -209,7 +238,7 @@ $totalPages = ceil($totalSales / $limit);
             });
 
             // Add date range
-            doc.setFontSize(16);
+            doc.setFontSize(14);
             doc.text(`Sales Report from ${startMonth} ${startDay}, ${startYear} to ${endMonth} ${endDay}, ${endYear}`, doc.internal.pageSize.getWidth() / 2, 30, {
                 align: 'center'
             });
@@ -221,7 +250,7 @@ $totalPages = ceil($totalSales / $limit);
             });
 
             // Save the PDF
-            doc.save('Sales_Report.pdf');
+            doc.save(`Sales_Report ${startMonth} ${startDay}, ${startYear} to ${endMonth} ${endDay}, ${endYear}.pdf`);
         });
     </script>
 </body>
