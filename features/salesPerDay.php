@@ -58,22 +58,22 @@ $totalPages = ceil($totalSales / $limit);
 
 <body style="background-color: #DADBDF;">
 
-    <!-- Header -->
-    <header class="d-flex flex-row">
-        <div class="d-flex justify-content text-center align-items-center text-white" style="background-color: #0F7505;">
-            <div class="" style="width: 300px">
-                <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
-            </div>
+     <!-- Header -->
+     <header class="flex flex-row sticky top-0 z-50">
+        <div class="flex justify-center items-center text-white bg-green-800" style="width: 300px;">
+            <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
         </div>
 
-
-        <div class="d-flex align-items-center text-black p-3 flex-grow-1" style="background-color: gray;">
-            <div class="d-flex justify-content-start flex-grow-1 text-white">
-                <span class="px-4" id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
+        <div class="flex items-center text-black p-3 flex-grow bg-gray-600">
+            <div class="ml-6 flex flex-start text-white">
+                <h2 class="text-[1.5rem] font-bold">Admin Dashboard</h2>
             </div>
-            <div class="d-flex justify-content-end">
+            <div class="flex justify-end flex-grow text-white">
+                <span class="px-4 font-bold text-[1rem]" id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
+            </div>
+            <div class="flex justify-end text-white mx-8">
                 <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <span><img src="../icons/user.svg" alt="User Icon" style="width: 20px; height: 20px; margin-right: 5px;"></span>
+                    <span><img src="../icons/user.svg" alt="User Icon" class="w-5 h-5 mr-1"></span>
                     user
                 </button>
                 <ul class="dropdown-menu">

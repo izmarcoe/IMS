@@ -28,7 +28,14 @@ $totalQuery->execute();
 $totalSales = $totalQuery->fetchColumn();
 
 // Fetch sales data for the given date range with pagination
-$query = $conn->prepare("SELECT * FROM sales WHERE sale_date BETWEEN :start_date AND :end_date LIMIT :limit OFFSET :offset");
+$query = $conn->prepare("
+      SELECT s.*, p.product_name, pc.category_name
+    FROM sales s
+    LEFT JOIN products p ON s.product_id = p.product_id  /* Changed from p.id to p.product_id */
+    LEFT JOIN product_categories pc ON p.category_id = pc.id
+    WHERE s.sale_date BETWEEN :start_date AND :end_date 
+    LIMIT :limit OFFSET :offset
+");
 $query->bindParam(':start_date', $startDate);
 $query->bindParam(':end_date', $endDate);
 $query->bindParam(':limit', $limit, PDO::PARAM_INT);
@@ -48,8 +55,6 @@ $totalPages = ceil($totalSales / $limit);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sales Report - Date Range</title>
     <link rel="stylesheet" href="../CSS/dashboard.css">
-    <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-    <script src="../bootstrap/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
     <style>
@@ -59,24 +64,24 @@ $totalPages = ceil($totalSales / $limit);
     </style>
 </head>
 
-<body style="background-color: #DADBDF;">
+<body class="bg-gray-200">
 
     <!-- Header -->
-    <header class="d-flex flex-row">
-        <div class="d-flex justify-content text-center align-items-center text-white" style="background-color: #0F7505;">
-            <div class="" style="width: 300px">
-                <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
-            </div>
+    <header class="flex flex-row sticky top-0 z-50">
+        <div class="flex justify-center items-center text-white bg-green-800" style="width: 300px;">
+            <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
         </div>
 
-
-        <div class="d-flex align-items-center text-black p-3 flex-grow-1" style="background-color: gray;">
-            <div class="d-flex justify-content-start flex-grow-1 text-white">
-                <span class="px-4" id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
+        <div class="flex items-center text-black p-3 flex-grow bg-gray-600">
+            <div class="ml-6 flex flex-start text-white">
+                <h2 class="text-[1.5rem] font-bold">Admin Dashboard</h2>
             </div>
-            <div class="d-flex justify-content-end">
+            <div class="flex justify-end flex-grow text-white">
+                <span class="px-4 font-bold text-[1rem]" id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
+            </div>
+            <div class="flex justify-end text-white mx-8">
                 <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <span><img src="../icons/user.svg" alt="User Icon" style="width: 20px; height: 20px; margin-right: 5px;"></span>
+                    <span><img src="../icons/user.svg" alt="User Icon" class="w-5 h-5 mr-1"></span>
                     user
                 </button>
                 <ul class="dropdown-menu">
@@ -87,68 +92,75 @@ $totalPages = ceil($totalSales / $limit);
         </div>
     </header>
 
-    <main>
-        <div class="d-flex">
-            <aside>
-                <?php include '../features/sidebar.php'; ?>
-            </aside>
-            <div class="container mt-5">
-                <h2>Sales Report from <?php echo htmlspecialchars($startDate); ?> to <?php echo htmlspecialchars($endDate); ?></h2>
-                <form method="GET" action="salesDateRange.php" class="mb-4">
-                    <div class="input-group date-input">
-                        <input type="date" id="start_date" name="start_date" class="form-control" value="<?php echo htmlspecialchars($startDate); ?>" max="<?php echo date('Y-m-d'); ?>">
-                        <input type="date" id="end_date" name="end_date" class="form-control" value="<?php echo htmlspecialchars($endDate); ?>" max="<?php echo date('Y-m-d'); ?>" min="<?php echo htmlspecialchars($startDate); ?>">
-                        <button type="submit" class="btn btn-primary">View Sales</button>
+    <main class="flex">
+        <aside>
+            <?php include '../features/sidebar.php'; ?>
+        </aside>
+        <div>
+            <div class="container mx-auto mt-8 px-4">
+                <h2 class="text-2xl font-bold mb-4">Sales Report from <?php echo htmlspecialchars($startDate); ?> to <?php echo htmlspecialchars($endDate); ?></h2>
+                <form method="GET" action="salesDateRange.php" class="mb-6">
+                    <div class="flex flex-wrap gap-4 max-w-2xl">
+                        <input type="date" id="start_date" name="start_date" class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" value="<?php echo htmlspecialchars($startDate); ?>" max="<?php echo date('Y-m-d'); ?>">
+                        <input type="date" id="end_date" name="end_date" class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" value="<?php echo htmlspecialchars($endDate); ?>" max="<?php echo date('Y-m-d'); ?>" min="<?php echo htmlspecialchars($startDate); ?>">
+                        <button type="submit" class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">View Sales</button>
                     </div>
-                    <div class="my-3">
-                        <button id="download-pdf" class="btn btn-danger">Download as PDF</button>
+                    <div class="my-4">
+                        <button id="download-pdf" class="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">Download as PDF</button>
                     </div>
                 </form>
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Sale ID</th>
-                            <th>Product</th>
-                            <th>Quantity</th>
-                            <th>Price</th>
-                            <th>Sale Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (empty($sales)): ?>
+                <div class="overflow-x-auto w-full">
+                    <table class="min-w-full bg-white shadow-md rounded-lg table-auto">
+                        <thead class="bg-gray-100">
                             <tr>
-                                <td colspan="5" class="text-center">No sales found.</td>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Sale ID</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Product</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Category</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Quantity</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Price</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Total Amount</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Sales Date</th>
                             </tr>
-                        <?php else: ?>
-                            <?php foreach ($sales as $sale): ?>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            <?php if (empty($sales)): ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($sale['id']); ?></td>
-                                    <td><?php echo htmlspecialchars($sale['product_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($sale['quantity']); ?></td>
-                                    <td><?php echo htmlspecialchars($sale['price']); ?></td>
-                                    <td><?php echo htmlspecialchars($sale['sale_date']); ?></td>
+                                    <td colspan="7" class="px-6 py-4 text-center text-gray-500">No sales found.</td>
                                 </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
+                            <?php else: ?>
+                                <?php foreach ($sales as $sale):
+                                    $totalAmount = $sale['quantity'] * $sale['price'];
+                                ?>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4"><?php echo htmlspecialchars($sale['id']); ?></td>
+                                        <td class="px-6 py-4"><?php echo htmlspecialchars($sale['product_name']); ?></td>
+                                        <td class="px-6 py-4"><?php echo htmlspecialchars($sale['category_name']); ?></td>                                        <td class="px-6 py-4"><?php echo htmlspecialchars($sale['quantity']); ?></td>
+                                        <td class="px-6 py-4">₱<?php echo number_format($sale['price'], 2); ?></td>
+                                        <td class="px-6 py-4 font-semibold">₱<?php echo number_format($totalAmount, 2); ?></td>
+                                        <td class="px-6 py-4"><?php echo htmlspecialchars($sale['sale_date']); ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
 
                 <!-- Pagination controls asdasdasdasdasdas -->
-                <nav>
-                    <ul class="pagination d-flex justify-content-center">
+                <nav class="flex justify-center mt-6">
+                    <ul class="flex space-x-2">
                         <?php if ($page > 1): ?>
-                            <li class="page-item">
-                                <a class="page-link" href="?start_date=<?php echo htmlspecialchars($startDate); ?>&end_date=<?php echo htmlspecialchars($endDate); ?>&page=<?php echo $page - 1; ?>">Previous</a>
+                            <li>
+                                <a href="?start_date=<?php echo htmlspecialchars($startDate); ?>&end_date=<?php echo htmlspecialchars($endDate); ?>&page=<?php echo $page - 1; ?>" class="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50 transition-colors">Previous</a>
                             </li>
                         <?php endif; ?>
                         <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                            <li class="page-item <?php echo $i == $page ? 'active' : ''; ?>">
-                                <a class="page-link" href="?start_date=<?php echo htmlspecialchars($startDate); ?>&end_date=<?php echo htmlspecialchars($endDate); ?>&page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                            <li>
+                                <a href="?start_date=<?php echo htmlspecialchars($startDate); ?>&end_date=<?php echo htmlspecialchars($endDate); ?>&page=<?php echo $i; ?>" class="px-4 py-2 <?php echo $i == $page ? 'bg-blue-500 text-white' : 'bg-white hover:bg-gray-50'; ?> border rounded-lg transition-colors"><?php echo $i; ?></a>
                             </li>
                         <?php endfor; ?>
                         <?php if ($page < $totalPages): ?>
-                            <li class="page-item">
-                                <a class="page-link" href="?start_date=<?php echo htmlspecialchars($startDate); ?>&end_date=<?php echo htmlspecialchars($endDate); ?>&page=<?php echo $page + 1; ?>">Next</a>
+                            <li>
+                                <a href="?start_date=<?php echo htmlspecialchars($startDate); ?>&end_date=<?php echo htmlspecialchars($endDate); ?>&page=<?php echo $page + 1; ?>" class="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50 transition-colors">Next</a>
                             </li>
                         <?php endif; ?>
                     </ul>
