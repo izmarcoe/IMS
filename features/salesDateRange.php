@@ -164,8 +164,8 @@ $totalPages = ceil($totalSales / $limit);
                                         <td class="px-3 py-4"><?php echo htmlspecialchars($sale['product_name']); ?></td>
                                         <td class="px-3 py-4"><?php echo htmlspecialchars($sale['category_name']); ?></td>
                                         <td class="px-3 py-4"><?php echo htmlspecialchars($sale['quantity']); ?></td>
-                                        <td class="px-3 py-4">₱<?php echo number_format($sale['price'], 2); ?></td>
-                                        <td class="px-3 py-4 font-semibold">₱<?php echo number_format($totalAmount, 2); ?></td>
+                                        <td class="px-3 py-4"><?php echo number_format($sale['price'], 2); ?></td>
+                                        <td class="px-3 py-4 font-semibold"><?php echo number_format($totalAmount, 2); ?></td>
                                         <td class="px-3 py-4"><?php echo htmlspecialchars($sale['sale_date']); ?></td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -250,7 +250,7 @@ $totalPages = ceil($totalSales / $limit);
             });
 
             // Save the PDF
-            doc.save(`Sales_Report ${startMonth} ${startDay}, ${startYear} to ${endMonth} ${endDay}, ${endYear}.pdf`);
+            doc.save(`Sales Report: ${startMonth} ${startDay}, ${startYear} to ${endMonth} ${endDay}, ${endYear}.pdf`);
         });
     </script>
 </body>
