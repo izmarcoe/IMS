@@ -21,7 +21,7 @@ if (!isset($_SESSION['Fname']) || !isset($_SESSION['Lname'])) {
     // Check if the connection variable is set
     if (isset($conn)) {
         // Prepare the SQL statement
-        $stmt = $conn->prepare("SELECT Fname, Lname FROM login_db WHERE user_id = :user_id");
+        $stmt = $conn->prepare("SELECT Fname, Lname, role FROM login_db WHERE user_id = :user_id");
         $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT); // Use bindParam for PDO
         $stmt->execute();
 
@@ -48,6 +48,7 @@ if (!isset($_SESSION['Fname']) || !isset($_SESSION['Lname'])) {
 // Now Fname and Lname are guaranteed to be in the session
 $fname = $_SESSION['Fname'];
 $lname = $_SESSION['Lname'];
+$user_role = $_SESSION['user_role'];
 
 // Fetch highest selling products
 $highestSellingStmt = $conn->prepare("
