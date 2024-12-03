@@ -47,14 +47,9 @@ $totalPages = ceil($totalSales / $limit);
     <link rel="stylesheet" href="../src/output.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
-    <style>
-        .date-input {
-            max-width: 300px;
-        }
-    </style>
 </head>
 
-<body style="background-color: #DADBDF;">
+<body class="bg-gray-200">
 
     <!-- Header -->
     <header class="flex flex-row sticky top-0 z-50">

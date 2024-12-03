@@ -1,6 +1,6 @@
 <link href="../src/output.css" rel="stylesheet">
 
-<!-- Include AlpineJS -->
+<!-- Alpine JS  -->
 <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
 <div x-data="{ sidebarOpen: true }" class="relative">
