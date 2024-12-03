@@ -24,14 +24,8 @@ if (isset($_SESSION['user_id'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
     <link rel="stylesheet" href="./src/output.css">
-    <style>
-        body {
-            background: linear-gradient(323deg, #0F7505 25.5%, #0C2809 79.98%);
-            min-height: 100vh;
-        }
-    </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-6">
+<body class="flex items-center justify-center min-h-screen p-6 bg-gradient-to-br from-green-800 to-green-950">
     <div class="w-full max-w-2xl">
         <div class="bg-white rounded-2xl shadow-xl p-8">
             <div class="text-center mb-8">
