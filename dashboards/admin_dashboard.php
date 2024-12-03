@@ -31,6 +31,7 @@ if (!isset($_SESSION['Fname']) || !isset($_SESSION['Lname'])) {
             // Set Fname and Lname in the session
             $_SESSION['Fname'] = $user['Fname'];
             $_SESSION['Lname'] = $user['Lname'];
+            $_SESSION['user_role'] = $user['role'];
         } else {
             // Handle case where user data is not found (optional)
             echo "User data not found.";
@@ -125,7 +126,7 @@ $totalSales = $totalSalesStmt->fetch(PDO::FETCH_ASSOC)['total_sales'];
 
         <div class="flex items-center text-black p-3 flex-grow bg-gray-600">
             <div class="ml-6 flex flex-start text-white">
-                <h2 class="text-[1.5rem] font-bold">Admin Dashboard</h2>
+                <h2 class="text-[1.5rem] font-bold capitalize"><?php echo htmlspecialchars($_SESSION['user_role']); ?> Dashboard</h2>
             </div>
             <div class="flex justify-end flex-grow text-white">
                 <span class="px-4 font-bold text-[1rem]" id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>

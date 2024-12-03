@@ -44,9 +44,7 @@ $totalPages = ceil($totalSales / $limit);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sales Report - Per Day</title>
-    <link rel="stylesheet" href="../CSS/dashboard.css">
-    <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-    <script src="../bootstrap/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../src/output.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
     <style>
@@ -58,15 +56,15 @@ $totalPages = ceil($totalSales / $limit);
 
 <body style="background-color: #DADBDF;">
 
-     <!-- Header -->
-     <header class="flex flex-row sticky top-0 z-50">
+    <!-- Header -->
+    <header class="flex flex-row sticky top-0 z-50">
         <div class="flex justify-center items-center text-white bg-green-800" style="width: 300px;">
             <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
         </div>
 
         <div class="flex items-center text-black p-3 flex-grow bg-gray-600">
             <div class="ml-6 flex flex-start text-white">
-                <h2 class="text-[1.5rem] font-bold">Admin Dashboard</h2>
+                <h2 class="text-[1.5rem] font-bold capitalize"><?php echo htmlspecialchars($_SESSION['user_role']); ?> Dashboard</h2>
             </div>
             <div class="flex justify-end flex-grow text-white">
                 <span class="px-4 font-bold text-[1rem]" id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
@@ -154,26 +152,39 @@ $totalPages = ceil($totalSales / $limit);
     <script src="../JS/time.js"></script>
     <script>
         document.getElementById('download-pdf').addEventListener('click', function() {
-            const { jsPDF } = window.jspdf;
+            const {
+                jsPDF
+            } = window.jspdf;
             const doc = new jsPDF();
 
             // Get the date from PHP
             const reportDate = '<?php echo $date; ?>';
             const dateObj = new Date(reportDate);
-            const day = dateObj.toLocaleString('default', { day: '2-digit' });
-            const month = dateObj.toLocaleString('default', { month: 'long' });
+            const day = dateObj.toLocaleString('default', {
+                day: '2-digit'
+            });
+            const month = dateObj.toLocaleString('default', {
+                month: 'long'
+            });
             const year = dateObj.getFullYear();
 
             // Add title
             doc.setFontSize(20);
-            doc.text('ZEFMAVEN COMPUTER PARTS AND ACCESSORIES', doc.internal.pageSize.getWidth() / 2, 20, { align: 'center' });
+            doc.text('ZEFMAVEN COMPUTER PARTS AND ACCESSORIES', doc.internal.pageSize.getWidth() / 2, 20, {
+                align: 'center'
+            });
 
             // Add date
             doc.setFontSize(16);
-            doc.text(`Sales Report for ${month} ${day}, ${year}`, doc.internal.pageSize.getWidth() / 2, 30, { align: 'center' });
+            doc.text(`Sales Report for ${month} ${day}, ${year}`, doc.internal.pageSize.getWidth() / 2, 30, {
+                align: 'center'
+            });
 
             // Add table
-            doc.autoTable({ html: 'table', startY: 40 });
+            doc.autoTable({
+                html: 'table',
+                startY: 40
+            });
 
             // Save the PDF
             doc.save('Daily_Sales_Report.pdf');

@@ -1,6 +1,4 @@
 <link href="../src/output.css" rel="stylesheet">
-<link rel="stylesheet" href="../CSS/dashboard.css">
-<link rel="stylesheet" href="../CSS/sidebar.css">
 
 <!-- Include AlpineJS -->
 <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>

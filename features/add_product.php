@@ -89,7 +89,7 @@ $active_add_product = ($current_page == 'add-product.php') ? 'active' : '';
 
         <div class="flex items-center text-black p-3 flex-grow bg-gray-600">
             <div class="ml-6 flex flex-start text-white">
-                <h2 class="text-[1.5rem] font-bold">Admin Dashboard</h2>
+                <h2 class="text-[1.5rem] font-bold capitalize"><?php echo htmlspecialchars($_SESSION['user_role']); ?> Dashboard</h2>
             </div>
             <div class="flex justify-end flex-grow text-white">
                 <span class="px-4 font-bold text-[1rem]" id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
@@ -135,8 +135,7 @@ $active_add_product = ($current_page == 'add-product.php') ? 'active' : '';
                     <label for="category" class="block text-gray-700 text-sm font-bold mb-2">Category</label>
                     <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
                         id="category"
-                        name="category_id"
-                        >
+                        name="category_id">
                         <option value="" disabled selected>Select a category</option>
                         <?php
                         // Fetch categories

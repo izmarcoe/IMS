@@ -98,37 +98,9 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Sales</title>
-    <link rel="stylesheet" href="../CSS/dashboard.css">
     <link rel="stylesheet" href="../src/output.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .pagination .page-link {
-            color: #0F7505;
-        }
-
-        .pagination .page-link:hover {
-            background-color: #0F7505;
-            color: white;
-        }
-
-        .pagination .page-item.active .page-link {
-            background-color: #0F7505;
-            border-color: #0F7505;
-        }
-
-        .pagination .page-link:focus {
-            box-shadow: none;
-        }
-
-        .action-btn {
-            height: 38px;
-            /* Adjust the height as needed */
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-    </style>
 </head>
 
 <body style="background-color: #DADBDF;">
@@ -140,7 +112,7 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         <div class="flex items-center text-black p-3 flex-grow bg-gray-600">
             <div class="ml-6 flex flex-start text-white">
-                <h2 class="text-[1.5rem] font-bold">Admin Dashboard</h2>
+                <h2 class="text-[1.5rem] font-bold capitalize"><?php echo htmlspecialchars($_SESSION['user_role']); ?> Dashboard</h2>
             </div>
             <div class="flex justify-end flex-grow text-white">
                 <span class="px-4 font-bold text-[1rem]" id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>

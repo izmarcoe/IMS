@@ -49,16 +49,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activate_user'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Users</title>
-    <link rel="stylesheet" href="../CSS/dashboard.css">
-    <link rel="stylesheet" href="../CSS/manage_users.css">
     <link rel="stylesheet" href="../src/output.css">
 </head>
-<style>
-    .table-secondary {
-        background-color: gray !important;
-        color: gray;
-    }
-</style>
 
 <body style="background-color: #DADBDF;">
     <!-- Header -->
@@ -69,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activate_user'])) {
 
         <div class="flex items-center text-black p-3 flex-grow bg-gray-600">
             <div class="ml-6 flex flex-start text-white">
-                <h2 class="text-[1.5rem] font-bold">Admin Dashboard</h2>
+                <h2 class="text-[1.5rem] font-bold capitalize"><?php echo htmlspecialchars($_SESSION['user_role']); ?> Dashboard</h2>
             </div>
             <div class="flex justify-end flex-grow text-white">
                 <span class="px-4 font-bold text-[1rem]" id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
@@ -134,16 +126,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activate_user'])) {
                                         <button type="button" class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600" onclick="openModal('editRoleModal<?php echo $user['user_id']; ?>')">
                                             Edit Role
                                         </button>
-                                        
-                                        <button type="button" 
-                                                onclick="updateUserStatus(<?php echo $user['user_id']; ?>, 'deactivate')" 
-                                                class="bg-yellow-500 text-white px-3 py-1 rounded text-sm hover:bg-yellow-600 ml-2">
+
+                                        <button type="button"
+                                            onclick="updateUserStatus(<?php echo $user['user_id']; ?>, 'deactivate')"
+                                            class="bg-yellow-500 text-white px-3 py-1 rounded text-sm hover:bg-yellow-600 ml-2">
                                             Deactivate
                                         </button>
                                     <?php else: ?>
-                                        <button type="button" 
-                                                onclick="updateUserStatus(<?php echo $user['user_id']; ?>, 'activate')" 
-                                                class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600">
+                                        <button type="button"
+                                            onclick="updateUserStatus(<?php echo $user['user_id']; ?>, 'activate')"
+                                            class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600">
                                             Activate
                                         </button>
                                     <?php endif; ?>
@@ -153,7 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activate_user'])) {
                                 <div id="editRoleModal<?php echo $user['user_id']; ?>" class="hidden fixed inset-0 z-50">
                                     <!-- Modal Backdrop -->
                                     <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
-                                    
+
                                     <!-- Modal Content -->
                                     <div class="fixed inset-0 z-10 overflow-y-auto">
                                         <div class="flex min-h-full items-center justify-center p-4 text-center">
@@ -164,8 +156,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activate_user'])) {
                                                         <h3 class="text-lg font-medium leading-6 text-gray-900">
                                                             Edit Role for <?php echo htmlspecialchars($user['Fname'] . ' ' . $user['Lname']); ?>
                                                         </h3>
-                                                        <button onclick="closeModal('editRoleModal<?php echo $user['user_id']; ?>')" 
-                                                                class="ml-auto bg-white rounded-md text-gray-400 hover:text-gray-500">
+                                                        <button onclick="closeModal('editRoleModal<?php echo $user['user_id']; ?>')"
+                                                            class="ml-auto bg-white rounded-md text-gray-400 hover:text-gray-500">
                                                             <span class="sr-only">Close</span>
                                                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -177,17 +169,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activate_user'])) {
                                                 <!-- Modal Body -->
                                                 <div class="bg-white px-4 pb-4 sm:p-6 sm:pb-4">
                                                     <form method="POST">
-                                                        <input type="hidden" name="user_id" 
-                                                               value="<?php echo htmlspecialchars($user['user_id']); ?>">
-                                                        
+                                                        <input type="hidden" name="user_id"
+                                                            value="<?php echo htmlspecialchars($user['user_id']); ?>">
+
                                                         <div class="mb-4">
-                                                            <label for="role<?php echo $user['user_id']; ?>" 
-                                                                   class="block text-sm font-medium text-gray-700 mb-2">
+                                                            <label for="role<?php echo $user['user_id']; ?>"
+                                                                class="block text-sm font-medium text-gray-700 mb-2">
                                                                 Select Role
                                                             </label>
-                                                            <select id="role<?php echo $user['user_id']; ?>" 
-                                                                    name="role" 
-                                                                    class="mt-1 block w-full rounded-md border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500">
+                                                            <select id="role<?php echo $user['user_id']; ?>"
+                                                                name="role"
+                                                                class="mt-1 block w-full rounded-md border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500">
                                                                 <option value="admin" <?php echo ($user['role'] == 'admin') ? 'selected' : ''; ?>>
                                                                     Admin
                                                                 </option>
@@ -202,14 +194,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activate_user'])) {
 
                                                         <!-- Modal Footer -->
                                                         <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                                                            <button type="submit" 
-                                                                    name="update_role" 
-                                                                    class="inline-flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm">
+                                                            <button type="submit"
+                                                                name="update_role"
+                                                                class="inline-flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm">
                                                                 Save Changes
                                                             </button>
-                                                            <button type="button" 
-                                                                    onclick="closeModal('editRoleModal<?php echo $user['user_id']; ?>')"
-                                                                    class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                                                            <button type="button"
+                                                                onclick="closeModal('editRoleModal<?php echo $user['user_id']; ?>')"
+                                                                class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
                                                                 Cancel
                                                             </button>
                                                         </div>
@@ -229,47 +221,47 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activate_user'])) {
 
     <script src="../JS/time.js"></script>
     <script src="../JS/manage_users_modal.js"></script>
-        <script>
-    function updateUserStatus(userId, action) {
-        const formData = new FormData();
-        formData.append('user_id', userId);
-        formData.append('action', action);
-    
-        fetch('../endpoint/update_user_status.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if(data.success) {
-                // Find and update the user's row
-                const row = document.querySelector(`tr:has(button[onclick*="${userId}"])`);
-                if(row) {
-                    // Update row background
-                    if(data.status === 'deactivated') {
-                        row.classList.add('bg-gray-400');
-                    } else {
-                        row.classList.remove('bg-gray-400');
-                    }
-                    
-                    // Update status cell
-                    const statusCell = row.querySelector('td:nth-child(5)');
-                    if(statusCell) {
-                        statusCell.textContent = data.status;
-                    }
-                    
-                    // Update action buttons
-                    const actionCell = row.querySelector('td:last-child');
-                    if(actionCell) {
-                        if(data.status === 'deactivated') {
-                            actionCell.innerHTML = `
+    <script>
+        function updateUserStatus(userId, action) {
+            const formData = new FormData();
+            formData.append('user_id', userId);
+            formData.append('action', action);
+
+            fetch('../endpoint/update_user_status.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Find and update the user's row
+                        const row = document.querySelector(`tr:has(button[onclick*="${userId}"])`);
+                        if (row) {
+                            // Update row background
+                            if (data.status === 'deactivated') {
+                                row.classList.add('bg-gray-400');
+                            } else {
+                                row.classList.remove('bg-gray-400');
+                            }
+
+                            // Update status cell
+                            const statusCell = row.querySelector('td:nth-child(5)');
+                            if (statusCell) {
+                                statusCell.textContent = data.status;
+                            }
+
+                            // Update action buttons
+                            const actionCell = row.querySelector('td:last-child');
+                            if (actionCell) {
+                                if (data.status === 'deactivated') {
+                                    actionCell.innerHTML = `
                                 <button type="button" 
                                     onclick="updateUserStatus(${userId}, 'activate')" 
                                     class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600">
                                     Activate
                                 </button>`;
-                        } else {
-                            actionCell.innerHTML = `
+                                } else {
+                                    actionCell.innerHTML = `
                                 <button type="button" class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600" 
                                     onclick="openModal('editRoleModal${userId}')">
                                     Edit Role
@@ -279,18 +271,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activate_user'])) {
                                     class="bg-yellow-500 text-white px-3 py-1 rounded text-sm hover:bg-yellow-600 ml-2">
                                     Deactivate
                                 </button>`;
+                                }
+                            }
                         }
+                    } else {
+                        alert('Error updating user status');
                     }
-                }
-            } else {
-                alert('Error updating user status');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error updating user status');
-        });
-    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error updating user status');
+                });
+        }
     </script>
 </body>
 

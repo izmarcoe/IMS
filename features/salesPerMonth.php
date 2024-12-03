@@ -54,7 +54,6 @@ $totalPages = ceil($totalSales / $limit);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sales Report - Per Month</title>
-    <link rel="stylesheet" href="../CSS/dashboard.css">
     <link rel="stylesheet" href="../src/output.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
@@ -70,7 +69,7 @@ $totalPages = ceil($totalSales / $limit);
 
         <div class="flex items-center text-black p-3 flex-grow bg-gray-600">
             <div class="ml-6 flex flex-start text-white">
-                <h2 class="text-[1.5rem] font-bold">Admin Dashboard</h2>
+                <h2 class="text-[1.5rem] font-bold capitalize"><?php echo htmlspecialchars($_SESSION['user_role']); ?> Dashboard</h2>
             </div>
             <div class="flex justify-end flex-grow text-white">
                 <span class="px-4 font-bold text-[1rem]" id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
@@ -136,7 +135,7 @@ $totalPages = ceil($totalSales / $limit);
                                     <td colspan="7" class="px-3 py-2 text-center text-gray-500">No sales found.</td>
                                 </tr>
                             <?php else: ?>
-                                <?php foreach ($sales as $sale): 
+                                <?php foreach ($sales as $sale):
                                     $totalAmount = $sale['quantity'] * $sale['price'];
                                 ?>
                                     <tr class="border-t hover:bg-gray-50">
@@ -159,20 +158,20 @@ $totalPages = ceil($totalSales / $limit);
                     <ul class="flex space-x-2">
                         <?php if ($page > 1): ?>
                             <li>
-                                <a href="?month=<?php echo htmlspecialchars($month); ?>&year=<?php echo htmlspecialchars($year); ?>&page=<?php echo $page - 1; ?>" 
-                                   class="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50 transition-colors">Previous</a>
+                                <a href="?month=<?php echo htmlspecialchars($month); ?>&year=<?php echo htmlspecialchars($year); ?>&page=<?php echo $page - 1; ?>"
+                                    class="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50 transition-colors">Previous</a>
                             </li>
                         <?php endif; ?>
                         <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                             <li>
-                                <a href="?month=<?php echo htmlspecialchars($month); ?>&year=<?php echo htmlspecialchars($year); ?>&page=<?php echo $i; ?>" 
-                                   class="px-4 py-2 <?php echo $i == $page ? 'bg-blue-500 text-white' : 'bg-white hover:bg-gray-50'; ?> border rounded-lg transition-colors"><?php echo $i; ?></a>
+                                <a href="?month=<?php echo htmlspecialchars($month); ?>&year=<?php echo htmlspecialchars($year); ?>&page=<?php echo $i; ?>"
+                                    class="px-4 py-2 <?php echo $i == $page ? 'bg-blue-500 text-white' : 'bg-white hover:bg-gray-50'; ?> border rounded-lg transition-colors"><?php echo $i; ?></a>
                             </li>
                         <?php endfor; ?>
                         <?php if ($page < $totalPages): ?>
                             <li>
-                                <a href="?month=<?php echo htmlspecialchars($month); ?>&year=<?php echo htmlspecialchars($year); ?>&page=<?php echo $page + 1; ?>" 
-                                   class="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50 transition-colors">Next</a>
+                                <a href="?month=<?php echo htmlspecialchars($month); ?>&year=<?php echo htmlspecialchars($year); ?>&page=<?php echo $page + 1; ?>"
+                                    class="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50 transition-colors">Next</a>
                             </li>
                         <?php endif; ?>
                     </ul>
@@ -182,40 +181,40 @@ $totalPages = ceil($totalSales / $limit);
     </main>
     <script src="../JS/time.js"></script>
     <script>
-    document.getElementById('download-pdf').addEventListener('click', function() {
-        const {
-            jsPDF
-        } = window.jspdf;
-        const doc = new jsPDF();
+        document.getElementById('download-pdf').addEventListener('click', function() {
+            const {
+                jsPDF
+            } = window.jspdf;
+            const doc = new jsPDF();
 
-        // Get the current month and year
-        const currentDate = new Date();
-        const month = currentDate.toLocaleString('default', {
-            month: 'long'
+            // Get the current month and year
+            const currentDate = new Date();
+            const month = currentDate.toLocaleString('default', {
+                month: 'long'
+            });
+            const year = currentDate.getFullYear();
+
+            // Add title
+            doc.setFontSize(20);
+            doc.text('ZEFMAVEN COMPUTER PARTS AND ACCESSORIES', doc.internal.pageSize.getWidth() / 2, 20, {
+                align: 'center'
+            });
+
+            // Add month and year
+            doc.setFontSize(16);
+            doc.text(`Sales Report for ${month} ${year}`, doc.internal.pageSize.getWidth() / 2, 30, {
+                align: 'center'
+            });
+
+            // Add table
+            doc.autoTable({
+                html: 'table',
+                startY: 40
+            });
+
+            // Save the PDF
+            doc.save(`Sales Report: ${month} ${year}.pdf`);
         });
-        const year = currentDate.getFullYear();
-
-        // Add title
-        doc.setFontSize(20);
-        doc.text('ZEFMAVEN COMPUTER PARTS AND ACCESSORIES', doc.internal.pageSize.getWidth() / 2, 20, {
-            align: 'center'
-        });
-
-        // Add month and year
-        doc.setFontSize(16);
-        doc.text(`Sales Report for ${month} ${year}`, doc.internal.pageSize.getWidth() / 2, 30, {
-            align: 'center'
-        });
-
-        // Add table
-        doc.autoTable({
-            html: 'table',
-            startY: 40
-        });
-
-        // Save the PDF
-        doc.save(`Sales Report: ${month} ${year}.pdf`);
-    });
-</script>
+    </script>
 
 </html>

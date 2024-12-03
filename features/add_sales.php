@@ -116,9 +116,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Sales</title>
-    <link rel="stylesheet" href="../CSS/dashboard.css">
-    <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-    <script src="../bootstrap/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../src/output.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
@@ -131,7 +129,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         <div class="flex items-center text-black p-3 flex-grow bg-gray-600">
             <div class="ml-6 flex flex-start text-white">
-                <h2 class="text-[1.5rem] font-bold">Admin Dashboard</h2>
+                <h2 class="text-[1.5rem] font-bold capitalize"><?php echo htmlspecialchars($_SESSION['user_role']); ?> Dashboard</h2>
             </div>
             <div class="flex justify-end flex-grow text-white">
                 <span class="px-4 font-bold text-[1rem]" id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
@@ -169,9 +167,9 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <form method="POST" action="add_sales.php" id="saleForm" class="space-y-6">
                     <div class="mb-4">
                         <label for="product" class="block text-gray-700 text-sm font-bold mb-2">Product</label>
-                        <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                            id="product" 
-                            name="product_id" 
+                        <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            id="product"
+                            name="product_id"
                             required>
                             <option value="" disabled selected>Select a product</option>
                             <?php foreach ($products as $product): ?>
@@ -245,37 +243,37 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <script src="../JS/notificationTimer.js"></script>
     <script src="../JS/time.js"></script>
     <script>
-       document.addEventListener('DOMContentLoaded', function() {
-    const productSelect = document.getElementById('product');
-    const categoryInput = document.getElementById('category');
-    const categoryNameInput = document.getElementById('category_name');
-    const priceInput = document.getElementById('price');
-    const quantityInput = document.getElementById('quantity');
-    const totalAmountDiv = document.getElementById('totalAmount');
-    const stockInfo = document.getElementById('stockInfo');
+        document.addEventListener('DOMContentLoaded', function() {
+            const productSelect = document.getElementById('product');
+            const categoryInput = document.getElementById('category');
+            const categoryNameInput = document.getElementById('category_name');
+            const priceInput = document.getElementById('price');
+            const quantityInput = document.getElementById('quantity');
+            const totalAmountDiv = document.getElementById('totalAmount');
+            const stockInfo = document.getElementById('stockInfo');
 
-    productSelect.addEventListener('change', function() {
-        const selectedOption = productSelect.options[productSelect.selectedIndex];
-        const categoryName = selectedOption.getAttribute('data-category-name') || 'No Category';
-        const price = selectedOption.getAttribute('data-price');
-        const stock = selectedOption.getAttribute('data-stock');
+            productSelect.addEventListener('change', function() {
+                const selectedOption = productSelect.options[productSelect.selectedIndex];
+                const categoryName = selectedOption.getAttribute('data-category-name') || 'No Category';
+                const price = selectedOption.getAttribute('data-price');
+                const stock = selectedOption.getAttribute('data-stock');
 
-        categoryInput.value = categoryName;
-        categoryNameInput.value = categoryName;
-        priceInput.value = price;
-        stockInfo.textContent = `Available stock: ${stock}`;
-        updateTotalAmount();
-    });
+                categoryInput.value = categoryName;
+                categoryNameInput.value = categoryName;
+                priceInput.value = price;
+                stockInfo.textContent = `Available stock: ${stock}`;
+                updateTotalAmount();
+            });
 
-    quantityInput.addEventListener('input', updateTotalAmount);
+            quantityInput.addEventListener('input', updateTotalAmount);
 
-    function updateTotalAmount() {
-        const price = parseFloat(priceInput.value) || 0;
-        const quantity = parseInt(quantityInput.value) || 0;
-        const totalAmount = price * quantity;
-        totalAmountDiv.textContent = totalAmount.toFixed(2);
-    }
-});
+            function updateTotalAmount() {
+                const price = parseFloat(priceInput.value) || 0;
+                const quantity = parseInt(quantityInput.value) || 0;
+                const totalAmount = price * quantity;
+                totalAmountDiv.textContent = totalAmount.toFixed(2);
+            }
+        });
     </script>
 </body>
 
