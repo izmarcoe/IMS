@@ -30,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['Fname'] = $user['Fname'];
                 $_SESSION['Lname'] = $user['Lname'];
                 
-                header("Location: " . ($user['role'] == 'employee' ? "./dashboards/employee_dashboard.php" : "../home.php"));
+                header("Location: " . ($user['role'] == 'employee' ? "./dashboards/employee_dashboard.php" : "./home.php"));
                 exit();
             } else {
                 $error = "Account is deactivated";

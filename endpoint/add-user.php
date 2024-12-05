@@ -51,7 +51,7 @@ if (isset($_POST['fname'], $_POST['lname'], $_POST['contact_number'], $_POST['em
 
             // Insert new user record with hashed password and default role set to 'none'
             $insertStmt = $conn->prepare("INSERT INTO `login_db` (`Fname`, `Lname`, `contact_number`, `email`, `generated_code`, `password`, `role`, `status`) 
-           VALUES (:fname, :lname, :contact_number, :email, :generated_code, :password, 'new_user', 'activated')");
+           VALUES (:fname, :lname, :contact_number, :email, :generated_code, :password, 'new_user', 'active')");
             $insertStmt->bindParam(':fname', $fname, PDO::PARAM_STR);
             $insertStmt->bindParam(':lname', $lname, PDO::PARAM_STR);
             $insertStmt->bindParam(':contact_number', $contactNumber, PDO::PARAM_STR);
