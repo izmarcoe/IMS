@@ -2,9 +2,15 @@
 session_start();
 include('./conn/conn.php');
 
-if (isset($_SESSION['user_id']) && $_SESSION['user_role'] == 'admin') {
-    header("Location: ./dashboards/admin_dashboard.php");
-    exit();
+// Redirect if already logged in
+if (isset($_SESSION['user_id'])) {
+    if ($_SESSION['user_role'] == 'employee') {
+        header("Location: ./dashboards/employee_dashboard.php");
+        exit();
+    } elseif ($_SESSION['user_role'] == 'new_user') {
+        header("Location: ./home.php");
+        exit();
+    }
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -12,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST['password'] ?? null;
 
     if ($email && $password) {
-        $stmt = $conn->prepare("SELECT * FROM `login_db` WHERE `email` = :email AND `role` = 'admin'");
+        $stmt = $conn->prepare("SELECT * FROM `login_db` WHERE `email` = :email AND (`role` = 'employee' OR `role` = 'new_user')");
         $stmt->bindParam(':email', $email);
         $stmt->execute();
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -23,7 +29,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['user_role'] = $user['role'];
                 $_SESSION['Fname'] = $user['Fname'];
                 $_SESSION['Lname'] = $user['Lname'];
-                header("Location: ./dashboards/admin_dashboard.php");
+                
+                header("Location: " . ($user['role'] == 'employee' ? "./dashboards/employee_dashboard.php" : "../home.php"));
                 exit();
             } else {
                 $error = "Account is deactivated";
@@ -37,34 +44,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login</title>
+    <title>Employee Login</title>
     <link rel="stylesheet" href="./src/output.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-
 <body class="bg-gradient-to-br from-green-800 to-green-950 min-h-screen flex items-center justify-center p-6">
     <div class="w-full max-w-md">
         <div class="bg-white rounded-2xl shadow-xl p-8">
             <div class="text-center mb-8">
-                <h2 class="text-3xl font-bold text-gray-800">Admin Login</h2>
+                <h2 class="text-3xl font-bold text-gray-800">Employee Login</h2>
                 <img src="./icons/zefmaven.png" class="mx-auto w-32 h-32 my-4">
             </div>
 
             <?php if (isset($error)): ?>
-                <script>
-                    document.addEventListener('DOMContentLoaded', function() {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: '<?php echo $error; ?>',
-                            confirmButtonColor: '#047857'
-                        });
-                    });
-                </script>
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                    <?php echo $error; ?>
+                </div>
             <?php endif; ?>
 
             <!-- QR Code Scanner Video -->
@@ -77,9 +74,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <form action="./endpoint/login.php" method="POST" class="text-center">
                     <h4 class="text-lg font-semibold mb-3">QR Code Detected!</h4>
                     <input type="hidden" id="detected-qr-code" name="qr-code">
-                    <input type="hidden" name="login_type" value="admin">
-                    <button type="submit"
-                        class="w-full py-2 px-4 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200">
+                    <input type="hidden" name="login_type" value="employee">
+                    <button type="submit" 
+                            class="w-full py-2 px-4 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200">
                         Login
                     </button>
                 </form>
@@ -110,7 +107,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <!-- Login Toggle Options -->
             <div class="text-center mt-4 text-sm text-gray-600">
                 <div>Login using</div>
-                <div class="flex justify-center space-x-4 mt-2">
+                <div class="flex justify-center text-center space-x-4 mt-2">
                     <span id="qrCodeLoginLink"
                         class="text-green-600 hover:text-green-700 cursor-pointer hidden"
                         onclick="togglePasswordLogin(false)">
@@ -123,6 +120,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </span>
                 </div>
             </div>
+
+            <div class="mt-6 text-center">
+                <p class="text-sm text-gray-600 mb-2">Don't have an account? 
+                    <a href="./register.php" class="text-green-600 hover:text-green-700">Register here</a>
+                </p>
+            </div>
         </div>
     </div>
 
@@ -130,84 +133,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
     <script src="./JS/QR.js"></script>
     <script>
-        function togglePasswordLogin(showPassword) {
-            const qrScanner = document.querySelector('.centered-video');
-            const passwordForm = document.getElementById('passwordLoginForm');
-            const qrLoginLink = document.getElementById('qrCodeLoginLink');
-            const passwordLoginLink = document.getElementById('passwordLoginLink');
-
-            if (showPassword) {
-                qrScanner.classList.add('hidden');
-                passwordForm.classList.remove('hidden');
-                qrLoginLink.classList.remove('hidden');
-                passwordLoginLink.classList.add('hidden');
-            } else {
-                qrScanner.classList.remove('hidden');
-                passwordForm.classList.add('hidden');
-                qrLoginLink.classList.add('hidden');
-                passwordLoginLink.classList.remove('hidden');
-            }
-        }
-    </script>
-    <script>
-        // Initialize scanner when page loads
         document.addEventListener('DOMContentLoaded', function() {
             const videoElement = document.getElementById('interactive');
             const qrDetectedContainer = document.querySelector('.qr-detected-container');
             const qrInput = document.getElementById('detected-qr-code');
             const passwordForm = document.getElementById('passwordLoginForm');
 
-            // Hide password form initially
             passwordForm.classList.add('hidden');
-
-            // Initialize scanner
-            let scanner = new Instascan.Scanner({
-                video: videoElement
-            });
-
-            // Handle successful scans
+            
+            let scanner = new Instascan.Scanner({ video: videoElement });
+            
             scanner.addListener('scan', function(content) {
                 console.log("QR Code detected:", content);
                 qrInput.value = content;
                 qrDetectedContainer.classList.remove('hidden');
-                Swal.fire({
-                    icon: 'success',
-                    title: 'QR Code Detected!',
-                    text: 'Processing login...',
-                    showConfirmButton: false,
-                    timer: 1500,
-                    timerProgressBar: true
-                }).then(() => {
-                    document.querySelector('.qr-detected-container form').submit();
-                });
             });
 
-            // Start camera
             Instascan.Camera.getCameras()
                 .then(function(cameras) {
                     if (cameras.length > 0) {
                         scanner.start(cameras[0]);
                     } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Camera Not Found',
-                            text: 'Switching to password login...',
-                            confirmButtonColor: '#047857'
-                        });
+                        console.error('No cameras found.');
                         togglePasswordLogin(true);
                     }
                 })
                 .catch(function(err) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Camera Error',
-                        text: 'Unable to access camera. Switching to password login...',
-                        confirmButtonColor: '#047857'
-                    });
+                    console.error('Error accessing cameras:', err);
                     togglePasswordLogin(true);
                 });
 
-            // Update toggle function to handle scanner
             window.togglePasswordLogin = function(showPassword) {
                 const qrScanner = document.querySelector('.centered-video');
                 const qrLoginLink = document.getElementById('qrCodeLoginLink');
@@ -230,5 +185,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         });
     </script>
 </body>
-
 </html>

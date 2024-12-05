@@ -24,9 +24,9 @@ header("Pragma: no-cache");
 if ($userRole === 'admin') {
     header("Location: http://localhost/IMS/admin_login.php");
 } else if ($userRole === 'employee') {
-    header("Location: http://localhost/IMS/employee_login.php");
+    header("Location: http://localhost/IMS/user_login.php");
 } else {
-    header("Location: http://localhost/IMS/");
+    header("Location: http://localhost/IMS/user_login.php");
 }
 
 exit();
