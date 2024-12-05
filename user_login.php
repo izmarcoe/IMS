@@ -29,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['user_role'] = $user['role'];
                 $_SESSION['Fname'] = $user['Fname'];
                 $_SESSION['Lname'] = $user['Lname'];
-                
+
                 header("Location: " . ($user['role'] == 'employee' ? "./dashboards/employee_dashboard.php" : "./home.php"));
                 exit();
             } else {
@@ -44,12 +44,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Login</title>
     <link rel="stylesheet" href="./src/output.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
+
 <body class="bg-gradient-to-br from-green-800 to-green-950 min-h-screen flex items-center justify-center p-6">
     <div class="w-full max-w-md">
         <div class="bg-white rounded-2xl shadow-xl p-8">
@@ -59,9 +62,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
 
             <?php if (isset($error)): ?>
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                    <?php echo $error; ?>
-                </div>
+                <script>
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Login Failed',
+                        text: '<?php echo $error; ?>',
+                        confirmButtonColor: '#047857',
+                        timer: 1500,
+                        timerProgressBar: true,
+                        showConfirmButton: false
+                    }).then((result) => {
+                        window.location.href = 'http://localhost/IMS/user_login.php';
+                    });
+                </script>
             <?php endif; ?>
 
             <!-- QR Code Scanner Video -->
@@ -75,8 +88,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <h4 class="text-lg font-semibold mb-3">QR Code Detected!</h4>
                     <input type="hidden" id="detected-qr-code" name="qr-code">
                     <input type="hidden" name="login_type" value="employee">
-                    <button type="submit" 
-                            class="w-full py-2 px-4 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200">
+                    <button type="submit"
+                        class="w-full py-2 px-4 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200">
                         Login
                     </button>
                 </form>
@@ -122,7 +135,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
 
             <div class="mt-6 text-center">
-                <p class="text-sm text-gray-600 mb-2">Don't have an account? 
+                <p class="text-sm text-gray-600 mb-2">Don't have an account?
                     <a href="./register.php" class="text-green-600 hover:text-green-700">Register here</a>
                 </p>
             </div>
@@ -140,9 +153,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             const passwordForm = document.getElementById('passwordLoginForm');
 
             passwordForm.classList.add('hidden');
-            
-            let scanner = new Instascan.Scanner({ video: videoElement });
-            
+
+            let scanner = new Instascan.Scanner({
+                video: videoElement
+            });
+
             scanner.addListener('scan', function(content) {
                 console.log("QR Code detected:", content);
                 qrInput.value = content;
@@ -185,4 +200,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         });
     </script>
 </body>
+
 </html>

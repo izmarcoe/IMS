@@ -12,7 +12,7 @@ header("Pragma: no-cache");
 
 // Check if the user is logged in and has the correct role
 if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
-    header("Location: http://localhost/IMS/");
+    header("Location: http://localhost/IMS/admin_login.php");
     exit();
 }
 ?>
