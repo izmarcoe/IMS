@@ -20,7 +20,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'admin')) {
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
-    <script src="../bootstrap/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../src/output.css">
     <link rel="stylesheet" href="../features-AI/css/forecasting.css">
 </head>
 
@@ -92,7 +92,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'admin')) {
             </div>
         </div>
     </header>
-    <main class="d-flex">
+    <main class="flex">
         <aside>
             <?php include '../features/sidebar.php' ?>
         </aside>
@@ -100,71 +100,84 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'admin')) {
             <h1>Inventory & Sales Forecast</h1>
 
             <!-- Key Metrics -->
-            <div class="container mt-3 text-center">
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="card h-100">
-                            <div class="card-body d-flex flex-column">
-                                <div class="card-title">Predicted Monthly Sales</div>
-                                <div id="predictedSales" class="card-text mt-auto">...</div>
-                            </div>
+            <div class="container mx-auto px-4 mt-3 text-center">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <!-- Predicted Monthly Sales -->
+                    <div class="bg-white rounded-lg shadow-lg p-4 h-full">
+                        <div class="flex flex-col h-full">
+                            <h3 class="text-lg font-semibold mb-2">Predicted Monthly Sales</h3>
+                            <div id="predictedSales" class="mt-auto">...</div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="card h-100">
-                            <div class="card-body d-flex flex-column">
-                                <div class="card-title">Recommended Stock Level</div>
-                                <div id="recommendedStock" class="card-text mt-auto">...</div>
-                            </div>
+
+                    <!-- Recommended Stock Level -->
+                    <div class="bg-white rounded-lg shadow-lg p-4 h-full">
+                        <div class="flex flex-col h-full">
+                            <h3 class="text-lg font-semibold mb-2">Recommended Stock Level</h3>
+                            <div id="recommendedStock" class="mt-auto">...</div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="card h-100">
-                            <div class="card-body d-flex flex-column">
-                                <div class="card-title">Stock Out Risk</div>
-                                <div id="stockOutRisk" class="card-text mt-auto">...</div>
-                            </div>
+
+                    <!-- Stock Out Risk -->
+                    <div class="bg-white rounded-lg shadow-lg p-4 h-full">
+                        <div class="flex flex-col h-full">
+                            <h3 class="text-lg font-semibold mb-2">Stock Out Risk</h3>
+                            <div id="stockOutRisk" class="mt-auto">...</div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="card h-100">
-                            <div class="card-body d-flex flex-column">
-                                <div class="card-title">Reorder Point</div>
-                                <div id="reorderPoint" class="card-text mt-auto">...</div>
-                            </div>
+
+                    <!-- Reorder Point -->
+                    <div class="bg-white rounded-lg shadow-lg p-4 h-full">
+                        <div class="flex flex-col h-full">
+                            <h3 class="text-lg font-semibold mb-2">Reorder Point</h3>
+                            <div id="reorderPoint" class="mt-auto">...</div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Charts -->
-            <div class="chart-container mt-4">
-                <canvas id="inventoryForecastChart"></canvas>
-            </div>
-            <div class="chart-container mt-4">
-                <canvas id="inventoryVsDemandChart"></canvas>
-            </div>
-            <div class="chart-container mt-4">
-                <canvas id="stockoutOverstockChart"></canvas>
-            </div>
-            <div class="container mt-4">
-                <h2>Dead Stock Identification</h2>
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Product Name</th>
-                            <th>Current Stock</th>
-                            <th>Predicted Demand</th>
-                            <th>Dead Stock Value</th>
-                        </tr>
-                    </thead>
-                    <tbody id="deadStockTableBody">
-                        <!-- Dead stock data will be populated here -->
-                    </tbody>
-                </table>
+            <div class="mt-4 px-4">
+                <div class="bg-white rounded-lg shadow-lg p-4 mb-4">
+                    <canvas id="inventoryForecastChart"></canvas>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-4 mb-4">
+                    <canvas id="inventoryVsDemandChart"></canvas>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-4">
+                    <canvas id="stockoutOverstockChart"></canvas>
+                </div>
             </div>
 
-            <div id="error" style="color: red; margin-top: 10px;"></div>
+            <!-- Dead Stock Identification -->
+            <div class="container mx-auto px-4 mt-4">
+                <h2 class="text-xl font-bold mb-4">Dead Stock Identification</h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white rounded-lg shadow-lg">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Product Name
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Current Stock
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Predicted Demand
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Dead Stock Value
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="deadStockTableBody" class="divide-y divide-gray-200">
+                            <!-- Dead stock data will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="error" class="text-red-500 mt-4 px-4"></div>
         </div>
     </main>
     <script src="../features-AI/forecastChart.js"></script>
