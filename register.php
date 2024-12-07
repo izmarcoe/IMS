@@ -55,8 +55,8 @@ if (isset($_SESSION['user_id'])) {
                     <div class="grid grid-cols-2 gap-6">
                         <div>
                             <label for="contactNumber" class="block text-sm font-medium text-gray-700">Contact Number</label>
-                            <input type="tel" id="contactNumber" name="contact_number" required maxlength="11"
-                                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <input type="text" id="contactNumber" name="contact_number" required maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                         </div>
                         <div>
                             <label for="email" class="block text-sm font-medium text-gray-700">Email</label>

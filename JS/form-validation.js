@@ -28,7 +28,11 @@ async function checkEmailExists(email) {
         return false;
     }
 }
-
+document.getElementById('contactNumber').addEventListener('input', function() {
+    if (this.value.length > 11) {
+        this.value = this.value.slice(0, 11);
+    }
+});
 function validateForm() {
     const firstName = document.getElementById('fname').value;  // Changed from firstName
     const lastName = document.getElementById('lname').value;   // Changed from lastName
