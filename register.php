@@ -42,12 +42,12 @@ if (isset($_SESSION['user_id'])) {
                     <div class="grid grid-cols-2 gap-6">
                         <div>
                             <label for="fname" class="block text-sm font-medium text-gray-700">First Name</label>
-                            <input type="text" id="fname" name="fname" required
+                            <input type="text" id="fname" name="fname" required maxlength="25"
                                 class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                         </div>
                         <div>
                             <label for="lname" class="block text-sm font-medium text-gray-700">Last Name</label>
-                            <input type="text" id="lname" name="lname" required
+                            <input type="text" id="lname" name="lname" required maxlength="25"
                                 class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                         </div>
                     </div>
@@ -115,6 +115,7 @@ if (isset($_SESSION['user_id'])) {
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
     <script src="./JS/QR.js"></script>
+    <script src="./JS/form-validation.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const registerButton = document.getElementById('registerButton');
