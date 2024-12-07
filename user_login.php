@@ -182,19 +182,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 const qrScanner = document.querySelector('.centered-video');
                 const qrLoginLink = document.getElementById('qrCodeLoginLink');
                 const passwordLoginLink = document.getElementById('passwordLoginLink');
+                const qrDetectedContainer = document.querySelector('.qr-detected-container');
 
                 if (showPassword) {
+                    // Switch to password login
                     qrScanner.classList.add('hidden');
+                    qrDetectedContainer.classList.add('hidden');
                     passwordForm.classList.remove('hidden');
                     qrLoginLink.classList.remove('hidden');
                     passwordLoginLink.classList.add('hidden');
-                    if (scanner) scanner.stop();
+                    // Stop the camera
+                    if (scanner) {
+                        scanner.stop();
+                    }
                 } else {
+                    // Switch to QR login
                     qrScanner.classList.remove('hidden');
                     passwordForm.classList.add('hidden');
                     qrLoginLink.classList.add('hidden');
                     passwordLoginLink.classList.remove('hidden');
-                    if (scanner) scanner.start();
+                    // Start the camera
+                    Instascan.Camera.getCameras()
+                        .then(function(cameras) {
+                            if (cameras.length > 0) {
+                                scanner.start(cameras[0]);
+                            } else {
+                                console.error('No cameras found.');
+                            }
+                        })
+                        .catch(function(err) {
+                            console.error('Error accessing cameras:', err);
+                        });
                 }
             };
         });
