@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const loginCon = document.querySelector(".login-container");
 const registrationCon = document.querySelector(".registration-container");
 const registrationForm = document.querySelector(".registration-form");
@@ -74,7 +76,7 @@ function generateQrCode() {
   registrationInputs.style.display = 'none';
 
   let text = generateRandomCode(10);
-  const secretKey = 'artificial intelligence'; // Use a secure key
+  const secretKey = process.env.SECRET_KEY; // Use a secure key
   const encryptedText = encryptData(text, secretKey); // Encrypt the random string
   document.getElementById("generatedCode").value = encryptedText;
 
@@ -108,3 +110,4 @@ function generateQrCode() {
 
 // Ensure the scanner starts after the page loads
 document.addEventListener('DOMContentLoaded', startScanner);
+console.log("Loaded SECRET_KEY:", artificial_intelligence);
