@@ -69,7 +69,7 @@ if (isset($_SESSION['user_id'])) {
                         <div>
                             <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
                             <input type="password" id="password" name="password" required
-                                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 transition-colors duration-200">
                         </div>
                         <div>
                             <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirm Password</label>
