@@ -6,4 +6,4 @@
         notification.style.opacity = '0';
         setTimeout(() => notification.style.display = 'none', 500);
     }
-}, 3000);
+}, 1500);
