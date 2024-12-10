@@ -3,31 +3,31 @@
 <!-- Alpine JS  -->
 <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-<div x-data="{ sidebarOpen: true }" class="relative">
+<div x-data="{ sidebarOpen: false }" class="relative">
     <!-- Mobile Toggle Button -->
     <button @click="sidebarOpen = !sidebarOpen"
-        class="fixed top-4 left-4 z-50 p-2 bg-gray-800 rounded-md text-white hover:bg-gray-700">
+        class="fixed top-4 left-4 z-50 p-2 bg-gray-800 rounded-md text-white hover:bg-gray-700 md:hidden">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path x-show="!sidebarOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
             <path x-show="sidebarOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
     </button>
 
-    <!-- Backdrop -->
+    <!-- Backdrop (mobile only) -->
     <div x-show="sidebarOpen"
         @click="sidebarOpen = false"
         class="fixed inset-0 bg-black bg-opacity-50 transition-opacity md:hidden z-40">
     </div>
 
     <!-- Sidebar -->
-    <div x-show="sidebarOpen"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="-translate-x-full"
-        x-transition:enter-end="translate-x-0"
-        x-transition:leave="transition ease-in duration-300"
-        x-transition:leave-start="translate-x-0"
-        x-transition:leave-end="-translate-x-full"
-        class="fixed top-0 left-0 bottom-0 w-[300px] bg-gray-800 text-white transform md:translate-x-0 md:relative z-50">
+    <div 
+        :class="{'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen}"
+        class="fixed top-0 left-0 bottom-0 w-[300px] bg-gray-800 text-white transform transition-transform duration-300 ease-in-out md:translate-x-0 md:relative z-50">
+        
+        <!-- Mobile Logo Header (shown only on mobile) -->
+        <div class="flex justify-center items-center bg-green-800 md:hidden">
+            <img class="m-1 w-[120px] h-[120px]" src="../icons/zefmaven.png" alt="Logo">
+        </div>
 
         <div class="bg-gray-800 text-white min-h-screen w-[300px] p-1">
             <div class="pt-5">
