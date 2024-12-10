@@ -3,7 +3,7 @@
 <!-- Alpine JS  -->
 <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-<div x-data="{ sidebarOpen: false }" class="relative">
+<div x-data="{ sidebarOpen: false }" class="relative h-screen">
     <!-- Mobile Toggle Button -->
     <button @click="sidebarOpen = !sidebarOpen"
         class="fixed top-4 left-4 z-50 p-2 bg-gray-800 rounded-md text-white hover:bg-gray-700 md:hidden">
@@ -22,15 +22,15 @@
     <!-- Sidebar -->
     <div 
         :class="{'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen}"
-        class="fixed top-0 left-0 bottom-0 w-[300px] bg-gray-800 text-white transform transition-transform duration-300 ease-in-out md:translate-x-0 md:relative z-50 flex flex-col">
+        class="fixed md:static top-0 left-0 bottom-0 w-[300px] bg-gray-800 text-white transform transition-transform duration-300 ease-in-out md:translate-x-0 h-full md:min-h-screen z-50 flex flex-col">
         
-        <!-- Fixed Logo Header -->
+        <!-- Logo Header - Only shown on mobile -->
         <div class="flex-shrink-0 flex justify-center items-center bg-green-800 md:hidden">
             <img class="m-1 w-[120px] h-[120px]" src="../icons/zefmaven.png" alt="Logo">
         </div>
 
-        <!-- Scrollable Content Area -->
-        <div class="flex-1 overflow-y-auto">
+        <!-- Content Area -->
+        <div class="flex-1 overflow-y-auto md:h-screen">
             <div class="bg-gray-800 text-white w-[300px] p-1">
                 <div class="pt-5">
                     <?php
