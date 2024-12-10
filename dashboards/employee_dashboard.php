@@ -115,16 +115,20 @@ $totalSales = $totalSalesStmt->fetch(PDO::FETCH_ASSOC)['total_sales'];
 
     <!-- Header -->
     <header class="flex flex-row sticky top-0 z-50">
-        <div class="flex justify-center items-center text-white bg-green-800" style="width: 300px;">
+        <div class="hidden lg:flex justify-center items-center text-white bg-green-800" style="width: 300px;">
             <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
         </div>
 
         <div class="flex items-center text-black p-3 flex-grow bg-gray-600">
-            <div class="ml-6 flex flex-start text-white">
-                <h2 class="text-[1.5rem] font-bold capitalize"><?php echo htmlspecialchars($_SESSION['user_role']); ?> Dashboard</h2>
+            <div class="w-full flex justify-center lg:justify-start pl-4">
+                <h2 class="text-sm md:text-lg lg:text-[1.5rem] font-bold capitalize text-white">
+                    <?php echo htmlspecialchars($_SESSION['user_role']); ?> Dashboard
+                </h2>
             </div>
             <div class="flex justify-end flex-grow text-white">
-                <span class="px-4 font-bold text-[1rem]" id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
+                <span class=" hidden md:block md:text-sm lg:text-[1rem] font-bold whitespace-nowrap mr-4" id="datetime">
+                    <?php echo date('F j, Y g:i A'); ?>
+                </span>
             </div>
             <!-- User dropdown component -->
             <div class="relative"
