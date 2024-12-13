@@ -1,6 +1,8 @@
 <?php
-include '../conn/conn.php';
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
+include '../conn/conn.php';
 header('Content-Type: application/json');
 
 try {
@@ -8,38 +10,25 @@ try {
         throw new Exception('Database connection failed');
     }
 
-    $sql = "SELECT sale_date, quantity FROM sales ORDER BY sale_date";
+    // Modified query to ensure we get complete data
+    $sql = "SELECT s.id, s.product_id, p.product_name, s.sale_date, s.quantity 
+            FROM sales s
+            JOIN products p ON s.product_id = p.product_id
+            WHERE s.quantity > 0
+            ORDER BY s.product_id, s.sale_date DESC";
+    
     $stmt = $conn->prepare($sql);
     $stmt->execute();
 
-    $data = array();
-    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        $sale_date = strtotime($row['sale_date']);
-        if ($sale_date === false) {
-            continue;
-        }
-        
-        $quantity = filter_var($row['quantity'], FILTER_VALIDATE_INT);
-        if ($quantity === false) {
-            continue;
-        }
-        
-        $data[] = array(
-            'sale_date' => date('Y-m-d', $sale_date),
-            'quantity' => $quantity
-        );
-    }
-
-    if (empty($data)) {
-        throw new Exception('No valid data found');
-    }
-
+    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Debug output
+    error_log('Sales data count: ' . count($data));
+    
     echo json_encode($data);
 
 } catch (Exception $e) {
+    error_log('Sales API Error: ' . $e->getMessage());
     http_response_code(500);
     echo json_encode(['error' => $e->getMessage()]);
 }
-
-$conn = null;
-?>

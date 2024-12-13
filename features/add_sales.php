@@ -130,7 +130,6 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <body style="background-color: #DADBDF;">
     <!-- Header -->
-    <!-- Header -->
     <header class="flex flex-row sticky top-0 z-50">
         <div class="flex justify-center items-center text-white bg-green-800" style="width: 300px;">
             <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
@@ -283,7 +282,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </div>
                     </div>
 
-                    <button type="submit" class="mt-4 px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+                    <button type="submit" id="submitBtn" class="mt-4 px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600">
                         Submit
                     </button>
                 </form>
@@ -298,6 +297,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
             const salesContainer = document.getElementById('salesContainer');
             const addButton = document.getElementById('addSaleRow');
             const form = document.getElementById('saleForm');
+            const submitBtn = document.getElementById('submitBtn');
             const MAX_ROWS = 8;
 
             // Set current date
@@ -339,15 +339,59 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 }
             }
 
-            function showError(message) {
+            function showError(row, message) {
                 const errorDiv = document.createElement('div');
-                errorDiv.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4';
-                errorDiv.innerHTML = message;
-                form.insertBefore(errorDiv, form.firstChild);
+                errorDiv.className = 'text-red-500 text-sm mt-1';
+                errorDiv.textContent = message;
+                row.appendChild(errorDiv);
                 setTimeout(() => errorDiv.remove(), 5000);
             }
 
             function setupRow(row) {
+                // Clear existing error messages
+                function clearErrors(row) {
+                    const existingErrors = row.querySelectorAll('.stock-error');
+                    existingErrors.forEach(error => error.remove());
+                }
+
+                // Show error message
+                function showStockError(row, message) {
+                    clearErrors(row);
+                    const quantityInput = row.querySelector('[name="quantities[]"]');
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'stock-error text-red-500 text-xs mt-1';  // Made text smaller
+                    errorDiv.textContent = message;
+                    // Insert error right after the quantity input
+                    quantityInput.parentNode.insertBefore(errorDiv, quantityInput.nextSibling);
+                }
+
+                // Validate stock
+                async function validateStock(productId, quantity, quantityInput) {
+                    const result = await checkStock(productId, quantity);
+                    clearErrors(row);
+                    
+                    // If input is empty or 0, clear errors and styling
+                    if (!quantity) {
+                        quantityInput.classList.remove('border-red-500');
+                        clearErrors(row);
+                        submitBtn.disabled = false;
+                        return true;
+                    }
+                    
+                    // Check for stock availability
+                    if (!result.success || !result.isAvailable) {
+                        quantityInput.classList.add('border-red-500');
+                        showStockError(row, 'Exceeded the current available stock');
+                        submitBtn.disabled = true;
+                        return false;
+                    } else {
+                        quantityInput.classList.remove('border-red-500');
+                        submitBtn.disabled = false;
+                        return true;
+                    }
+                }
+
+                // Setup event listeners
                 const productSelect = row.querySelector('[name="products[]"]');
                 const categoryInput = row.querySelector('[name="categories[]"]');
                 const categoryNameInput = row.querySelector('[name="category_names[]"]');
@@ -369,17 +413,16 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 });
 
                 quantityInput.addEventListener('input', async function() {
-                    const quantity = parseInt(this.value) || 0;
+                    const quantity = this.value ? parseInt(this.value) : 0;
                     const productId = productSelect.value;
 
-                    if (productId && quantity > 0) {
-                        const result = await checkStock(productId, quantity);
-                        if (!result.success || !result.isAvailable) {
-                            showError(result.message);
-                            this.value = '';
-                            updateRowTotal(row);
-                            return;
-                        }
+                    if (!this.value) {
+                        // If input is empty, clear errors and styling
+                        this.classList.remove('border-red-500');
+                        clearErrors(row);
+                        submitBtn.disabled = false;
+                    } else if (productId && quantity > 0) {
+                        await validateStock(productId, quantity, this);
                     }
                     updateRowTotal(row);
                 });
@@ -407,7 +450,8 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     if (productId && quantity > 0) {
                         const result = await checkStock(productId, quantity);
                         if (!result.success || !result.isAvailable) {
-                            showError(result.message);
+                            showError(row, 'Exceeded the current available stock');
+                            row.querySelector('[name="quantities[]"]').classList.add('border-red-500');
                             isValid = false;
                             break;
                         }
