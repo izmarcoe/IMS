@@ -982,12 +982,20 @@ video {
   width: 1000px;
 }
 
+.w-\[700px\] {
+  width: 700px;
+}
+
 .min-w-\[1024px\] {
   min-width: 1024px;
 }
 
 .min-w-full {
   min-width: 100%;
+}
+
+.min-w-\[700px\] {
+  min-width: 700px;
 }
 
 .max-w-2xl {
@@ -2207,6 +2215,10 @@ video {
 
   .lg\:w-1\/4 {
     width: 25%;
+  }
+
+  .lg\:w-\[700px\] {
+    width: 700px;
   }
 
   .lg\:justify-start {

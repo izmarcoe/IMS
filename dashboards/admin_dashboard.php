@@ -284,13 +284,16 @@ foreach ($weeklyOrders as $order) {
                 </div>
             </div>
 
-            <!-- monthly orders graph-->
-            <div class="w-full md:w-3/4 lg:w-1/3 mx-auto p-6 bg-white rounded-lg shadow-lg mb-8 mt-8">
-                <div class="mb-4">
-                    <h2 class="text-xl font-semibold text-gray-800">Monthly Orders</h2>
-                </div>
-                <div class="bg-white p-4 rounded-lg h-[400px]"> <!-- Fixed height container -->
-                    <canvas id="monthlyOrdersChart"></canvas>
+            <!-- Add a scrollable wrapper div -->
+            <div class="overflow-x-auto w-full">
+                <!-- weekly orders graph-->
+                <div class="min-w-[700px] w-[700px] mx-auto p-6 bg-white rounded-lg shadow-lg mb-8 mt-8">
+                    <div class="mb-4">
+                        <h2 class="text-xl font-semibold text-gray-800">Weekly Orders</h2>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg h-[400px] relative">
+                        <canvas id="monthlyOrdersChart"></canvas>
+                    </div>
                 </div>
             </div>
 
@@ -387,60 +390,66 @@ foreach ($weeklyOrders as $order) {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         const ctx = document.getElementById('monthlyOrdersChart').getContext('2d');
-       // Update Chart.js configuration
-       const monthlyOrdersChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-        labels: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-        datasets: [{
-            label: 'Current Week',
-            data: <?php echo json_encode($currentWeekData); ?>,
-            borderColor: 'rgb(170, 255, 0)',
-            tension: 0.1,
-            fill: false
-        },
-        {
-            label: 'Previous Week',
-            data: <?php echo json_encode($lastWeekData); ?>,
-            borderColor: 'rgb(238, 75, 43)',
-            tension: 0.1,
-            fill: false,
-            borderDash: [5, 5]
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                position: 'top',
-                labels: {
-                    usePointStyle: true,
-                    padding: 20
-                }
-            },
-            tooltip: {
-                callbacks: {
-                    title: (context) => {
-                        return context[0].label;
+        // Update Chart.js configuration
+        const monthlyOrdersChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+                datasets: [{
+                        label: 'Current Week',
+                        data: <?php echo json_encode($currentWeekData); ?>,
+                        borderColor: 'rgb(170, 255, 0)',
+                        tension: 0.01,
+                        fill: false
                     },
-                    label: (context) => {
-                        return `Orders: ${context.parsed.y}`;
+                    {
+                        label: 'Previous Week',
+                        data: <?php echo json_encode($lastWeekData); ?>,
+                        borderColor: 'rgb(238, 75, 43)',
+                        tension: 0.01,
+                        fill: false,
+                        borderDash: [5, 5]
                     }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: (context) => {
+                                return context[0].label;
+                            },
+                            label: (context) => {
+                                return `Orders: ${context.parsed.y}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Orders'
+                        }
+                    }
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {}
                 }
             }
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                title: {
-                    display: true,
-                    text: 'Number of Orders'
-                }
-            }
-        }
-    }
-});
+        });
 
         function openModal(modalId) {
             document.getElementById(modalId).classList.remove('hidden');
