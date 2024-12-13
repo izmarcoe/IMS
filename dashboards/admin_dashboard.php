@@ -103,6 +103,36 @@ $totalSalesStmt = $conn->prepare("
 ");
 $totalSalesStmt->execute();
 $totalSales = $totalSalesStmt->fetch(PDO::FETCH_ASSOC)['total_sales'];
+
+// Update the SQL query to get weekly data
+$weeklyOrdersStmt = $conn->prepare("
+    SELECT 
+        DATE(sale_date) as sale_day,
+        COUNT(*) as order_count
+    FROM sales 
+    WHERE sale_date >= DATE_SUB(CURDATE(), INTERVAL 2 WEEK)
+    GROUP BY DATE(sale_date)
+    ORDER BY sale_day DESC
+");
+$weeklyOrdersStmt->execute();
+$weeklyOrders = $weeklyOrdersStmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Format data for Chart.js
+$currentWeekData = array_fill(0, 7, 0);
+$lastWeekData = array_fill(0, 7, 0);
+
+foreach ($weeklyOrders as $order) {
+    $dayDiff = (strtotime('today') - strtotime($order['sale_day'])) / (60 * 60 * 24);
+    if ($dayDiff < 7) {
+        // Current week
+        $dayIndex = date('w', strtotime($order['sale_day']));
+        $currentWeekData[$dayIndex] = $order['order_count'];
+    } else {
+        // Last week
+        $dayIndex = date('w', strtotime($order['sale_day']));
+        $lastWeekData[$dayIndex] = $order['order_count'];
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -121,7 +151,7 @@ $totalSales = $totalSalesStmt->fetch(PDO::FETCH_ASSOC)['total_sales'];
 <body class=bg-gray-200>
 
     <!-- Header -->
-    <header class="flex flex-row sticky top-0 z-50">
+    <header class="flex flex-row sticky">
         <div class="hidden lg:flex justify-center items-center text-white bg-green-800" style="width: 300px;">
             <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
         </div>
@@ -254,13 +284,43 @@ $totalSales = $totalSalesStmt->fetch(PDO::FETCH_ASSOC)['total_sales'];
                 </div>
             </div>
 
+            <!-- monthly orders graph-->
+            <div class="w-full md:w-3/4 lg:w-1/3 mx-auto p-6 bg-white rounded-lg shadow-lg mb-8 mt-8">
+                <div class="mb-4">
+                    <h2 class="text-xl font-semibold text-gray-800">Monthly Orders</h2>
+                </div>
+                <div class="bg-white p-4 rounded-lg h-[400px]"> <!-- Fixed height container -->
+                    <canvas id="monthlyOrdersChart"></canvas>
+                </div>
+            </div>
 
             <!-- Grid Container -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
-                <!-- Highest Selling Products -->
-                <div class="bg-white rounded-lg shadow-lg p-4">
-                    <h2 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-3">Highest Selling Products</h2>
-                    <div class="overflow-y-auto max-h-64">
+                <!-- Highest Selling Products Button -->
+                <button onclick="openModal('highestSellingModal')" class="bg-white rounded-lg shadow-lg p-4 hover:shadow-xl transition-shadow">
+                    <h2 class="text-lg font-semibold text-gray-800">Highest Selling Products</h2>
+                </button>
+
+                <!-- Latest Sales Button -->
+                <button onclick="openModal('latestSalesModal')" class="bg-white rounded-lg shadow-lg p-4 hover:shadow-xl transition-shadow">
+                    <h2 class="text-lg font-semibold text-gray-800">Latest Sales</h2>
+                </button>
+
+                <!-- Recently Added Products Button -->
+                <button onclick="openModal('recentProductsModal')" class="bg-white rounded-lg shadow-lg p-4 hover:shadow-xl transition-shadow">
+                    <h2 class="text-lg font-semibold text-gray-800">Recently Added Products</h2>
+                </button>
+            </div>
+
+            <!-- Modal Templates -->
+            <!-- Highest Selling Products Modal -->
+            <div id="highestSellingModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full">
+                <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                    <div class="flex justify-between items-center border-b pb-2 mb-3">
+                        <h3 class="text-lg font-semibold text-gray-800">Highest Selling Products</h3>
+                        <button onclick="closeModal('highestSellingModal')" class="text-gray-500 hover:text-gray-700">&times;</button>
+                    </div>
+                    <div class="mt-2">
                         <ul class="divide-y divide-gray-200">
                             <?php foreach ($highestSellingProducts as $product): ?>
                                 <li class="py-2 px-3 hover:bg-gray-50 flex justify-between items-center">
@@ -271,11 +331,16 @@ $totalSales = $totalSalesStmt->fetch(PDO::FETCH_ASSOC)['total_sales'];
                         </ul>
                     </div>
                 </div>
+            </div>
 
-                <!-- Latest Sales -->
-                <div class="bg-white rounded-lg shadow-lg p-4">
-                    <h2 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-3">Latest Sales</h2>
-                    <div class="overflow-y-auto max-h-64">
+            <!-- Latest Sales Modal -->
+            <div id="latestSalesModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full">
+                <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                    <div class="flex justify-between items-center border-b pb-2 mb-3">
+                        <h3 class="text-lg font-semibold text-gray-800">Latest Sales</h3>
+                        <button onclick="closeModal('latestSalesModal')" class="text-gray-500 hover:text-gray-700">&times;</button>
+                    </div>
+                    <div class="mt-2">
                         <ul class="divide-y divide-gray-200">
                             <?php foreach ($latestSales as $sale): ?>
                                 <li class="py-2 px-3 hover:bg-gray-50">
@@ -289,11 +354,16 @@ $totalSales = $totalSalesStmt->fetch(PDO::FETCH_ASSOC)['total_sales'];
                         </ul>
                     </div>
                 </div>
+            </div>
 
-                <!-- Recently Added Products -->
-                <div class="bg-white rounded-lg shadow-lg p-4">
-                    <h2 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-3">Recently Added Products</h2>
-                    <div class="overflow-y-auto max-h-64">
+            <!-- Recently Added Products Modal -->
+            <div id="recentProductsModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full">
+                <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                    <div class="flex justify-between items-center border-b pb-2 mb-3">
+                        <h3 class="text-lg font-semibold text-gray-800">Recently Added Products</h3>
+                        <button onclick="closeModal('recentProductsModal')" class="text-gray-500 hover:text-gray-700">&times;</button>
+                    </div>
+                    <div class="mt-2">
                         <ul class="divide-y divide-gray-200">
                             <?php foreach ($recentlyAddedProducts as $product): ?>
                                 <li class="py-2 px-3 hover:bg-gray-50">
@@ -314,6 +384,91 @@ $totalSales = $totalSalesStmt->fetch(PDO::FETCH_ASSOC)['total_sales'];
     <script src="../JS/employeeAuth.js"></script>
     <script src="../JS/time.js"></script>
     <script src="../JS/preventBack.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('monthlyOrdersChart').getContext('2d');
+       // Update Chart.js configuration
+       const monthlyOrdersChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+        datasets: [{
+            label: 'Current Week',
+            data: <?php echo json_encode($currentWeekData); ?>,
+            borderColor: 'rgb(170, 255, 0)',
+            tension: 0.1,
+            fill: false
+        },
+        {
+            label: 'Previous Week',
+            data: <?php echo json_encode($lastWeekData); ?>,
+            borderColor: 'rgb(238, 75, 43)',
+            tension: 0.1,
+            fill: false,
+            borderDash: [5, 5]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'top',
+                labels: {
+                    usePointStyle: true,
+                    padding: 20
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    title: (context) => {
+                        return context[0].label;
+                    },
+                    label: (context) => {
+                        return `Orders: ${context.parsed.y}`;
+                    }
+                }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Number of Orders'
+                }
+            }
+        }
+    }
+});
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+    </script>
+    <script>
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('fixed')) {
+                event.target.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+        }
+    </script>
 </body>
 
 </html>

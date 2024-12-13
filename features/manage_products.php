@@ -76,7 +76,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <body class="bg-[#DADBDF] h-screen">
     <!-- Header -->
-    <header class="flex flex-row sticky top-0 z-50">
+    <header class="flex flex-row sticky">
         <div class="flex justify-center items-center text-white bg-green-800" style="width: 300px;">
             <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
         </div>
