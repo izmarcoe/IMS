@@ -1,5 +1,3 @@
-// forecastChart.js
-
 async function fetchData(endpoint) {
     try {
         const response = await fetch(endpoint);
@@ -18,193 +16,309 @@ async function fetchData(endpoint) {
     }
 }
 
-async function main() {
-    try {
-        const [salesData, inventoryData] = await Promise.all([
-            fetch('../features-AI/get_sales_data.php'),
-            fetch('../features-AI/get_inventory_data.php')
-        ]);
-
-        // Process data for time-series forecasting
-        const predictions = await generatePredictions(salesData, inventoryData);
-
-        if (predictions.length > 0) {
-            updatePredictionsTable(predictions);
-            createRiskCharts(predictions);
-        } else {
-            throw new Error('No valid predictions generated');
-        }
-
-    } catch (error) {
-        console.error('Error in main function:', error);
-        document.getElementById('error').textContent = error.message;
-    }
+function calculateSafetyStock(data) {
+    const quantities = data.map(d => d.quantity);
+    const stdDev = calculateStandardDeviation(quantities);
+    const leadTime = 7; // Assumed 7 days lead time
+    const serviceLevel = 1.96; // 95% service level (z-score)
+    return Math.ceil(serviceLevel * stdDev * Math.sqrt(leadTime));
 }
 
-async function generatePredictions(salesData, inventoryData) {
-    const predictions = [];
-
-    for (const product of inventoryData) {
-        const productSales = salesData
-            .filter(sale => sale.product_id === product.product_id)
-            .map(sale => ({
-                date: new Date(sale.sale_date),
-                quantity: sale.quantity
-            }))
-            .sort((a, b) => a.date - b.date);
-
-        if (productSales.length < 2) continue; // Need at least 2 data points
-
-        // Prepare data for time-series forecasting
-        const quantities = productSales.map(s => s.quantity);
-        const dates = productSales.map(s => s.date.getTime());
-
-        // Normalize dates
-        const minDate = Math.min(...dates);
-        const normalizedDates = dates.map(date => (date - minDate) / (1000 * 3600 * 24)); // days since first date
-
-        // Train the model
-        const model = await trainTimeSeriesModel(normalizedDates, quantities);
-
-        // Predict demand for the next month
-        const futureDate = (normalizedDates[normalizedDates.length - 1] + 30); // 30 days ahead
-        const predictedDemandTensor = model.predict(tf.tensor2d([[futureDate]]));
-        const predictedDemand = predictedDemandTensor.dataSync()[0];
-        predictedDemandTensor.dispose();
-
-        // Calculate risks and recommendations
-        const { stockoutRisk, overstockRisk } = calculateRiskScores(product.quantity, predictedDemand);
-        const action = getActionRecommendation(stockoutRisk, overstockRisk);
-
-        predictions.push({
-            product_name: product.product_name,
-            current_stock: product.quantity,
-            predicted_demand: Math.round(predictedDemand),
-            stockout_risk: stockoutRisk,
-            overstock_risk: overstockRisk,
-            action: action
-        });
-
-        model.dispose();
-    }
-
-    return predictions.sort((a, b) => b.stockout_risk - a.stockout_risk).slice(0, 10);
+function calculateStandardDeviation(values) {
+    const mean = values.reduce((a, b) => a + b) / values.length;
+    const variance = values.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / values.length;
+    return Math.sqrt(variance);
 }
 
-async function trainTimeSeriesModel(xsData, ysData) {
-    const xs = tf.tensor2d(xsData, [xsData.length, 1]);
-    const ys = tf.tensor2d(ysData, [ysData.length, 1]);
+function calculateReorderPoint(avgDailyDemand, leadTime, safetyStock) {
+    return Math.ceil(avgDailyDemand * leadTime + safetyStock);
+}
+
+async function trainModel(dates, quantities) {
+    const xs = tf.tensor2d(dates, [dates.length, 1]);
+    const ys = tf.tensor2d(quantities, [quantities.length, 1]);
 
     const model = tf.sequential();
-    model.add(tf.layers.dense({ units: 50, activation: 'relu', inputShape: [1] }));
-    model.add(tf.layers.dense({ units: 25, activation: 'relu' }));
+    model.add(tf.layers.dense({ units: 128, activation: 'relu', inputShape: [1] }));
+    model.add(tf.layers.dropout({ rate: 0.2 }));
+    model.add(tf.layers.dense({ units: 64, activation: 'relu' }));
+    model.add(tf.layers.dropout({ rate: 0.2 }));
+    model.add(tf.layers.dense({ units: 32, activation: 'relu' }));
     model.add(tf.layers.dense({ units: 1 }));
 
-    model.compile({ optimizer: 'adam', loss: 'meanSquaredError' });
+    model.compile({
+        optimizer: tf.train.adam(0.001),
+        loss: 'meanSquaredError'
+    });
 
-    await model.fit(xs, ys, { epochs: 100, verbose: 0 });
-
-    xs.dispose();
-    ys.dispose();
+    await model.fit(xs, ys, {
+        epochs: 200,
+        batchSize: 32,
+        validationSplit: 0.2,
+        verbose: 0
+    });
 
     return model;
 }
 
-function calculateRiskScores(currentStock, predictedDemand) {
-    const stockoutRisk = Math.max(0, Math.min(100, ((predictedDemand - currentStock) / predictedDemand) * 100));
-    const overstockRisk = Math.max(0, Math.min(100, ((currentStock - predictedDemand) / currentStock) * 100));
+async function main() {
+    try {
+        const salesData = await fetchData('get_sales_data.php');
+        const inventoryData = await fetchData('get_inventory_data.php');
 
-    return { stockoutRisk, overstockRisk };
-}
+        // Preprocess sales data
+        const dates = salesData.map(d => new Date(d.sale_date).getTime());
+        const quantities = salesData.map(d => d.quantity);
 
-function getActionRecommendation(stockoutRisk, overstockRisk) {
-    if (stockoutRisk > 70) return 'URGENT: Restock Required';
-    if (stockoutRisk > 40) return 'Consider Restocking';
-    if (overstockRisk > 70) return 'Reduce Future Orders';
-    if (overstockRisk > 40) return 'Monitor Stock Levels';
-    return 'Stock Levels Optimal';
-}
+        // Normalize dates for training
+        const minDate = Math.min(...dates);
+        const maxDate = Math.max(...dates);
+        const normalizedDates = dates.map(d => (d - minDate) / (maxDate - minDate));
 
-function updatePredictionsTable(predictions) {
-    const tbody = document.getElementById('predictionsBody');
-    tbody.innerHTML = predictions.map(pred => `
-        <tr class="hover:bg-gray-50">
-            <td class="px-6 py-4 whitespace-nowrap">${pred.product_name}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-right">${pred.current_stock}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-right">${pred.predicted_demand}</td>
-            <td class="px-6 py-4">
-                <div class="flex flex-col gap-1">
-                    <div class="flex items-center">
-                        <span class="text-xs w-20">Stockout:</span>
-                        <div class="flex-1 bg-gray-200 rounded h-2">
-                            <div class="bg-red-500 h-2 rounded" style="width: ${pred.stockout_risk}%"></div>
-                        </div>
-                        <span class="text-xs ml-2">${pred.stockout_risk.toFixed(1)}%</span>
-                    </div>
-                    <div class="flex items-center">
-                        <span class="text-xs w-20">Overstock:</span>
-                        <div class="flex-1 bg-gray-200 rounded h-2">
-                            <div class="bg-yellow-500 h-2 rounded" style="width: ${pred.overstock_risk}%"></div>
-                        </div>
-                        <span class="text-xs ml-2">${pred.overstock_risk.toFixed(1)}%</span>
-                    </div>
-                </div>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-                <span class="px-2 py-1 text-xs font-semibold rounded-full ${getRiskClass(pred.stockout_risk, pred.overstock_risk)}">
-                    ${pred.action}
-                </span>
-            </td>
-        </tr>
-    `).join('');
-}
+        // Train model
+        const model = await trainModel(normalizedDates, quantities);
 
-function createRiskCharts(predictions) {
-    // Stockout Risk Chart
-    new Chart(document.getElementById('stockoutChart'), {
-        type: 'bar',
-        data: {
-            labels: predictions.map(p => p.product_name),
-            datasets: [{
-                label: 'Stockout Risk (%)',
-                data: predictions.map(p => p.stockout_risk),
-                backgroundColor: 'rgba(239, 68, 68, 0.5)',
-                borderColor: 'rgb(239, 68, 68)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: { y: { beginAtZero: true, max: 100 } }
+        // Generate future dates
+        const futureDays = 30;
+        const futureTimestamps = [];
+        const lastDate = new Date(Math.max(...dates));
+        for (let i = 1; i <= futureDays; i++) {
+            const futureDate = new Date(lastDate);
+            futureDate.setDate(futureDate.getDate() + i);
+            futureTimestamps.push(futureDate.getTime());
         }
-    });
 
-    // Overstock Risk Chart
-    new Chart(document.getElementById('overstockChart'), {
-        type: 'bar',
-        data: {
-            labels: predictions.map(p => p.product_name),
-            datasets: [{
-                label: 'Overstock Risk (%)',
-                data: predictions.map(p => p.overstock_risk),
-                backgroundColor: 'rgba(245, 158, 11, 0.5)',
-                borderColor: 'rgb(245, 158, 11)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: { y: { beginAtZero: true, max: 100 } }
-        }
+        // Normalize future dates and predict
+        const normalizedFutureDates = futureTimestamps.map(d =>
+            (d - minDate) / (maxDate - minDate)
+        );
+        const futurePredictions = model.predict(tf.tensor2d(normalizedFutureDates, [normalizedFutureDates.length, 1]));
+        const predictedQuantities = await futurePredictions.data();
+
+        // Round predicted quantities
+        const roundedPredictedQuantities = Array.from(predictedQuantities).map(Math.round);
+
+        // Calculate key metrics
+        const safetyStock = calculateSafetyStock(salesData);
+        const avgDailyDemand = quantities.reduce((a, b) => a + b) / quantities.length;
+        const leadTime = 7; // Assumed 7 days lead time
+        const reorderPoint = calculateReorderPoint(avgDailyDemand, leadTime, safetyStock);
+        const predictedMonthlyDemand = roundedPredictedQuantities.reduce((a, b) => a + b, 0);
+        const stockOutRisk = calculateStockOutRisk(roundedPredictedQuantities, safetyStock);
+
+        // Update metrics display
+        document.getElementById('predictedSales').textContent = Math.round(predictedMonthlyDemand);
+        document.getElementById('recommendedStock').textContent = Math.round(safetyStock + predictedMonthlyDemand);
+        document.getElementById('stockOutRisk').textContent = `${(stockOutRisk * 100).toFixed(1)}%`;
+        document.getElementById('reorderPoint').textContent = Math.round(reorderPoint);
+
+        // Create inventory forecast chart
+        const inventoryCtx = document.getElementById('inventoryForecastChart').getContext('2d');
+        new Chart(inventoryCtx, {
+            type: 'line',
+            data: {
+                datasets: [{
+                    label: 'Recommended Stock Level',
+                    data: futureTimestamps.map((date, i) => ({
+                        x: new Date(date),
+                        y: Math.round(safetyStock + roundedPredictedQuantities[i])
+                    })),
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    fill: true,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)'
+                }, {
+                    label: 'Reorder Point',
+                    data: futureTimestamps.map(date => ({
+                        x: new Date(date),
+                        y: Math.round(reorderPoint)
+                    })),
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    borderDash: [5, 5]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Inventory Level Forecast'
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'day'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Quantity'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Create inventory vs demand chart
+        const inventoryVsDemandCtx = document.getElementById('inventoryVsDemandChart').getContext('2d');
+        new Chart(inventoryVsDemandCtx, {
+            type: 'bar',
+            data: {
+                labels: inventoryData.map(d => d.product_name),
+                datasets: [{
+                    label: 'Inventory Levels',
+                    data: inventoryData.map(d => d.quantity),
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }, {
+                    label: 'Predicted Demand',
+                    data: roundedPredictedQuantities,
+                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Inventory Levels vs. Predicted Demand'
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Products'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Units'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Create stockout and overstocking rate tracking chart
+        const stockoutOverstockCtx = document.getElementById('stockoutOverstockChart').getContext('2d');
+        new Chart(stockoutOverstockCtx, {
+            type: 'line',
+            data: {
+                labels: salesData.map(d => d.sale_date),
+                datasets: [{
+                    label: 'Stockout Rate',
+                    data: calculateStockoutRate(salesData),
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    fill: false
+                }, {
+                    label: 'Overstocking Rate',
+                    data: calculateOverstockingRate(salesData),
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Stockout and Overstocking Rates'
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Months'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Rates (%)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Populate dead stock table
+        updateDeadStockTable(inventoryData, roundedPredictedQuantities);
+
+    } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('error').textContent = 'Error: ' + error.message;
+    }
+}
+
+function updateDeadStockTable(inventoryData, predictedQuantities) {
+    const deadStockTableBody = document.getElementById('deadStockTableBody');
+
+    // Calculate dead stock
+    const deadStockItems = inventoryData.map((product, index) => {
+        const predictedDemand = predictedQuantities[index] || 0;
+        const price = product.price || 0;
+        
+        console.log(`Product: ${product.product_name}`);
+        console.log(`Price: ${price}`);
+        
+        const excessQuantity = product.quantity - predictedDemand;
+        const deadStockValue = excessQuantity > 0 ? excessQuantity * price : 0;
+        
+        console.log(`Excess Quantity: ${excessQuantity}`);
+        console.log(`Dead Stock Value: ${deadStockValue}`);
+
+        return {
+            product_name: product.product_name,
+            quantity: product.quantity,
+            predictedDemand: predictedDemand,
+            deadStockValue: deadStockValue.toFixed(2)
+        };
+    }).filter(item => item.quantity > item.predictedDemand);
+
+
+    // Sort dead stock items by dead stock value in descending order
+    deadStockItems.sort((a, b) => parseFloat(b.deadStockValue) - parseFloat(a.deadStockValue));
+
+    // Get top 10 dead stock items
+    const topDeadStockItems = deadStockItems.slice(0, 10);
+
+    // Clear existing table rows
+    deadStockTableBody.innerHTML = '';
+
+    // Populate table with top dead stock items
+    topDeadStockItems.forEach(item => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${item.product_name}</td>
+            <td>${item.quantity}</td>
+            <td>${item.predictedDemand}</td>
+            <td>₱${item.deadStockValue}</td>
+        `;
+        deadStockTableBody.appendChild(row);
     });
 }
 
-function getRiskClass(stockoutRisk, overstockRisk) {
-    if (stockoutRisk > 70) return 'bg-red-100 text-red-800';
-    if (stockoutRisk > 40) return 'bg-yellow-100 text-yellow-800';
-    if (overstockRisk > 70) return 'bg-blue-100 text-blue-800';
-    if (overstockRisk > 40) return 'bg-gray-100 text-gray-800';
-    return 'bg-green-100 text-green-800';
+function calculateStockOutRisk(predictedDemand, safetyStock) {
+    const exceedsSafetyCount = predictedDemand.filter(q => q > safetyStock).length;
+    return exceedsSafetyCount / predictedDemand.length;
+}
+
+function calculateStockoutRate(salesData) {
+    // Implement stockout rate calculation logic
+    return salesData.map(d => Math.random() * 100); // Placeholder
+}
+
+function calculateOverstockingRate(salesData) {
+    // Implement overstocking rate calculation logic
+    return salesData.map(d => Math.random() * 100); // Placeholder
 }
 
 window.addEventListener('load', main);

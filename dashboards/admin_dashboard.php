@@ -284,16 +284,13 @@ foreach ($weeklyOrders as $order) {
                 </div>
             </div>
 
-            <!-- Add a scrollable wrapper div -->
-            <div class="overflow-x-auto w-full">
-                <!-- weekly orders graph-->
-                <div class="min-w-[700px] w-[700px] mx-auto p-6 bg-white rounded-lg shadow-lg mb-8 mt-8">
-                    <div class="mb-4">
-                        <h2 class="text-xl font-semibold text-gray-800">Weekly Orders</h2>
-                    </div>
-                    <div class="bg-white p-4 rounded-lg h-[400px] relative">
-                        <canvas id="monthlyOrdersChart"></canvas>
-                    </div>
+            <!-- weekly orders graph-->
+            <div class="w-full lg:w-3/4 mx-auto p-6 bg-white rounded-lg shadow-lg mb-8 mt-8">
+                <div class="mb-4">
+                    <h2 class="text-xl font-semibold text-gray-800">Weekly Orders</h2>
+                </div>
+                <div class="bg-white p-4 rounded-lg h-[200px] relative"> <!-- Added relative positioning -->
+                    <canvas id="monthlyOrdersChart" style="width:100% !important; height:100% !important;"></canvas>
                 </div>
             </div>
 

@@ -16,12 +16,12 @@ $month = $_GET['month'] ?? date('m'); // Default to current month if not provide
 $year = $_GET['year'] ?? date('Y'); // Default to current year if not provided
 
 // Pagination settings
-$limit = 15; // Number of entries per page
+$limit = 10; // Number of entries per page
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
 // Fetch total number of sales for the given month and year
-$totalQuery = $conn->prepare("SELECT COUNT(*) FROM sales WHERE MONTH(sale_date) = :month AND YEAR(sale_date) = :year");
+$totalQuery = $conn->prepare(" SELECT COUNT(*) FROM sales WHERE MONTH(sale_date) = :month AND YEAR(sale_date) = :year" );
 $totalQuery->bindParam(':month', $month);
 $totalQuery->bindParam(':year', $year);
 $totalQuery->execute();
