@@ -5,6 +5,8 @@ module.exports = {
     "./dashboards/*.{html,php,js}", 
     "./features/*.{html,php,js}", 
     "./js/*.{html,php,js}",
+    "./features/**/*.{php,js}",
+    "./features-AI/**/*.{php,js}",
   ],
   theme: {
     extend: {
