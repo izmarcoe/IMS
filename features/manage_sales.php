@@ -49,34 +49,34 @@ switch ($sort) {
 if (isset($_GET['delete_id'])) {
     try {
         $delete_id = $_GET['delete_id'];
-        
+
         // Start transaction
         $conn->beginTransaction();
-        
+
         // Get sale details before deletion
         $stmt = $conn->prepare("SELECT product_id, quantity FROM sales WHERE id = :id");
         $stmt->bindParam(':id', $delete_id, PDO::PARAM_INT);
         $stmt->execute();
         $sale = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+
         if ($sale) {
             // Update product quantity (add back the sold items)
             $updateStmt = $conn->prepare("UPDATE products SET quantity = quantity + :qty WHERE product_id = :pid");
             $updateStmt->bindParam(':qty', $sale['quantity'], PDO::PARAM_INT);
             $updateStmt->bindParam(':pid', $sale['product_id'], PDO::PARAM_INT);
             $updateStmt->execute();
-            
+
             // Delete the sale record
             $deleteStmt = $conn->prepare("DELETE FROM sales WHERE id = :id");
             $deleteStmt->bindParam(':id', $delete_id, PDO::PARAM_INT);
             $deleteStmt->execute();
-            
+
             // Commit transaction
             $conn->commit();
-            
+
             $_SESSION['success_message'] = "Sale deleted and product quantity restored.";
         }
-        
+
         header("Location: manage_sales.php");
         exit();
     } catch (PDOException $e) {
@@ -414,8 +414,8 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="editQuantity">Quantity</label>
-                            <input type="number" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                id="editQuantity" name="quantity" min="1" required>
+                            <input type="number" step="0.01" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 bg-gray-100 leading-tight focus:outline-none focus:shadow-outline"
+                                id="editQuantity" name="quantity" min="1" readonly>
                             <small id="stockInfo" class="text-gray-500"></small>
                         </div>
 
