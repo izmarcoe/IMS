@@ -45,6 +45,8 @@ $sales = $query->fetchAll(PDO::FETCH_ASSOC);
 
 // Calculate total pages
 $totalPages = ceil($totalSales / $limit);
+
+$fname = $_SESSION['Fname'];
 ?>
 
 <!DOCTYPE html>
@@ -57,13 +59,14 @@ $totalPages = ceil($totalSales / $limit);
     <link rel="stylesheet" href="../src/output.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
 </head>
 
 <body class="bg-gray-200">
 
-    <!-- Header -->
-    <header class="flex flex-row">
+      <!-- Header -->
+      <header class="flex flex-row sticky">
         <div class="flex justify-center items-center text-white bg-green-800" style="width: 300px;">
             <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
         </div>
@@ -88,7 +91,7 @@ $totalPages = ceil($totalSales / $limit);
                     :aria-expanded="isOpen"
                     aria-haspopup="true">
                     <img src="../icons/user.svg" alt="User Icon" class="w-5 h-5 mr-2">
-                    <span>user</span>
+                    <span><?php echo htmlspecialchars($fname); ?></span>
                     <svg class="w-4 h-4 ml-2 transition-transform duration-200"
                         :class="{ 'rotate-180': isOpen }"
                         fill="none"
@@ -128,7 +131,6 @@ $totalPages = ceil($totalSales / $limit);
             </div>
         </div>
     </header>
-
     <main class="flex">
         <aside>
             <?php include '../features/sidebar.php'; ?>

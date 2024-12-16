@@ -146,26 +146,23 @@ foreach ($weeklyOrders as $order) {
     <meta http-equiv="Expires" content="0">
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="../src/output.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
 <body class=bg-gray-200>
 
     <!-- Header -->
     <header class="flex flex-row sticky">
-        <div class="hidden lg:flex justify-center items-center text-white bg-green-800" style="width: 300px;">
+        <div class="flex justify-center items-center text-white bg-green-800" style="width: 300px;">
             <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
         </div>
 
         <div class="flex items-center text-black p-3 flex-grow bg-gray-600">
-            <div class="w-full flex justify-center lg:justify-start pl-4">
-                <h2 class="text-sm md:text-lg lg:text-[1.5rem] font-bold capitalize text-white">
-                    <?php echo htmlspecialchars($_SESSION['user_role']); ?> Dashboard
-                </h2>
+            <div class="ml-6 flex flex-start text-white">
+                <h2 class="text-[1.5rem] font-bold capitalize"><?php echo htmlspecialchars($_SESSION['user_role']); ?> Dashboard</h2>
             </div>
             <div class="flex justify-end flex-grow text-white">
-                <span class=" hidden md:block md:text-sm lg:text-[1rem] font-bold whitespace-nowrap mr-4" id="datetime">
-                    <?php echo date('F j, Y g:i A'); ?>
-                </span>
+                <span class="px-4 font-bold text-[1rem]" id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
             </div>
             <!-- User dropdown component -->
             <div class="relative"
@@ -180,7 +177,7 @@ foreach ($weeklyOrders as $order) {
                     :aria-expanded="isOpen"
                     aria-haspopup="true">
                     <img src="../icons/user.svg" alt="User Icon" class="w-5 h-5 mr-2">
-                    <span>user</span>
+                    <span><?php echo htmlspecialchars($fname); ?></span>
                     <svg class="w-4 h-4 ml-2 transition-transform duration-200"
                         :class="{ 'rotate-180': isOpen }"
                         fill="none"
@@ -228,7 +225,6 @@ foreach ($weeklyOrders as $order) {
         </div>
         <!-- Main Content -->
         <div class="flex-grow p-3">
-            <h2 class="text-center text-5xl my-5">Welcome, <?php echo htmlspecialchars($fname) . ' ' . htmlspecialchars($lname); ?>!</h2>
 
             <div class="flex flex-wrap justify-center items-center gap-6 mt-5">
                 <!-- Total Number of Users -->

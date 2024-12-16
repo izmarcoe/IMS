@@ -60,6 +60,8 @@ $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
 $stmt->bindParam(':limit', $productsPerPage, PDO::PARAM_INT);
 $stmt->execute();
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+$fname = $_SESSION['Fname'];
 ?>
 
 <!DOCTYPE html>
@@ -101,7 +103,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     :aria-expanded="isOpen"
                     aria-haspopup="true">
                     <img src="../icons/user.svg" alt="User Icon" class="w-5 h-5 mr-2">
-                    <span>user</span>
+                    <span><?php echo htmlspecialchars($fname); ?></span>
                     <svg class="w-4 h-4 ml-2 transition-transform duration-200"
                         :class="{ 'rotate-180': isOpen }"
                         fill="none"

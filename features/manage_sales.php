@@ -116,6 +116,9 @@ $stmt->bindParam(':limit', $productsPerPage, PDO::PARAM_INT);
 $stmt->execute();
 $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+
+$fname = $_SESSION['Fname'];
+$lname = $_SESSION['Lname'];
 ?>
 
 <!DOCTYPE html>
@@ -131,8 +134,8 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 
 <body style="background-color: #DADBDF;">
-    <!-- Header -->
-    <header class="flex flex-row sticky">
+     <!-- Header -->
+     <header class="flex flex-row sticky">
         <div class="flex justify-center items-center text-white bg-green-800" style="width: 300px;">
             <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
         </div>
@@ -157,7 +160,7 @@ $sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     :aria-expanded="isOpen"
                     aria-haspopup="true">
                     <img src="../icons/user.svg" alt="User Icon" class="w-5 h-5 mr-2">
-                    <span>user</span>
+                    <span><?php echo htmlspecialchars($fname); ?></span>
                     <svg class="w-4 h-4 ml-2 transition-transform duration-200"
                         :class="{ 'rotate-180': isOpen }"
                         fill="none"
