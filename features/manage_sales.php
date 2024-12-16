@@ -49,15 +49,42 @@ switch ($sort) {
 if (isset($_GET['delete_id'])) {
     try {
         $delete_id = $_GET['delete_id'];
-
-        $stmt = $conn->prepare("DELETE FROM sales WHERE id = :id");
+        
+        // Start transaction
+        $conn->beginTransaction();
+        
+        // Get sale details before deletion
+        $stmt = $conn->prepare("SELECT product_id, quantity FROM sales WHERE id = :id");
         $stmt->bindParam(':id', $delete_id, PDO::PARAM_INT);
         $stmt->execute();
-
+        $sale = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($sale) {
+            // Update product quantity (add back the sold items)
+            $updateStmt = $conn->prepare("UPDATE products SET quantity = quantity + :qty WHERE product_id = :pid");
+            $updateStmt->bindParam(':qty', $sale['quantity'], PDO::PARAM_INT);
+            $updateStmt->bindParam(':pid', $sale['product_id'], PDO::PARAM_INT);
+            $updateStmt->execute();
+            
+            // Delete the sale record
+            $deleteStmt = $conn->prepare("DELETE FROM sales WHERE id = :id");
+            $deleteStmt->bindParam(':id', $delete_id, PDO::PARAM_INT);
+            $deleteStmt->execute();
+            
+            // Commit transaction
+            $conn->commit();
+            
+            $_SESSION['success_message'] = "Sale deleted and product quantity restored.";
+        }
+        
         header("Location: manage_sales.php");
         exit();
     } catch (PDOException $e) {
-        echo "Error: " . $e->getMessage();
+        // Rollback transaction on error
+        $conn->rollBack();
+        $_SESSION['error_message'] = "Error: " . $e->getMessage();
+        header("Location: manage_sales.php");
+        exit();
     }
 }
 

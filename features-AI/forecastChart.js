@@ -57,66 +57,54 @@ async function main() {
 
 // Add debug logging
 async function generatePredictions(salesData, inventoryData) {
-    console.log('Sales Data:', salesData);
-    console.log('Inventory Data:', inventoryData);
-    
     const predictions = [];
 
-    // Validate input data
-    if (!Array.isArray(inventoryData)) {
-        throw new Error('Inventory data must be an array');
-    }
-
     for (const product of inventoryData) {
-        if (!product.product_id || !product.quantity) {
-            console.warn('Skipping invalid product:', product);
-            continue;
+        try {
+            // Filter sales data for current product
+            const productSales = salesData
+                .filter(sale => sale.product_id === product.product_id)
+                .map(sale => parseFloat(sale.quantity))
+                .filter(qty => !isNaN(qty));
+
+            if (productSales.length < 6) {
+                console.warn(`Insufficient data for product ${product.product_name}`);
+                continue;
+            }
+
+            // Preprocess data
+            const { inputs, outputs } = preprocessData(productSales);
+
+            // Create and train model
+            const model = await createTimeSeriesModel();
+            await trainModel(model, inputs, outputs);
+
+            // Make prediction
+            const lastWindow = productSales.slice(-5);
+            const predictedDemand = await makePredictions(model, lastWindow);
+
+            // Calculate risks
+            const { stockoutRisk, overstockRisk } = calculateRiskScores(
+                product.quantity,
+                predictedDemand
+            );
+
+            predictions.push({
+                product_name: product.product_name,
+                current_stock: product.quantity,
+                predicted_demand: Math.round(predictedDemand),
+                stockout_risk: stockoutRisk,
+                overstock_risk: overstockRisk,
+                action: getActionRecommendation(stockoutRisk, overstockRisk)
+            });
+
+            model.dispose();
+            inputs.dispose();
+            outputs.dispose();
+
+        } catch (error) {
+            console.error(`Error processing product ${product.product_name}:`, error);
         }
-
-        const productSales = salesData
-            .filter(sale => sale.product_id === product.product_id)
-            .map(sale => ({
-                date: new Date(sale.sale_date),
-                quantity: parseInt(sale.quantity)
-            }))
-            .sort((a, b) => a.date - b.date);
-
-        if (productSales.length < 2) {
-            console.warn(`Insufficient sales data for product ${product.product_name}`);
-            continue;
-        }
-
-        // Prepare data for time-series forecasting
-        const quantities = productSales.map(s => s.quantity);
-        const dates = productSales.map(s => s.date.getTime());
-
-        // Normalize dates
-        const minDate = Math.min(...dates);
-        const normalizedDates = dates.map(date => (date - minDate) / (1000 * 3600 * 24)); // days since first date
-
-        // Train the model
-        const model = await trainTimeSeriesModel(normalizedDates, quantities);
-
-        // Predict demand for the next month
-        const futureDate = (normalizedDates[normalizedDates.length - 1] + 30); // 30 days ahead
-        const predictedDemandTensor = model.predict(tf.tensor2d([[futureDate]]));
-        const predictedDemand = predictedDemandTensor.dataSync()[0];
-        predictedDemandTensor.dispose();
-
-        // Calculate risks and recommendations
-        const { stockoutRisk, overstockRisk } = calculateRiskScores(product.quantity, predictedDemand);
-        const action = getActionRecommendation(stockoutRisk, overstockRisk);
-
-        predictions.push({
-            product_name: product.product_name,
-            current_stock: product.quantity,
-            predicted_demand: Math.round(predictedDemand),
-            stockout_risk: stockoutRisk,
-            overstock_risk: overstockRisk,
-            action: action
-        });
-
-        model.dispose();
     }
 
     return predictions.sort((a, b) => b.stockout_risk - a.stockout_risk).slice(0, 10);
@@ -236,6 +224,73 @@ function getRiskClass(stockoutRisk, overstockRisk) {
     if (overstockRisk > 70) return 'bg-blue-100 text-blue-800';
     if (overstockRisk > 40) return 'bg-gray-100 text-gray-800';
     return 'bg-green-100 text-green-800';
+}
+
+async function createTimeSeriesModel() {
+    const model = tf.sequential();
+    
+    // Add layers
+    model.add(tf.layers.dense({
+        inputShape: [5], // Look back 5 time steps
+        units: 64,
+        activation: 'relu'
+    }));
+    
+    model.add(tf.layers.dropout(0.2));
+    
+    model.add(tf.layers.dense({
+        units: 32,
+        activation: 'relu'
+    }));
+    
+    model.add(tf.layers.dense({
+        units: 1
+    }));
+
+    // Compile the model
+    model.compile({
+        optimizer: tf.train.adam(0.001),
+        loss: 'meanSquaredError',
+        metrics: ['mse']
+    });
+
+    return model;
+}
+
+function preprocessData(salesData, windowSize = 5) {
+    const xs = [];
+    const ys = [];
+
+    for (let i = windowSize; i < salesData.length; i++) {
+        const window = salesData.slice(i - windowSize, i);
+        xs.push(window);
+        ys.push(salesData[i]);
+    }
+
+    return {
+        inputs: tf.tensor2d(xs),
+        outputs: tf.tensor2d(ys, [ys.length, 1])
+    };
+}
+
+async function trainModel(model, inputs, outputs, epochs = 100) {
+    const history = await model.fit(inputs, outputs, {
+        epochs: epochs,
+        validationSplit: 0.2,
+        shuffle: true,
+        callbacks: {
+            onEpochEnd: (epoch, logs) => {
+                console.log(`Epoch ${epoch + 1}: loss = ${logs.loss.toFixed(4)}`);
+            }
+        }
+    });
+    return history;
+}
+
+async function makePredictions(model, lastWindow) {
+    const input = tf.tensor2d([lastWindow], [1, 5]);
+    const prediction = await model.predict(input).data();
+    return prediction[0];
 }
 
 window.addEventListener('load', main);
