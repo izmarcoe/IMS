@@ -6,6 +6,7 @@
     "build:css": "tailwindcss -i ./src/input.css -o ./src/output.css --watch"
   },
   "dependencies": {
+    "@tensorflow/tfjs": "^4.22.0",
     "dotenv": "^16.4.7"
   }
 }
