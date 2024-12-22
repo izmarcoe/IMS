@@ -2,6 +2,37 @@
 session_start(); // Start the session
 include('../conn/conn.php');
 
+// User ID from session
+$user_id = $_SESSION['user_id'];
+
+if (!isset($_SESSION['Fname']) || !isset($_SESSION['Lname'])) {
+    // Check if the connection variable is set
+    if (isset($conn)) {
+        $stmt = $conn->prepare("SELECT Fname, Lname, role FROM login_db WHERE user_id = :user_id");
+        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT); // Use bindParam for PDO
+        $stmt->execute();
+
+        // Fetch the user data
+        if ($stmt->rowCount() > 0) {
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            // Set Fname and Lname in the session
+            $_SESSION['Fname'] = $user['Fname'];
+            $_SESSION['Lname'] = $user['Lname'];
+            $_SESSION['user_role'] = $user['role'];
+        } else {
+            // Handle case where user data is not found (optional)
+            echo "User data not found.";
+            exit();
+        }
+
+        // Close the statement
+        $stmt = null;
+    } else {
+        die("Database connection not established.");
+    }
+}
+
+$fname = $_SESSION['Fname'];
 $notification = ""; // Variable to store notification messages
 
 // Check if the form is submitted

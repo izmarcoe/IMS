@@ -1,6 +1,6 @@
 <?php
 session_start();
-include('../conn/conn.php'); // Ensure this points to the correct path of your conn.php
+include('../conn/conn.php');
 require '../endpoint/adminAuth.php';
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
@@ -16,11 +16,9 @@ $currentMonth = date('F'); // Get the current month name
 // User ID from session
 $user_id = $_SESSION['user_id'];
 
-// Check if Fname and Lname are set in session; if not, fetch them from the database
 if (!isset($_SESSION['Fname']) || !isset($_SESSION['Lname'])) {
     // Check if the connection variable is set
     if (isset($conn)) {
-        // Prepare the SQL statement
         $stmt = $conn->prepare("SELECT Fname, Lname, role FROM login_db WHERE user_id = :user_id");
         $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT); // Use bindParam for PDO
         $stmt->execute();
@@ -45,7 +43,6 @@ if (!isset($_SESSION['Fname']) || !isset($_SESSION['Lname'])) {
     }
 }
 
-// Now Fname and Lname are guaranteed to be in the session
 $fname = $_SESSION['Fname'];
 $lname = $_SESSION['Lname'];
 $user_role = $_SESSION['user_role'];
@@ -377,9 +374,7 @@ foreach ($weeklyOrders as $order) {
     </main>
 
     <!-- JS -->
-    <script src="../JS/employeeAuth.js"></script>
     <script src="../JS/time.js"></script>
-    <script src="../JS/preventBack.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         const ctx = document.getElementById('monthlyOrdersChart').getContext('2d');
