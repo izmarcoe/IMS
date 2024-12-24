@@ -2,8 +2,6 @@
 
 
 <?php
-// Modified employeeAuth.php
-include('../conn/conn.php');
 
 // Add cache control headers
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");

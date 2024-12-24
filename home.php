@@ -1,10 +1,10 @@
 <?php
-session_start();
-include('./conn/conn.php');
-
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
+session_start();
+include('./conn/conn.php');
+
 
 // Check if the user is logged in and has the role 'new_user'
 if (isset($_SESSION['user_id']) && isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'new_user') {
@@ -85,15 +85,28 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['user_role']) && $_SESSION['u
                 </script>
             </head>
 
-            <body>
-                <div class="main">
-                    <div class="container ">
-                        <h1>Welcome, <?php echo $user_name; ?>!</h1>
-                        <h2>You don't have access to the dashboard yet. Please contact your Admin and try again later.</h2>
-                        <a class='btn btn-dark logout' href='endpoint/logout.php'>Logout</a>
-                    </div>
-                    <div class="image-container">
-                        <img src="icons/noRole.svg" alt="Unauthorized Access">
+            <body class="bg-gradient-to-br from-green-800 via-green-600 to-green-900 min-h-screen">
+                <div class="min-h-screen flex items-center justify-center px-4 backdrop-blur-sm">
+                    <div class="max-w-4xl w-full flex flex-col md:flex-row items-center justify-between gap-8 p-8 bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl border border-green-200/20 hover:shadow-green-500/10 transition-all duration-300">
+                        <div class="text-center md:text-left space-y-6">
+                            <div class="space-y-2">
+                                <h1 class="text-4xl font-bold text-green-800 tracking-tight">
+                                    Welcome, <span class="text-green-900"><?php echo $user_name; ?></span>!
+                                </h1>
+                                <h2 class="text-xl text-green-700/80 max-w-lg font-medium">
+                                    You don't have access to the dashboard yet. Please contact your Admin and try again later.
+                                </h2>
+                            </div>
+                            <a href='endpoint/logout.php' 
+                               class="inline-block px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transform hover:-translate-y-0.5 transition-all duration-200 shadow-lg hover:shadow-green-500/50 font-semibold">
+                                Logout
+                            </a>
+                        </div>
+                        <div class="w-full md:w-1/2 transform hover:scale-105 transition-transform duration-300">
+                            <img src="icons/noRole.svg" 
+                                 alt="Unauthorized Access" 
+                                 class="w-full max-w-md mx-auto drop-shadow-2xl">
+                        </div>
                     </div>
                 </div>
             </body>
@@ -106,11 +119,11 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['user_role']) && $_SESSION['u
         }
     } else {
         // Redirect if user not found
-        header("Location: http://localhost/IMS/");
+        header("Location: http://localhost/IMS/user_login.php");
         exit();
     }
 } else {
-    header("Location: http://localhost/IMS/");
+    header("Location: http://localhost/IMS/user_login.php");
     exit();
 }
 ?>
