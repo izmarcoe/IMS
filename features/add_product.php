@@ -76,11 +76,6 @@ $fname = $_SESSION['Fname'];
         -webkit-appearance: none;
         margin: 0;
     }
-
-    /* Remove spinner arrows for Firefox */
-    input[type=number] {
-        -moz-appearance: textfield;
-    }
 </style>
 
 <body style="background-color: #DADBDF;">
