@@ -1,6 +1,6 @@
 <?php
 session_start();
-
+include('./conn/conn.php');
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
@@ -12,6 +12,9 @@ if (isset($_SESSION['user_id'])) {
         exit();
     } elseif ($_SESSION['user_role'] == 'admin') {
         header("Location: dashboards/admin_dashboard.php");
+        exit();
+    } elseif($_SESSION['user_role'] == 'new_user') {
+        header("Location: home.php");
         exit();
     }
 }

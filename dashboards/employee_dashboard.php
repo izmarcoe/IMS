@@ -115,9 +115,6 @@ $totalSales = $totalSalesStmt->fetch(PDO::FETCH_ASSOC)['total_sales'];
 
     <!-- Header -->
     <header class="flex flex-row sticky top-0 z-50">
-        <div class="hidden lg:flex justify-center items-center text-white bg-green-800" style="width: 300px;">
-            <img class="m-1" style="width: 120px; height:120px;" src="../icons/zefmaven.png">
-        </div>
 
         <div class="flex items-center text-black p-3 flex-grow bg-gray-600">
             <div class="w-full flex justify-center lg:justify-start pl-4">
