@@ -1,33 +1,61 @@
+/**
+ * DemandForecaster - Handles product demand prediction and stock recommendations
+ * Uses machine learning to analyze sales history and predict future demand
+ */
 class DemandForecaster {
+    /**
+     * Initialize forecaster with required DOM elements and default values
+     * @constructor
+     */
     constructor() {
-        this.model = null;
-        this.searchInput = document.getElementById('productSearch');
-        this.tableBody = document.getElementById('forecastTableBody');
-        this.itemsPerPage = 10;
-        this.currentPage = 1;
-        this.allProducts = [];
+        // DOM element references
+        this.model = null;                                    // TensorFlow model instance
+        this.searchInput = document.getElementById('productSearch');  // Search input field
+        this.tableBody = document.getElementById('forecastTableBody'); // Table body for results
+        this.loadingRow = document.getElementById('loadingRow');      // Loading indicator row
+        
+        // Pagination settings
+        this.itemsPerPage = 10;        // Number of items per page
+        this.currentPage = 1;          // Current active page
+        
+        // Data storage
+        this.allProducts = [];         // Holds all product data
         
         this.setupEventListeners();
     }
 
+    /**
+     * Set up event listeners for user interactions
+     */
     setupEventListeners() {
         this.searchInput.addEventListener('input', () => this.handleSearch());
     }
 
+    /**
+     * Initialize the forecaster by loading data and training the model
+     * @async
+     */
     async initialize() {
         await this.loadData();
         await this.trainModel();
         this.displayForecasts();
     }
 
+    /**
+     * Load sales and inventory data from the server
+     * @async
+     */
     async loadData() {
         const salesData = await fetch('../features-AI/get_sales_data.php').then(r => r.json());
         const inventoryData = await fetch('../features-AI/get_inventory_data.php').then(r => r.json());
-        
-        // Process and combine data
         this.processData(salesData, inventoryData);
     }
 
+    /**
+     * Process raw sales and inventory data into usable format
+     * @param {Array} salesData - Raw sales data from database
+     * @param {Array} inventoryData - Raw inventory data from database
+     */
     processData(salesData, inventoryData) {
         // Group sales by product and month
         const salesByProduct = {};
@@ -162,7 +190,29 @@ class DemandForecaster {
         this.displayForecasts(filtered);
     }
 
+    /**
+     * Calculate recommended stock level based on predictions and current inventory
+     * @param {number} prediction - Predicted demand for next month
+     * @param {Object} product - Product information including current quantity
+     * @param {number} lastMonthSales - Sales from previous month
+     * @returns {number} Recommended stock level
+     */
+    calculateRecommendedStock(prediction, product, lastMonthSales) {
+        const minimumStockLevel = Math.ceil(prediction * 0.2);  // 20% minimum stock
+        const leadTimeFactor = 1.1;                             // 10% buffer for lead time
+        const safetyStock = Math.ceil(prediction * 0.15);       // 15% safety stock
+        
+        const totalRequired = Math.ceil(prediction * leadTimeFactor) + safetyStock;
+        return Math.max(minimumStockLevel, totalRequired - product.quantity);
+    }
+
+    /**
+     * Display forecasts in the table with pagination
+     * @async
+     * @param {Array} products - Products to display (defaults to all products)
+     */
     async displayForecasts(products = this.allProducts) {
+        this.loadingRow.classList.remove('hidden');
         const start = (this.currentPage - 1) * this.itemsPerPage;
         const end = start + this.itemsPerPage;
         const pageProducts = products.slice(start, end);
@@ -178,7 +228,7 @@ class DemandForecaster {
             const salesVariability = this.calculateSalesVariability(history);
             const safetyBuffer = Math.ceil(prediction * salesVariability);
             
-            const recommendedStock = Math.max(1, prediction + safetyBuffer - product.quantity);
+            const recommendedStock = this.calculateRecommendedStock(prediction, product, lastMonthSales);
             
             const row = document.createElement('tr');
             row.innerHTML = `
@@ -193,6 +243,7 @@ class DemandForecaster {
         }
         
         this.updatePagination(products.length);
+        this.loadingRow.classList.add('hidden');
     }
 
     updatePagination(totalItems) {
@@ -212,7 +263,11 @@ class DemandForecaster {
         }
     }
 
-    // Helper method to calculate sales variability
+    /**
+     * Calculate sales variability for safety stock
+     * @param {Array} history - Historical sales data
+     * @returns {number} Variability factor
+     */
     calculateSalesVariability(history) {
         if (history.length < 2) return 0.1; // Default 10% buffer
         
@@ -226,7 +281,7 @@ class DemandForecaster {
     }
 }
 
-// Initialize when document is ready
+// Initialize forecaster when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     const forecaster = new DemandForecaster();
     forecaster.initialize();

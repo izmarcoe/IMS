@@ -53,7 +53,7 @@ $fname = $_SESSION['Fname'];
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forecasting</title>
     <script src="../node_modules/@tensorflow/tfjs/dist/tf.min.js"></script>
-    <script src="../features-AI/forecastChart.js"></script>
+    <script src="../features-AI/PredictDemand.js"></script>
     <script src="../features-AI/demandForecast.js"></script>
     <link rel="stylesheet" href="../src/output.css">
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -128,24 +128,24 @@ $fname = $_SESSION['Fname'];
         <div class="container mx-auto p-4">
             <h1 class="text-2xl font-bold mb-4">Product Demand Forecast</h1>
 
-            <h2 class="text-xl font-semibold mb-2">Top-Performing Products</h2>
+            <h2 class="text-xl font-semibold mb-2">Top-5 Performing Products</h2>
             <table class="min-w-full bg-white border border-gray-200">
                 <thead>
                     <tr>
                         <th class="px-4 py-2 border-b text-center bg-gray-50">Product ID</th>
-                        <th class="px-4 py-2 border-b text-left bg-gray-50">Product Name</th>
+                        <th class="px-4 py-2 border-b text-center bg-gray-50">Product Name</th>
                         <th class="px-4 py-2 border-b text-center bg-gray-50">Total Quantity Sold</th>
                     </tr>
                 </thead>
                 <tbody id="topPerformingTableBody"></tbody>
             </table>
 
-            <h2 class="text-xl font-semibold mt-8 mb-2">Underperforming Products</h2>
+            <h2 class="text-xl font-semibold mt-8 mb-2">Bottom-5 Underperforming Products</h2>
             <table class="min-w-full bg-white border border-gray-200">
                 <thead>
                     <tr>
                         <th class="px-4 py-2 border-b text-center bg-gray-50">Product ID</th>
-                        <th class="px-4 py-2 border-b text-left bg-gray-50">Product Name</th>
+                        <th class="px-4 py-2 border-b text-center bg-gray-50">Product Name</th>
                         <th class="px-4 py-2 border-b text-center bg-gray-50">Total Quantity Sold</th>
                     </tr>
                 </thead>
@@ -171,11 +171,20 @@ $fname = $_SESSION['Fname'];
                             <th class="px-4 py-2 border-b text-left bg-gray-50">Product Name</th>
                             <th class="px-4 py-2 border-b text-center bg-gray-50">Current Stock</th>
                             <th class="px-4 py-2 border-b text-center bg-gray-50">Previous Month Sales</th>
-                            <th class="px-4 py-2 border-b text-center bg-gray-50">Predicted Demand</th>
-                            <th class="px-4 py-2 border-b text-center bg-gray-50">Recommended Stock</th>
+                            <th class="px-4 py-2 border-b text-center bg-gray-50">Predicted Demand (Next Month)</th>
+                            <th class="px-4 py-2 border-b text-center bg-gray-50">Recommended Stock (at least)</th>
                         </tr>
                     </thead>
-                    <tbody id="forecastTableBody"></tbody>
+                    <tbody id="forecastTableBody">
+                        <tr id="loadingRow" class="animate-pulse">
+                            <td colspan="6" class="text-center py-8">
+                                <div class="flex items-center justify-center">
+                                    <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                                </div>
+                                <p class="mt-4 text-gray-600 text-sm">Loading forecasts...</p>
+                            </td>
+                        </tr>
+                    </tbody>
                 </table>
 
                 <div id="paginationControls" class="mt-4 flex justify-center space-x-2"></div>

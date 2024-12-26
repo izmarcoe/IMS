@@ -123,10 +123,10 @@
                     </div>
                 </div>
 
-                <div x-data="{ open: <?php echo in_array($current_page, ['salesPerDay.php', 'salesPerMonth.php', 'salesDateRange.php', 'forecasting.php']) ? 'true' : 'false' ?> }"
+                <div x-data="{ open: <?php echo in_array($current_page, ['salesPerDay.php', 'salesPerMonth.php', 'salesDateRange.php', 'predictive_forecast.php']) ? 'true' : 'false' ?> }"
                     class="relative">
                     <button @click="open = !open"
-                        class="w-full flex items-center py-3 px-4 rounded-lg text-lg hover:bg-green-700 transition-all duration-200 <?php echo in_array($current_page, ['salesPerDay.php', 'salesPerMonth.php', 'salesDateRange.php', 'forecasting.php']) ? 'bg-green-800' : ''; ?>">
+                        class="w-full flex items-center py-3 px-4 rounded-lg text-lg hover:bg-green-700 transition-all duration-200 <?php echo in_array($current_page, ['salesPerDay.php', 'salesPerMonth.php', 'salesDateRange.php', 'predictive_forecast.php']) ? 'bg-green-800' : ''; ?>">
                         <img src="../icons/salesreport.svg" class="h-5 w-5 mr-3">
                         <span>Sales Report</span>
                         <svg class="w-4 h-4 ml-auto transform transition-transform duration-200"
@@ -147,8 +147,8 @@
                         <a class="block py-2 px-4 rounded-lg text-lg hover:bg-green-700 transition-all duration-200 <?php echo ($current_page == 'salesDateRange.php') ? 'bg-green-800' : ''; ?>"
                             href="../features/salesDateRange.php">Sales by Date Range</a>
                         <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'admin'): ?>
-                            <a class="block py-2 px-4 rounded-lg text-lg hover:bg-green-700 transition-all duration-200 <?php echo ($current_page == 'forecasting.php') ? 'bg-green-800' : ''; ?>"
-                                href="../features-AI/forecasting.php">Predictive Analytics</a>
+                            <a class="block py-2 px-4 rounded-lg text-lg hover:bg-green-700 transition-all duration-200 <?php echo ($current_page == 'predictive_forecast.php') ? 'bg-green-800' : ''; ?>"
+                                href="../features-AI/predictive_forecast.php">Predictive Analytics</a>
                         <?php endif; ?>
                     </div>
                 </div>

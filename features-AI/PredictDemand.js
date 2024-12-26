@@ -1,6 +1,18 @@
+//Top performing and underperforming products
+
 async function fetchData(url) {
-    const response = await fetch('../features-AI/get_inventory_data.php');
-    return response.json();
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log('Fetched data:', data); // Debug log
+        return data;
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        return [];
+    }
 }
 
 async function getData() {
@@ -45,9 +57,9 @@ function displaySalesPerformance(topPerforming, underPerforming) {
     topPerforming.forEach(item => {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td class="px-4 py-2">${item.product_id}</td>
-            <td class="px-4 py-2">${item.product_name}</td>
-            <td class="px-4 py-2">${item.total_quantity}</td>
+            <td class="px-4 py-2 text-center">${item.product_id}</td>
+            <td class="px-4 py-2 text-center">${item.product_name}</td>
+            <td class="px-4 py-2 text-center">${item.total_quantity}</td>
         `;
         topTableBody.appendChild(row);
     });
@@ -55,18 +67,36 @@ function displaySalesPerformance(topPerforming, underPerforming) {
     underPerforming.forEach(item => {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td class="px-4 py-2">${item.product_id}</td>
-            <td class="px-4 py-2">${item.product_name}</td>
-            <td class="px-4 py-2">${item.total_quantity}</td>
+            <td class="px-4 py-2 text-center">${item.product_id}</td>
+            <td class="px-4 py-2 text-center">${item.product_name}</td>
+            <td class="px-4 py-2 text-center">${item.total_quantity}</td>
         `;
         underTableBody.appendChild(row);
     });
 }
 
 async function main() {
-    const { salesData } = await getData();
-    const { topPerforming, underPerforming } = analyzeSalesPerformance(salesData);
-    displaySalesPerformance(topPerforming, underPerforming);
+    try {
+        console.log('Starting main function'); // Debug log
+        const { salesData } = await getData();
+        
+        if (!salesData || salesData.length === 0) {
+            console.error('No sales data received');
+            return;
+        }
+
+        console.log('Sales data:', salesData); // Debug log
+        
+        const { topPerforming, underPerforming } = analyzeSalesPerformance(salesData);
+        
+        console.log('Top performing:', topPerforming); // Debug log
+        console.log('Under performing:', underPerforming); // Debug log
+        
+        displaySalesPerformance(topPerforming, underPerforming);
+    } catch (error) {
+        console.error('Error in main function:', error);
+    }
 }
 
-main();
+// Call main function when document is ready
+document.addEventListener('DOMContentLoaded', main);
