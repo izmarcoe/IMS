@@ -58,93 +58,53 @@ $fname = $_SESSION['Fname'];
 
 <body style="background-color: #DADBDF;">
     <!-- Header -->
-    <header class="flex flex-row sticky">
-        <div class="flex items-center text-black p-3 flex-grow bg-gray-600">
-            <div class="ml-6 flex flex-start text-white">
-                <h2 class="text-[1.5rem] font-bold capitalize"><?php echo htmlspecialchars($_SESSION['user_role']); ?> Dashboard</h2>
-            </div>
-            <div class="flex justify-end flex-grow text-white">
-                <span class="px-4 font-bold text-[1rem]" id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
-            </div>
-            <!-- User dropdown component -->
-            <div class="relative"
-                x-data="{ isOpen: false }"
-                @keydown.escape.stop="isOpen = false"
-                @click.away="isOpen = false">
-
-                <button class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                    @click="isOpen = !isOpen"
-                    type="button"
-                    id="user-menu-button"
-                    :aria-expanded="isOpen"
-                    aria-haspopup="true">
-                    <img src="../icons/user.svg" alt="User Icon" class="w-5 h-5 mr-2">
-                    <span><?php echo htmlspecialchars($fname); ?></span>
-                    <svg class="w-4 h-4 ml-2 transition-transform duration-200"
-                        :class="{ 'rotate-180': isOpen }"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                </button>
-
-                <!-- Dropdown menu -->
-                <div x-show="isOpen"
-                    x-transition:enter="transition ease-out duration-100"
-                    x-transition:enter-start="transform opacity-0 scale-95"
-                    x-transition:enter-end="transform opacity-100 scale-100"
-                    x-transition:leave="transition ease-in duration-75"
-                    x-transition:leave-start="transform opacity-100 scale-100"
-                    x-transition:leave-end="transform opacity-0 scale-95"
-                    class="absolute right-0 z-10 mt-2 w-48 origin-top-right">
-
-                    <ul class="bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
-                        <li>
-                            <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-lg"
-                                href="../features/user_settings.php"
-                                role="menuitem">
-                                <i class="fas fa-cog mr-2"></i>Settings
-                            </a>
-                        </li>
-                        <li>
-                            <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-b-lg"
-                                href="../endpoint/logout.php"
-                                role="menuitem">
-                                <i class="fas fa-sign-out-alt mr-2"></i>Logout
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </header>
+    <?php include '../features/header.php' ?>
 
     <main class="flex flex-row">
         <div class="flex">
+
             <aside>
                 <?php include '../features/sidebar.php'; ?>
             </aside>
+
             <div class="container mx-auto mt-4 z-30 px-8 max-w-7xl">
-                <h2 class="mt-6 text-5xl font-bold">Manage Users</h2>
-                <table class="mt-6 w-full border-collapse border-2 border-gray-500 min-w-[1024px]">
-                    <thead>
-                        <tr class="bg-gray-200">
-                            <th class="border border-gray-100 px-6 py-3">User ID</th>
-                            <th class="border border-gray-100 px-6 py-3">First Name</th>
-                            <th class="border border-gray-100 px-6 py-3">Last Name</th>
-                            <th class="border border-gray-100 px-6 py-3">Role</th>
-                            <th class="border border-gray-100 px-6 py-3">Status</th>
-                            <th class="border border-gray-100 px-6 py-3">Actions</th>
+                <h2 class="mt-6 text-xl md:text-2xl font-semibold mb-6">Manage Users</h2>
+                <table class="w-full divide-y divide-gray-200 table-auto">
+                    <thead class="bg-gray-50 sticky top-0 z-10">
+                        <tr>
+                            <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider w-1/3">
+                                User ID
+                            </th>
+                            <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider w-1/3">
+                                First name
+                            </th>
+                            <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider w-1/3">
+                                Last name
+                            </th>
+                            <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider w-1/3">
+                                Role
+                            </th>
+                            <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider w-1/3">
+                                Status
+                            </th>
+                            <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider w-1/3">
+                                Actions
+                            </th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="bg-white divide-y divide-gray-200">
                         <?php foreach ($users as $user): ?>
                             <tr class="<?php echo $user['status'] == 'deactivated' ? 'bg-gray-400' : ''; ?>">
-                                <td class="border border-gray-300 px-4 py-2"><?php echo htmlspecialchars($user['user_id']); ?></td>
-                                <td class="border border-gray-300 px-4 py-2"><?php echo htmlspecialchars($user['Fname']); ?></td>
-                                <td class="border border-gray-300 px-4 py-2"><?php echo htmlspecialchars($user['Lname']); ?></td>
-                                <td class="border border-gray-300 px-4 py-2">
+                                <td class="px-4 md:px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm md:text-base text-gray-900"><?php echo htmlspecialchars($user['user_id']); ?></div>
+                                </td>
+                                <td class="px-4 md:px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm md:text-base text-gray-900"><?php echo htmlspecialchars($user['Fname']); ?></div>
+                                </td>
+                                <td class="px-4 md:px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm md:text-base text-gray-900"><?php echo htmlspecialchars($user['Lname']); ?></div>
+                                </td>
+                                <td class="px-4 md:px-6 py-4 whitespace-nowrap">
                                     <?php
                                     switch ($user['role']) {
                                         case 'admin':
@@ -161,8 +121,10 @@ $fname = $_SESSION['Fname'];
                                     }
                                     ?>
                                 </td>
-                                <td class="border border-gray-300 px-4 py-2"><?php echo htmlspecialchars($user['status']); ?></td>
-                                <td class="border border-gray-300 px-4 py-2">
+                                <td class="px-4 md:px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm md:text-base text-gray-900"><?php echo htmlspecialchars($user['status']); ?></div>
+                                </td>
+                                <td class="px-4 md:px-6 py-4 whitespace-nowrap">
                                     <?php if ($user['status'] == 'active'): ?>
                                         <button type="button" class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600" onclick="openModal('editRoleModal<?php echo $user['user_id']; ?>')">
                                             Edit Role
