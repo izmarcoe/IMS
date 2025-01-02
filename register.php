@@ -13,7 +13,7 @@ if (isset($_SESSION['user_id'])) {
     } elseif ($_SESSION['user_role'] == 'admin') {
         header("Location: dashboards/admin_dashboard.php");
         exit();
-    } elseif($_SESSION['user_role'] == 'new_user') {
+    } elseif ($_SESSION['user_role'] == 'new_user') {
         header("Location: home.php");
         exit();
     }
@@ -30,6 +30,8 @@ if (isset($_SESSION['user_id'])) {
     <link rel="stylesheet" href="./src/output.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
 </head>
 
 <body class="flex items-center justify-center min-h-screen p-6 bg-gradient-to-br from-green-800 to-green-950">
@@ -70,48 +72,58 @@ if (isset($_SESSION['user_id'])) {
 
                     <div class="grid grid-cols-2 gap-6">
                         <div>
-                            <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                            <div class="flex items-center justify-between">
+                                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                                <button type="button" class="ml-2" onclick="togglePassword('password', 'togglePassword1')">
+                                    <i class="fas fa-eye text-gray-500 hover:text-gray-700" id="togglePassword1"></i>
+                                </button>
+                            </div>
                             <input type="password" id="password" name="password" required
-                            class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 transition-colors duration-200">
+                                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                         </div>
+
                         <div>
-                            <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+                            <div class="flex items-center justify-between">
+                                <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+                                <button type="button" class="ml-2" onclick="togglePassword('confirmPassword', 'togglePassword2')">
+                                    <i class="fas fa-eye text-gray-500 hover:text-gray-700" id="togglePassword2"></i>
+                                </button>
+                            </div>
                             <input type="password" id="confirmPassword" name="confirm_password" required
                                 class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                         </div>
+
+                        <input type="hidden" name="role" value="new_user">
+                        <input type="hidden" id="generatedCode" name="generated_code">
                     </div>
 
-                    <input type="hidden" name="role" value="new_user">
-                    <input type="hidden" id="generatedCode" name="generated_code">
-                </div>
-
-                <div class="qr-code-container hidden text-center">
-                    <h3 class="text-xl font-semibold mb-4">Your QR Code is Ready!</h3>
-                    <p class="text-gray-600 mb-4">Please save this QR code - you'll need it to login</p>
-                    <div class="m-4" id="qrBox">
-                        <img src="" id="qrImg" class="mx-auto rounded-lg shadow-lg">
+                    <div class="qr-code-container hidden text-center">
+                        <h3 class="text-xl font-semibold mb-4">Your QR Code is Ready!</h3>
+                        <p class="text-gray-600 mb-4">Please save this QR code - you'll need it to login</p>
+                        <div class="m-4" id="qrBox">
+                            <img src="" id="qrImg" class="mx-auto rounded-lg shadow-lg">
+                        </div>
+                        <div class="mt-4 space-y-4">
+                            <button type="submit"
+                                class="w-full py-2 px-4 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-200">
+                                Complete Registration
+                            </button>
+                            <p class="text-sm text-gray-600">A PDF copy will be downloaded automatically</p>
+                        </div>
                     </div>
-                    <div class="mt-4 space-y-4">
-                        <button type="submit"
-                            class="w-full py-2 px-4 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-200">
-                            Complete Registration
+
+                    <div class="flex flex-col space-y-4 mt-4">
+                        <button type="button" id="registerButton" onclick="generateQrCode()" disabled
+                            class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transform transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed">
+                            Register and Generate QR Code
                         </button>
-                        <p class="text-sm text-gray-600">A PDF copy will be downloaded automatically</p>
-                    </div>
-                </div>
 
-                <div class="flex flex-col space-y-4">
-                    <button type="button" id="registerButton" onclick="generateQrCode()" disabled
-                        class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transform transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed">
-                        Register and Generate QR Code
-                    </button>
-
-                    <div class="text-center">
-                        <a href="./user_login.php" class="text-sm text-green-600 hover:text-green-700">
-                            Already have an account? Login here
-                        </a>
+                        <div class="text-center">
+                            <a href="./user_login.php" class="text-sm text-green-600 hover:text-green-700">
+                                Already have an account? Login here
+                            </a>
+                        </div>
                     </div>
-                </div>
             </form>
         </div>
     </div>
@@ -244,6 +256,22 @@ if (isset($_SESSION['user_id'])) {
                 return CryptoJS.AES.encrypt(data, secretKey).toString();
             }
         });
+    </script>
+    <script>
+        function togglePassword(inputId, toggleIconId) {
+            const passwordInput = document.getElementById(inputId);
+            const toggleIcon = document.getElementById(toggleIconId);
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
     </script>
 </body>
 

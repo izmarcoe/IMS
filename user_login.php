@@ -51,6 +51,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Employee Login</title>
     <link rel="stylesheet" href="./src/output.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
 </head>
 
 <body class="bg-gradient-to-br from-green-800 to-green-950 min-h-screen flex items-center justify-center p-6">
@@ -106,13 +108,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                     <div>
                         <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                        <input type="password" id="password" name="password" required
-                            class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                        <div class="relative">
+                            <input type="password" id="password" name="password" required
+                                class="mt-1 block w-full px-3 pr-10 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <button type="button" class="absolute inset-y-0 right-0 flex items-center pr-3 mt-1" onclick="togglePassword()">
+                                <i class="fas fa-eye text-gray-500 hover:text-gray-700" id="togglePassword"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="flex items-center justify-between mb-4">
-                        <button type="button" onclick="openForgotPasswordModal()" 
-                                class="text-sm text-green-600 hover:text-green-800">
+                        <button type="button" onclick="openForgotPasswordModal()"
+                            class="text-sm text-green-600 hover:text-green-800">
                             Forgot Password?
                         </button>
                     </div>
@@ -299,40 +306,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         document.getElementById('forgotPasswordForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
-            
+
             fetch('./endpoint/reset_password.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'OTP Sent!',
-                        text: 'Please check your email for the OTP code',
-                        confirmButtonColor: '#047857'
-                    }).then(() => {
-                        closeForgotPasswordModal();
-                        document.getElementById('otpVerificationModal').classList.remove('hidden');
-                    });
-                } else {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'OTP Sent!',
+                            text: 'Please check your email for the OTP code',
+                            confirmButtonColor: '#047857'
+                        }).then(() => {
+                            closeForgotPasswordModal();
+                            document.getElementById('otpVerificationModal').classList.remove('hidden');
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message || 'Failed to send OTP',
+                            confirmButtonColor: '#047857'
+                        });
+                    }
+                })
+                .catch(error => {
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: data.message || 'Failed to send OTP',
+                        text: 'An error occurred. Please try again.',
                         confirmButtonColor: '#047857'
                     });
-                }
-            })
-            .catch(error => {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'An error occurred. Please try again.',
-                    confirmButtonColor: '#047857'
                 });
-            });
         });
 
         function closeOtpModal() {
@@ -342,25 +349,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         document.getElementById('otpVerificationForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
-            
+
             fetch('./endpoint/verify_otp.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    window.location.href = './reset_password_form.php';
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Invalid OTP',
-                        text: data.message,
-                        confirmButtonColor: '#047857'
-                    });
-                }
-            });
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = './reset_password_form.php';
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Invalid OTP',
+                            text: data.message,
+                            confirmButtonColor: '#047857'
+                        });
+                    }
+                });
         });
     </script>
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('togglePassword');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+    </script>
 </body>
+
 </html>
