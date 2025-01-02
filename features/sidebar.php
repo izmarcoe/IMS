@@ -20,10 +20,10 @@
     </div>
 
     <!-- Sidebar -->
-    <div 
+    <div
         :class="{'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen}"
         class="fixed md:static top-0 left-0 bottom-0 w-[300px] bg-gradient-to-b from-gray-800 to-gray-900 text-white transform transition-transform duration-300 ease-in-out md:translate-x-0 h-full md:min-h-screen z-50 flex flex-col shadow-xl">
-        
+
         <!-- Logo Header -->
         <div class="flex-shrink-0 flex justify-center items-center bg-green-800 h-[120px] border-b border-gray-700">
             <img class="w-[100px] h-[100px]" src="../icons/zefmaven.png" alt="Logo">
@@ -86,19 +86,24 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                         </svg>
                     </button>
-                    <div x-show="open" 
+                    <div x-show="open"
                         x-transition:enter="transition ease-out duration-200"
                         x-transition:enter-start="opacity-0 transform scale-95"
                         x-transition:enter-end="opacity-100 transform scale-100"
                         class="ml-8 mt-2 space-y-2">
-                        <a class="block py-2 px-4 rounded-lg text-lg hover:bg-green-700 transition-all duration-200 <?php echo ($current_page == 'manage_products.php') ? 'bg-green-800' : ''; ?>"
-                            href="../features/manage_products.php">Manage Products</a>
-                        <a class="block py-2 px-4 rounded-lg text-lg hover:bg-green-700 transition-all duration-200 <?php echo ($current_page == 'add_product.php') ? 'bg-green-800' : ''; ?>"
-                            href="../features/add_product.php">Add Products</a>
+                        <a class="flex items-center py-2 px-4 rounded-lg text-lg hover:bg-green-700 transition-all duration-200 <?php echo ($current_page == 'manage_products.php') ? 'bg-green-800' : ''; ?>"
+                            href="../features/manage_products.php">
+                            <img src="../icons/cart.svg" class="h-5 w-5 mr-3">
+                            <span>Manage Products</span>
+                        </a>
+                        <a class="flex items-center py-2 px-4 rounded-lg text-lg hover:bg-green-700 transition-all duration-200 <?php echo ($current_page == 'add_product.php') ? 'bg-green-800' : ''; ?>"
+                            href="../features/add_product.php">
+                            <img src="../icons/cart.svg" class="h-5 w-5 mr-3">
+                            <span>Add Products</span>
+                        </a>
                     </div>
                 </div>
 
-                <!-- Apply same styling pattern to Sales and Sales Report dropdowns -->
                 <div x-data="{ open: <?php echo ($current_page == 'manage_sales.php' || $current_page == 'add_sales.php') ? 'true' : 'false' ?> }"
                     class="relative">
                     <button @click="open = !open"
@@ -111,15 +116,21 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                         </svg>
                     </button>
-                    <div x-show="open" 
+                    <div x-show="open"
                         x-transition:enter="transition ease-out duration-200"
                         x-transition:enter-start="opacity-0 transform scale-95"
                         x-transition:enter-end="opacity-100 transform scale-100"
                         class="ml-8 mt-2 space-y-2">
-                        <a class="block py-2 px-4 rounded-lg text-lg hover:bg-green-700 transition-all duration-200 <?php echo ($current_page == 'manage_sales.php') ? 'bg-green-800' : ''; ?>"
-                            href="../features/manage_sales.php">Manage Sales</a>
-                        <a class="block py-2 px-4 rounded-lg text-lg hover:bg-green-700 transition-all duration-200 <?php echo ($current_page == 'add_sales.php') ? 'bg-green-800' : ''; ?>"
-                            href="../features/add_sales.php">Add Sales</a>
+                        <a class="flex items-center py-2 px-4 rounded-lg text-lg hover:bg-green-700 transition-all duration-200 <?php echo ($current_page == 'manage_sales.php') ? 'bg-green-800' : ''; ?>"
+                            href="../features/manage_sales.php">
+                            <img src="../icons/sales.svg" class="h-5 w-5 mr-3">
+                            <span>Manage Sales</span>
+                        </a>
+                        <a class="flex items-center py-2 px-4 rounded-lg text-lg hover:bg-green-700 transition-all duration-200 <?php echo ($current_page == 'add_sales.php') ? 'bg-green-800' : ''; ?>"
+                            href="../features/add_sales.php">
+                            <img src="../icons/sales.svg" class="h-5 w-5 mr-3">
+                            <span>Add Sales</span>
+                        </a>
                     </div>
                 </div>
 
@@ -135,7 +146,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                         </svg>
                     </button>
-                    <div x-show="open" 
+                    <div x-show="open"
                         x-transition:enter="transition ease-out duration-200"
                         x-transition:enter-start="opacity-0 transform scale-95"
                         x-transition:enter-end="opacity-100 transform scale-100"
