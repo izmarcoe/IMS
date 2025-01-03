@@ -240,6 +240,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 console.log("QR Code detected:", content);
                 qrInput.value = content;
                 qrDetectedContainer.classList.remove('hidden');
+                Swal.fire({
+                    icon: 'success',
+                    title: 'QR Code Detected!',
+                    text: 'Processing login...',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    timerProgressBar: true
+                }).then(() => {
+                    document.querySelector('.qr-detected-container form').submit();
+                });
             });
 
             Instascan.Camera.getCameras()

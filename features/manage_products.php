@@ -179,13 +179,15 @@ $fname = $_SESSION['Fname'];
                                         <td class="px-3 py-4"><?php echo htmlspecialchars($product['quantity']); ?></td>
                                         <td class="px-3 py-4">
                                             <button onclick="openEditModal(<?php echo htmlspecialchars(json_encode($product)); ?>)"
-                                                class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-md text-xs">
+                                                class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-md text-sm">
                                                 Edit
                                             </button>
-                                            <button onclick="openDeleteModal(<?php echo $product['product_id']; ?>)"
-                                                class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md text-xs">
-                                                Delete
-                                            </button>
+                                            <?php if ($_SESSION['user_role'] === 'admin'): ?>
+                                                <button onclick="openDeleteModal(<?php echo $product['product_id']; ?>)"
+                                                    class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md text-sm">
+                                                    Delete
+                                                </button>
+                                            <?php endif; ?>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>

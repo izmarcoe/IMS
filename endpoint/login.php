@@ -29,21 +29,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     if ($_SESSION['user_role'] == 'employee') {
                         echo "
                         <script>
-                            alert('Login Successfully!');
                             window.location.href = 'http://localhost/IMS/dashboards/employee_dashboard.php';
                         </script>
                         ";
                     } else if ($_SESSION['user_role'] == 'admin') {
                         echo "
                         <script>
-                            alert('Login Successfully!');
                             window.location.href = 'http://localhost/IMS/dashboards/admin_dashboard.php';
                         </script>
                         ";
                     } else if ($_SESSION['user_role'] == 'new_user') {
                         echo "
                         <script>
-                            alert('Welcome!');
                             window.location.href = 'http://localhost/IMS/home.php';
                         </script>
                         ";
@@ -52,8 +49,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     // Inactive account - redirect to admin login
                     echo "
                     <script>
-                        alert('Account deactivated. Contact administrator.');
-                        window.location.href = 'http://localhost/IMS/admin_login.php';
+                         document.addEventListener('DOMContentLoaded', function() {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Account deactivated!',
+                                    text: 'Please contact your admin.',
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                }).then(function() {
+                                    window.location.href = 'http://localhost/IMS/admin_login.php';
+                                });
+                            });
                     </script>
                     ";
                     exit();
@@ -87,31 +93,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     if ($_SESSION['user_role'] == 'employee') {
                         echo "
                         <script>
-                           document.addEventListener('DOMContentLoaded', function() {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Login Successfully!',
-                                    showConfirmButton: false,
-                                    timer: 2000
-                                }).then(function() {
-                                    window.location.href = 'http://localhost/IMS/dashboards/employee_dashboard.php';
-                                });
-                            });
+                                window.location.href = 'http://localhost/IMS/dashboards/employee_dashboard.php';
                         </script>
                         ";
                     } else if ($_SESSION['user_role'] == 'admin') {
                         echo "
                         <script>
-                             document.addEventListener('DOMContentLoaded', function() {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Login Successfully!',
-                                    showConfirmButton: false,
-                                    timer: 2000
-                                }).then(function() {
-                                    window.location.href = 'http://localhost/IMS/dashboards/admin_dashboard.php';
-                                });
-                            });
+                                window.location.href = 'http://localhost/IMS/dashboards/admin_dashboard.php';
                         </script>
                         ";
                     } else if ($_SESSION['user_role'] == 'new_user') {

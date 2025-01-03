@@ -109,6 +109,7 @@ $totalSales = $totalSalesStmt->fetch(PDO::FETCH_ASSOC)['total_sales'];
     <meta http-equiv="Expires" content="0">
     <title>Employee Dashboard</title>
     <link rel="stylesheet" href="../src/output.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
 <body class=bg-gray-200>

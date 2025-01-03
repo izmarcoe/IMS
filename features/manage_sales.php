@@ -273,14 +273,16 @@ $lname = $_SESSION['Lname'];
                                         <td class="px-3 py-4 total-sales"><?php echo htmlspecialchars($sale['total_sales']); ?></td>
                                         <td class="px-3 py-4 sale-date"><?php echo htmlspecialchars(date('F j, Y', strtotime($sale['sale_date']))); ?></td>
                                         <td class="px-3 py-4">
-                                            <button onclick='openEditModal(<?php echo json_encode($sale); ?>)'
-                                                class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-md text-xs">
+                                            <button onclick="openEditModal(<?php echo htmlspecialchars(json_encode($sale)); ?>)"
+                                                class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-md text-sm">
                                                 Edit
                                             </button>
-                                            <button onclick="deleteSale(<?php echo $sale['id']; ?>)"
-                                                class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md text-xs">
-                                                Delete
-                                            </button>
+                                            <?php if ($_SESSION['user_role'] === 'admin'): ?>
+                                                <button onclick="deleteSale(<?php echo $sale['id']; ?>)"
+                                                    class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md text-sm">
+                                                    Delete
+                                                </button>
+                                            <?php endif; ?>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
