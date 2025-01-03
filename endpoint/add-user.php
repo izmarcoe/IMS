@@ -61,24 +61,22 @@
                 $insertStmt->bindParam(':generated_code', $generatedCode, PDO::PARAM_STR);
                 $insertStmt->bindParam(':password', $hashedPassword, PDO::PARAM_STR);
 
-                $insertStmt->execute();
-
-                $conn->commit();  // Commit the transaction
-
-                echo "
-            <script>
-    
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Registered Successfully!',
-                    confirmButtonColor: '#047857'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = 'http://localhost/IMS/user_login.php';
-                    }
-                });
-            </script>
-            ";
+                if ($insertStmt->execute()) {
+                    $conn->commit();
+                    echo "
+                    <script>
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Registration Successful!',
+                            text: 'You can now login with your credentials.',
+                            confirmButtonColor: '#047857'
+                        }).then((result) => {
+                            window.location.href = '../user_login.php';
+                        });
+                    </script>
+                    ";
+                    exit();
+                }
             } else {
                 // User with the same name already exists
                 echo "

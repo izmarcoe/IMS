@@ -218,7 +218,14 @@ if (isset($_SESSION['user_id'])) {
                             icon: 'success',
                             title: 'QR Code Generated!',
                             text: 'Your QR code has been generated and PDF has been downloaded.',
-                            confirmButtonColor: '#047857'
+                            confirmButtonColor: '#047857',
+                            showConfirmButton: true,
+                            allowOutsideClick: false
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Automatically submit the form after user acknowledges
+                                document.getElementById('registrationForm').submit();
+                            }
                         });
                     } catch (error) {
                         // Handle any errors during PDF generation
