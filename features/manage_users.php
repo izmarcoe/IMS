@@ -8,10 +8,29 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'admin')) {
     exit();
 }
 
-// Fetch USERS excluding the current live session account
-$UserStmt = $conn->prepare("SELECT user_id, Fname, Lname, role, status FROM login_db WHERE user_id != ? ORDER BY user_id");
-$UserStmt->execute([$_SESSION['user_id']]);
-$users = $UserStmt->fetchAll(PDO::FETCH_ASSOC);
+// 1. Modify SQL query with pagination and exclude admins
+$itemsPerPage = 10;
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($page - 1) * $itemsPerPage;
+
+// Get total count excluding admins
+$totalQuery = $conn->prepare("SELECT COUNT(*) FROM login_db WHERE role != 'admin'");
+$totalQuery->execute();
+$totalItems = $totalQuery->fetchColumn();
+$totalPages = ceil($totalItems / $itemsPerPage);
+
+// Modified main query
+$stmt = $conn->prepare("
+    SELECT user_id, Fname, Lname, email, contact_number, role, status 
+    FROM login_db 
+    WHERE role != 'admin'
+    ORDER BY user_id 
+    LIMIT :offset, :limit
+");
+$stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+$stmt->bindParam(':limit', $itemsPerPage, PDO::PARAM_INT);
+$stmt->execute();
+$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Handle role update
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_role'])) {
@@ -69,25 +88,25 @@ $fname = $_SESSION['Fname'];
 
             <div class="container mx-auto mt-4 z-30 px-8 max-w-7xl">
                 <h2 class="mt-6 text-xl md:text-2xl font-semibold mb-6">Manage Users</h2>
-                <table class="w-full divide-y divide-gray-200 table-auto">
+                <table class="w-full divide-y divide-gray-200 table-fixed">
                     <thead class="bg-gray-50 sticky top-0 z-10">
                         <tr>
-                            <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider w-1/3">
+                            <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider w-[10%]">
                                 User ID
                             </th>
-                            <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider w-1/3">
+                            <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider w-[15%]">
                                 First name
                             </th>
-                            <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider w-1/3">
+                            <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider w-[15%]">
                                 Last name
                             </th>
-                            <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider w-1/3">
+                            <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider w-[20%]">
                                 Role
                             </th>
-                            <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider w-1/3">
+                            <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider w-[15%]">
                                 Status
                             </th>
-                            <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider w-1/3">
+                            <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider w-[25%]">
                                 Actions
                             </th>
                         </tr>
@@ -95,21 +114,18 @@ $fname = $_SESSION['Fname'];
                     <tbody class="bg-white divide-y divide-gray-200">
                         <?php foreach ($users as $user): ?>
                             <tr class="<?php echo $user['status'] == 'deactivated' ? 'bg-gray-400' : ''; ?>">
-                                <td class="px-4 md:px-6 py-4 whitespace-nowrap">
+                                <td class="px-4 md:px-6 py-4 whitespace-nowrap w-[10%]">
                                     <div class="text-sm md:text-base text-gray-900"><?php echo htmlspecialchars($user['user_id']); ?></div>
                                 </td>
-                                <td class="px-4 md:px-6 py-4 whitespace-nowrap">
+                                <td class="px-4 md:px-6 py-4 whitespace-nowrap w-[15%]">
                                     <div class="text-sm md:text-base text-gray-900"><?php echo htmlspecialchars($user['Fname']); ?></div>
                                 </td>
-                                <td class="px-4 md:px-6 py-4 whitespace-nowrap">
+                                <td class="px-4 md:px-6 py-4 whitespace-nowrap w-[15%]">
                                     <div class="text-sm md:text-base text-gray-900"><?php echo htmlspecialchars($user['Lname']); ?></div>
                                 </td>
-                                <td class="px-4 md:px-6 py-4 whitespace-nowrap">
+                                <td class="px-4 md:px-6 py-4 whitespace-nowrap w-[20%]">
                                     <?php
                                     switch ($user['role']) {
-                                        case 'admin':
-                                            echo 'Admin';
-                                            break;
                                         case 'employee':
                                             echo 'Employee';
                                             break;
@@ -121,10 +137,10 @@ $fname = $_SESSION['Fname'];
                                     }
                                     ?>
                                 </td>
-                                <td class="px-4 md:px-6 py-4 whitespace-nowrap">
+                                <td class="px-4 md:px-6 py-4 whitespace-nowrap w-[15%]">
                                     <div class="text-sm md:text-base text-gray-900"><?php echo htmlspecialchars($user['status']); ?></div>
                                 </td>
-                                <td class="px-4 md:px-6 py-4 whitespace-nowrap">
+                                <td class="px-4 md:px-6 py-4 whitespace-nowrap w-[25%]">
                                     <?php if ($user['status'] == 'active'): ?>
                                         <button type="button" class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600" onclick="openModal('editRoleModal<?php echo $user['user_id']; ?>')">
                                             Edit Role
@@ -183,9 +199,6 @@ $fname = $_SESSION['Fname'];
                                                             <select id="role<?php echo $user['user_id']; ?>"
                                                                 name="role"
                                                                 class="mt-1 block w-full rounded-md border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500">
-                                                                <option value="admin" <?php echo ($user['role'] == 'admin') ? 'selected' : ''; ?>>
-                                                                    Admin
-                                                                </option>
                                                                 <option value="employee" <?php echo ($user['role'] == 'employee') ? 'selected' : ''; ?>>
                                                                     Employee
                                                                 </option>
