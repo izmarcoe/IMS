@@ -31,7 +31,7 @@ if (!isset($_SESSION['otp_verified']) || !isset($_SESSION['reset_email'])) {
                     <label class="block text-sm font-medium text-gray-700">New Password</label>
                     <div class="relative">
                         <input type="password" id="newPassword" name="new_password" required minlength="8"
-                            class="mt-1 block w-full px-3 py-2 pr-10 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+                            class="mt-1 block w-full px-3 py-2 pr-10 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent focus:invalid:ring-red-500 focus:invalid:border-red-500">
                         <button type="button" onclick="togglePassword('newPassword', 'togglePassword1')"
                             class="absolute inset-y-0 right-0 flex items-center pr-3 mt-1">
                             <i class="fas fa-eye text-gray-500 hover:text-gray-700" id="togglePassword1"></i>
@@ -43,7 +43,7 @@ if (!isset($_SESSION['otp_verified']) || !isset($_SESSION['reset_email'])) {
                     <label class="block text-sm font-medium text-gray-700">Confirm Password</label>
                     <div class="relative">
                         <input type="password" id="confirmPassword" name="confirm_password" required minlength="8"
-                            class="mt-1 block w-full px-3 py-2 pr-10 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+                            class="mt-1 block w-full px-3 py-2 pr-10 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent focus:invalid:ring-red-500 focus:invalid:border-red-500">
                         <button type="button" onclick="togglePassword('confirmPassword', 'togglePassword2')"
                             class="absolute inset-y-0 right-0 flex items-center pr-3 mt-1">
                             <i class="fas fa-eye text-gray-500 hover:text-gray-700" id="togglePassword2"></i>
@@ -70,6 +70,33 @@ if (!isset($_SESSION['otp_verified']) || !isset($_SESSION['reset_email'])) {
             </form>
         </div>
     </div>
+
+    <div id="passwordRequirements" class="hidden fixed top-1/2 w-72 p-6 bg-white border border-gray-200 rounded-lg shadow-lg transform -translate-y-1/2" style="left: 300px;">
+        <h4 class="font-semibold text-lg text-gray-800 mb-4">Password Requirements</h4>
+        <ul class="space-y-3">
+            <li id="length" class="flex items-center text-sm text-gray-600">
+                <i class="fas fa-times mr-3 text-red-500 w-5"></i>
+                <span>Minimum 8 characters</span>
+            </li>
+            <li id="uppercase" class="flex items-center text-sm text-gray-600">
+                <i class="fas fa-times mr-3 text-red-500 w-5"></i>
+                <span>One uppercase letter</span>
+            </li>
+            <li id="lowercase" class="flex items-center text-sm text-gray-600">
+                <i class="fas fa-times mr-3 text-red-500 w-5"></i>
+                <span>One lowercase letter</span>
+            </li>
+            <li id="number" class="flex items-center text-sm text-gray-600">
+                <i class="fas fa-times mr-3 text-red-500 w-5"></i>
+                <span>One number</span>
+            </li>
+            <li id="special" class="flex items-center text-sm text-gray-600">
+                <i class="fas fa-times mr-3 text-red-500 w-5"></i>
+                <span>One special character</span>
+            </li>
+        </ul>
+    </div>
+
     <script>
         function togglePassword(inputId, toggleIconId) {
             const passwordInput = document.getElementById(inputId);
@@ -228,6 +255,80 @@ if (!isset($_SESSION['otp_verified']) || !isset($_SESSION['reset_email'])) {
                     confirmButtonColor: '#047857'
                 });
             }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const newPassword = document.getElementById('newPassword');
+            const confirmPassword = document.getElementById('confirmPassword');
+            const submitButton = document.querySelector('button[type="submit"]');
+
+            function validatePassword() {
+                const password = newPassword.value;
+                const requirements = {
+                    length: password.length >= 8,
+                    uppercase: /[A-Z]/.test(password),
+                    lowercase: /[a-z]/.test(password),
+                    number: /[0-9]/.test(password),
+                    special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+                };
+
+                const isValid = Object.values(requirements).every(req => req === true);
+                const passwordsMatch = password === confirmPassword.value;
+
+                // Update password field styling
+                if (!isValid) {
+                    newPassword.style.borderColor = '#ef4444';
+                    newPassword.style.boxShadow = '0 0 0 1px #ef4444';
+                } else {
+                    newPassword.style.borderColor = '#10b981';
+                    newPassword.style.boxShadow = '0 0 0 1px #10b981';
+                }
+
+                // Update confirm password field styling - only show green if password is valid AND matches
+                if (confirmPassword.value) {
+                    if (!isValid || !passwordsMatch) {
+                        confirmPassword.style.borderColor = '#ef4444';
+                        confirmPassword.style.boxShadow = '0 0 0 1px #ef4444';
+                    } else {
+                        confirmPassword.style.borderColor = '#10b981';
+                        confirmPassword.style.boxShadow = '0 0 0 1px #10b981';
+                    }
+                }
+
+                // Update requirement icons
+                Object.keys(requirements).forEach(req => {
+                    const element = document.getElementById(req);
+                    const icon = element.querySelector('i');
+
+                    if (requirements[req]) {
+                        icon.classList.remove('fa-times', 'text-red-500');
+                        icon.classList.add('fa-check', 'text-green-500');
+                        element.classList.add('text-green-600');
+                    } else {
+                        icon.classList.remove('fa-check', 'text-green-500');
+                        icon.classList.add('fa-times', 'text-red-500');
+                        element.classList.remove('text-green-600');
+                    }
+                });
+
+                return isValid && passwordsMatch;
+            }
+
+            newPassword.addEventListener('input', validatePassword);
+            confirmPassword.addEventListener('input', validatePassword);
+
+            // Show/hide password requirements
+            newPassword.addEventListener('focus', function() {
+                document.getElementById('passwordRequirements').classList.remove('hidden');
+            });
+
+            document.addEventListener('click', function(e) {
+                const requirements = document.getElementById('passwordRequirements');
+                if (!requirements.contains(e.target) && e.target !== newPassword) {
+                    requirements.classList.add('hidden');
+                }
+            });
         });
     </script>
 </body>
