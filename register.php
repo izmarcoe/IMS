@@ -175,7 +175,9 @@ if (isset($_SESSION['user_id'])) {
                 });
 
                 const passwordsMatch = password.value === confirmPassword.value;
-                registerButton.disabled = !allFilled || !passwordsMatch;
+                const passwordValid = validatePassword();
+                
+                registerButton.disabled = !allFilled || !passwordsMatch || !emailIsValid || !passwordValid;
             }
 
             formInputs.forEach(input => {
@@ -354,6 +356,43 @@ if (isset($_SESSION['user_id'])) {
             });
 
             confirmPassword.addEventListener('input', validatePassword);
+            
+            const emailInput = document.getElementById('email');
+            let emailIsValid = true;
+
+            emailInput.addEventListener('input', function() {
+                const email = this.value;
+                if(email) {
+                    fetch('./endpoint/check-email.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `email=${encodeURIComponent(email)}`
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if(data.exists) {
+                            emailIsValid = false;
+                            emailInput.style.borderColor = '#ef4444';
+                            emailInput.style.boxShadow = '0 0 0 1px #ef4444';
+                            registerButton.disabled = true;
+                            
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Email Already Exists',
+                                text: 'Please use a different email address',
+                                confirmButtonColor: '#047857'
+                            });
+                        } else {
+                            emailIsValid = true;
+                            emailInput.style.borderColor = '#10b981';
+                            emailInput.style.boxShadow = '';
+                            validateForm();
+                        }
+                    });
+                }
+            });
         });
     </script>
     <script>

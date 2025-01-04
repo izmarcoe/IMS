@@ -42,49 +42,52 @@
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
         try {
-            // Check if a user with the same first name and last name already exists
-            $stmt = $conn->prepare("SELECT `email` FROM `login_db` WHERE `email` = :email");
-            $stmt->execute(['email' => $email]);
+            // Check if email exists
+            $stmt = $conn->prepare("SELECT COUNT(*) FROM login_db WHERE email = ?");
+            $stmt->execute([$email]);
+            
+            if($stmt->fetchColumn() > 0) {
+                echo "<script>
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Email Already Exists',
+                        text: 'Please use a different email address',
+                        confirmButtonColor: '#047857'
+                    }).then(() => {
+                        window.location.href = '../register.php';
+                    });
+                </script>";
+                exit();
+            }
 
-            $emailExists = $stmt->fetch(PDO::FETCH_ASSOC);
+            // Continue with registration if email doesn't exist
+            $conn->beginTransaction();
 
-            if (empty($emailExists)) {
-                $conn->beginTransaction();
-
-                // Insert new user record with hashed password and default role set to 'none'
-                $insertStmt = $conn->prepare("INSERT INTO `login_db` (`Fname`, `Lname`, `contact_number`, `email`, `generated_code`, `password`, `role`, `status`) 
+            // Insert new user record with hashed password and default role set to 'none'
+            $insertStmt = $conn->prepare("INSERT INTO `login_db` (`Fname`, `Lname`, `contact_number`, `email`, `generated_code`, `password`, `role`, `status`) 
            VALUES (:fname, :lname, :contact_number, :email, :generated_code, :password, 'new_user', 'active')");
-                $insertStmt->bindParam(':fname', $fname, PDO::PARAM_STR);
-                $insertStmt->bindParam(':lname', $lname, PDO::PARAM_STR);
-                $insertStmt->bindParam(':contact_number', $contactNumber, PDO::PARAM_STR);
-                $insertStmt->bindParam(':email', $email, PDO::PARAM_STR);
-                $insertStmt->bindParam(':generated_code', $generatedCode, PDO::PARAM_STR);
-                $insertStmt->bindParam(':password', $hashedPassword, PDO::PARAM_STR);
+            $insertStmt->bindParam(':fname', $fname, PDO::PARAM_STR);
+            $insertStmt->bindParam(':lname', $lname, PDO::PARAM_STR);
+            $insertStmt->bindParam(':contact_number', $contactNumber, PDO::PARAM_STR);
+            $insertStmt->bindParam(':email', $email, PDO::PARAM_STR);
+            $insertStmt->bindParam(':generated_code', $generatedCode, PDO::PARAM_STR);
+            $insertStmt->bindParam(':password', $hashedPassword, PDO::PARAM_STR);
 
-                if ($insertStmt->execute()) {
-                    $conn->commit();
-                    echo "
-                    <script>
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Registration Successful!',
-                            text: 'You can now login with your credentials.',
-                            confirmButtonColor: '#047857'
-                        }).then((result) => {
-                            window.location.href = '../user_login.php';
-                        });
-                    </script>
-                    ";
-                    exit();
-                }
-            } else {
-                // User with the same name already exists
+            if ($insertStmt->execute()) {
+                $conn->commit();
                 echo "
-            <script>
-                alert('User with the same name already exists!');
-                window.location.href = 'http://localhost/IMS/register.php';
-            </script>
-            ";
+                <script>
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Registration Successful!',
+                        text: 'You can now login with your credentials.',
+                        confirmButtonColor: '#047857'
+                    }).then((result) => {
+                        window.location.href = '../user_login.php';
+                    });
+                </script>
+                ";
+                exit();
             }
         } catch (Exception $e) {
             $conn->rollBack();
