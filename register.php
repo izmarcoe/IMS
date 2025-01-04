@@ -35,6 +35,33 @@ if (isset($_SESSION['user_id'])) {
 </head>
 
 <body class="flex items-center justify-center min-h-screen p-6 bg-gradient-to-br from-green-800 to-green-950">
+
+    <div id="passwordRequirements" class="hidden fixed top-1/2 w-72 p-6 bg-white border border-gray-200 rounded-lg shadow-lg transform -translate-y-1/2" style="left: 300px;">
+        <h4 class="font-semibold text-lg text-gray-800 mb-4">Password Requirements</h4>
+        <ul class="space-y-3">
+            <li id="length" class="flex items-center text-sm text-gray-600">
+                <i class="fas fa-times mr-3 text-red-500 w-5"></i>
+                <span>Minimum 8 characters</span>
+            </li>
+            <li id="uppercase" class="flex items-center text-sm text-gray-600">
+                <i class="fas fa-times mr-3 text-red-500 w-5"></i>
+                <span>One uppercase letter</span>
+            </li>
+            <li id="lowercase" class="flex items-center text-sm text-gray-600">
+                <i class="fas fa-times mr-3 text-red-500 w-5"></i>
+                <span>One lowercase letter</span>
+            </li>
+            <li id="number" class="flex items-center text-sm text-gray-600">
+                <i class="fas fa-times mr-3 text-red-500 w-5"></i>
+                <span>One number</span>
+            </li>
+            <li id="special" class="flex items-center text-sm text-gray-600">
+                <i class="fas fa-times mr-3 text-red-500 w-5"></i>
+                <span>One special character</span>
+            </li>
+        </ul>
+    </div>
+
     <div class="w-full max-w-2xl">
         <div class="bg-white rounded-2xl shadow-xl p-8">
             <div class="text-center mb-8">
@@ -72,25 +99,27 @@ if (isset($_SESSION['user_id'])) {
 
                     <div class="grid grid-cols-2 gap-6">
                         <div>
-                            <div class="flex items-center justify-between">
-                                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                                <button type="button" class="ml-2" onclick="togglePassword('password', 'togglePassword1')">
+                            <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                            <div class="relative group">
+                                <input type="password" id="password" name="password" required
+                                    class="mt-1 block w-full px-3 py-2 pr-10 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent focus:invalid:ring-red-500 focus:invalid:border-red-500">
+                                <button type="button" onclick="togglePassword('password', 'togglePassword1')"
+                                    class="absolute inset-y-0 right-0 flex items-center pr-3 mt-1">
                                     <i class="fas fa-eye text-gray-500 hover:text-gray-700" id="togglePassword1"></i>
                                 </button>
                             </div>
-                            <input type="password" id="password" name="password" required
-                                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                         </div>
 
                         <div>
-                            <div class="flex items-center justify-between">
-                                <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirm Password</label>
-                                <button type="button" class="ml-2" onclick="togglePassword('confirmPassword', 'togglePassword2')">
+                            <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+                            <div class="relative">
+                                <input type="password" id="confirmPassword" name="confirm_password" required
+                                    class="mt-1 block w-full px-3 py-2 pr-10 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent focus:invalid:ring-red-500 focus:invalid:border-red-500">
+                                <button type="button" onclick="togglePassword('confirmPassword', 'togglePassword2')"
+                                    class="absolute inset-y-0 right-0 flex items-center pr-3 mt-1">
                                     <i class="fas fa-eye text-gray-500 hover:text-gray-700" id="togglePassword2"></i>
                                 </button>
                             </div>
-                            <input type="password" id="confirmPassword" name="confirm_password" required
-                                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                         </div>
 
                         <input type="hidden" name="role" value="new_user">
@@ -130,7 +159,6 @@ if (isset($_SESSION['user_id'])) {
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
     <script src="./JS/QR.js"></script>
-    <script src="./JS/form-validation.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const registerButton = document.getElementById('registerButton');
@@ -262,6 +290,70 @@ if (isset($_SESSION['user_id'])) {
             function encryptData(data, secretKey) {
                 return CryptoJS.AES.encrypt(data, secretKey).toString();
             }
+
+            function validatePassword() {
+                const password = document.getElementById('password');
+                const confirmPassword = document.getElementById('confirmPassword');
+                const requirements = {
+                    length: password.value.length >= 8,
+                    uppercase: /[A-Z]/.test(password.value),
+                    lowercase: /[a-z]/.test(password.value),
+                    number: /[0-9]/.test(password.value),
+                    special: /[!@#$%^&*(),.?":{}|<>]/.test(password.value)
+                };
+
+                const isValid = Object.values(requirements).every(req => req === true);
+                const passwordsMatch = password.value === confirmPassword.value;
+
+                // Update password field styling
+                if (!isValid) {
+                    password.style.borderColor = '#ef4444'; // red-500
+                    password.style.boxShadow = '0 0 0 1px #ef4444';
+                } else {
+                    password.style.borderColor = '';
+                    password.style.boxShadow = '';
+                }
+
+                // Update confirm password field styling
+                if (!passwordsMatch && confirmPassword.value) {
+                    confirmPassword.style.borderColor = '#ef4444'; // red-500
+                    confirmPassword.style.boxShadow = '0 0 0 1px #ef4444';
+                } else {
+                    confirmPassword.style.borderColor = '';
+                    confirmPassword.style.boxShadow = '';
+                }
+
+                return isValid && passwordsMatch;
+            }
+
+            password.addEventListener('input', function() {
+                validatePassword();
+                const password = this.value;
+                const requirements = {
+                    length: password.length >= 8,
+                    uppercase: /[A-Z]/.test(password),
+                    lowercase: /[a-z]/.test(password),
+                    number: /[0-9]/.test(password),
+                    special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+                };
+
+                Object.keys(requirements).forEach(req => {
+                    const element = document.getElementById(req);
+                    const icon = element.querySelector('i');
+
+                    if (requirements[req]) {
+                        icon.classList.remove('fa-times', 'text-red-500');
+                        icon.classList.add('fa-check', 'text-green-500');
+                        element.classList.add('text-green-600');
+                    } else {
+                        icon.classList.remove('fa-check', 'text-green-500');
+                        icon.classList.add('fa-times', 'text-red-500');
+                        element.classList.remove('text-green-600');
+                    }
+                });
+            });
+
+            confirmPassword.addEventListener('input', validatePassword);
         });
     </script>
     <script>
@@ -279,6 +371,19 @@ if (isset($_SESSION['user_id'])) {
                 toggleIcon.classList.add('fa-eye');
             }
         }
+
+        document.getElementById('password').addEventListener('focus', function() {
+            document.getElementById('passwordRequirements').classList.remove('hidden');
+        });
+
+        // Optional: Hide requirements when clicking outside
+        document.addEventListener('click', function(e) {
+            const requirements = document.getElementById('passwordRequirements');
+            const passwordInput = document.getElementById('password');
+            if (!requirements.contains(e.target) && e.target !== passwordInput) {
+                requirements.classList.add('hidden');
+            }
+        });
     </script>
 </body>
 
