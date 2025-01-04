@@ -8,6 +8,7 @@ if (!isset($_SESSION['otp_verified']) || !isset($_SESSION['reset_email'])) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,6 +17,8 @@ if (!isset($_SESSION['otp_verified']) || !isset($_SESSION['reset_email'])) {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
 </head>
 
 <body class="bg-gradient-to-br from-green-800 to-green-950 min-h-screen flex items-center justify-center p-6">
@@ -26,14 +29,26 @@ if (!isset($_SESSION['otp_verified']) || !isset($_SESSION['reset_email'])) {
             <form id="resetPasswordForm" class="space-y-6">
                 <div>
                     <label class="block text-sm font-medium text-gray-700">New Password</label>
-                    <input type="password" name="new_password" required minlength="8"
-                        class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <div class="relative">
+                        <input type="password" id="newPassword" name="new_password" required minlength="8"
+                            class="mt-1 block w-full px-3 py-2 pr-10 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <button type="button" onclick="togglePassword('newPassword', 'togglePassword1')"
+                            class="absolute inset-y-0 right-0 flex items-center pr-3 mt-1">
+                            <i class="fas fa-eye text-gray-500 hover:text-gray-700" id="togglePassword1"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Confirm Password</label>
-                    <input type="password" name="confirm_password" required minlength="8"
-                        class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <div class="relative">
+                        <input type="password" id="confirmPassword" name="confirm_password" required minlength="8"
+                            class="mt-1 block w-full px-3 py-2 pr-10 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <button type="button" onclick="togglePassword('confirmPassword', 'togglePassword2')"
+                            class="absolute inset-y-0 right-0 flex items-center pr-3 mt-1">
+                            <i class="fas fa-eye text-gray-500 hover:text-gray-700" id="togglePassword2"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <input type="hidden" id="generatedCode" name="generated_code">
@@ -55,7 +70,22 @@ if (!isset($_SESSION['otp_verified']) || !isset($_SESSION['reset_email'])) {
             </form>
         </div>
     </div>
+    <script>
+        function togglePassword(inputId, toggleIconId) {
+            const passwordInput = document.getElementById(inputId);
+            const toggleIcon = document.getElementById(toggleIconId);
 
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+    </script>
     <script>
         function generateRandomCode(length) {
             const characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -147,17 +177,23 @@ if (!isset($_SESSION['otp_verified']) || !isset($_SESSION['reset_email'])) {
             });
 
             // Generate PDF
-            const { jsPDF } = window.jspdf;
+            const {
+                jsPDF
+            } = window.jspdf;
             const doc = new jsPDF();
-            
+
             try {
                 doc.setFontSize(16);
-                doc.text('Your New QR Code Login Credentials', 105, 20, { align: 'center' });
+                doc.text('Your New QR Code Login Credentials', 105, 20, {
+                    align: 'center'
+                });
                 doc.setFontSize(12);
                 doc.text('Please keep this QR code safe and private.', 20, 50);
                 doc.addImage(qrImg, 'PNG', 65, 60, 80, 80);
                 doc.setFontSize(10);
-                doc.text('To login, use this QR code with the scanner on the login page.', 105, 160, { align: 'center' });
+                doc.text('To login, use this QR code with the scanner on the login page.', 105, 160, {
+                    align: 'center'
+                });
                 doc.save('New_QRCode.pdf');
 
                 // Show QR code container
@@ -169,7 +205,7 @@ if (!isset($_SESSION['otp_verified']) || !isset($_SESSION['reset_email'])) {
                     method: 'POST',
                     body: formData
                 });
-                
+
                 const data = await response.json();
 
                 if (data.success) {
@@ -195,4 +231,5 @@ if (!isset($_SESSION['otp_verified']) || !isset($_SESSION['reset_email'])) {
         });
     </script>
 </body>
+
 </html>
