@@ -170,6 +170,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </button>
                 </div>
                 <form id="forgotPasswordForm" action="./endpoint/reset_password.php" method="POST">
+                    <input type="hidden" name="source" value="user">
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
                         <input type="email" name="email" required
