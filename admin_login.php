@@ -106,6 +106,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
                     </div>
 
+                    <div class="flex items-center justify-between mb-4">
+                        <button type="button" onclick="openForgotPasswordModal()"
+                            class="text-sm text-green-600 hover:text-green-800">
+                            Forgot Password?
+                        </button>
+                    </div>
+
                     <button type="submit"
                         class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transform transition-all duration-200 hover:scale-105">
                         Sign in
@@ -250,6 +257,147 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 toggleIcon.classList.add('fa-eye');
             }
         }
+    </script>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgotPasswordModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <div class="flex items-start justify-between mb-4">
+                    <h3 class="text-lg font-medium leading-6 text-gray-900">Reset Password</h3>
+                    <button onclick="closeForgotPasswordModal()" class="text-gray-400 hover:text-gray-500">
+                        <span class="sr-only">Close</span>
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <form id="forgotPasswordForm" action="./endpoint/reset_password.php" method="POST">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
+                        <input type="email" name="email" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500">
+                    </div>
+                    <div class="flex justify-end gap-2">
+                        <button type="button" onclick="closeForgotPasswordModal()"
+                            class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                            class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                            Send Reset Link
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- OTP Verification Modal -->
+    <div id="otpVerificationModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <div class="flex items-start justify-between mb-4">
+                    <h3 class="text-lg font-medium leading-6 text-gray-900">Enter OTP</h3>
+                    <button onclick="closeOtpModal()" class="text-gray-400 hover:text-gray-500">
+                        <span class="sr-only">Close</span>
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <form id="otpVerificationForm" action="./endpoint/verify_otp.php" method="POST">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Enter OTP sent to your email</label>
+                        <input type="text" name="otp" required maxlength="6" pattern="\d{6}"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500">
+                    </div>
+                    <div class="flex justify-end gap-2">
+                        <button type="submit"
+                            class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                            Verify OTP
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add JavaScript for forgot password functionality -->
+    <script>
+        function openForgotPasswordModal() {
+            document.getElementById('forgotPasswordModal').classList.remove('hidden');
+        }
+
+        function closeForgotPasswordModal() {
+            document.getElementById('forgotPasswordModal').classList.add('hidden');
+        }
+
+        function closeOtpModal() {
+            document.getElementById('otpVerificationModal').classList.add('hidden');
+        }
+
+        document.getElementById('forgotPasswordForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+
+            fetch('./endpoint/reset_password.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'OTP Sent!',
+                            text: 'Please check your email for the OTP code',
+                            confirmButtonColor: '#047857'
+                        }).then(() => {
+                            closeForgotPasswordModal();
+                            document.getElementById('otpVerificationModal').classList.remove('hidden');
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message || 'Failed to send OTP',
+                            confirmButtonColor: '#047857'
+                        });
+                    }
+                })
+                .catch(error => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred. Please try again.',
+                        confirmButtonColor: '#047857'
+                    });
+                });
+        });
+
+        document.getElementById('otpVerificationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+
+            fetch('./endpoint/verify_otp.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = './reset_password_form.php';
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Invalid OTP',
+                            text: data.message,
+                            confirmButtonColor: '#047857'
+                        });
+                    }
+                });
+        });
     </script>
 </body>
 
