@@ -16,7 +16,7 @@ $startDate = $_GET['start_date'] ?? date('Y-m-01'); // Default to the first day 
 $endDate = $_GET['end_date'] ?? date('Y-m-d'); // Default to today's date if not provided
 
 // Pagination settings
-$limit = 15; // Number of entries per page
+$limit = 10; // Number of entries per page
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
@@ -45,6 +45,10 @@ $sales = $query->fetchAll(PDO::FETCH_ASSOC);
 
 // Calculate total pages
 $totalPages = ceil($totalSales / $limit);
+
+// Calculate which page numbers to show
+$startPage = max(1, min($page - 2, $totalPages - 4));
+$endPage = min($totalPages, $startPage + 4);
 
 $fname = $_SESSION['Fname'];
 ?>
@@ -148,25 +152,40 @@ $fname = $_SESSION['Fname'];
                 </div>
 
                 <!-- Pagination controls -->
-                <nav class="flex justify-center mt-6">
-                    <ul class="flex space-x-2">
-                        <?php if ($page > 1): ?>
-                            <li>
-                                <a href="?start_date=<?php echo htmlspecialchars($startDate); ?>&end_date=<?php echo htmlspecialchars($endDate); ?>&page=<?php echo $page - 1; ?>" class="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50 transition-colors">Previous</a>
-                            </li>
-                        <?php endif; ?>
-                        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                            <li>
-                                <a href="?start_date=<?php echo htmlspecialchars($startDate); ?>&end_date=<?php echo htmlspecialchars($endDate); ?>&page=<?php echo $i; ?>" class="px-4 py-2 <?php echo $i == $page ? 'bg-blue-500 text-white' : 'bg-white hover:bg-gray-50'; ?> border rounded-lg transition-colors"><?php echo $i; ?></a>
-                            </li>
-                        <?php endfor; ?>
-                        <?php if ($page < $totalPages): ?>
-                            <li>
-                                <a href="?start_date=<?php echo htmlspecialchars($startDate); ?>&end_date=<?php echo htmlspecialchars($endDate); ?>&page=<?php echo $page + 1; ?>" class="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50 transition-colors">Next</a>
-                            </li>
-                        <?php endif; ?>
-                    </ul>
-                </nav>
+                <div class="flex justify-center items-center mt-4 space-x-2">
+                    <?php if ($page > 1): ?>
+                        <a href="?page=1&start_date=<?php echo htmlspecialchars($startDate); ?>&end_date=<?php echo htmlspecialchars($endDate); ?>"
+                            class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+                            First
+                        </a>
+                        <a href="?page=<?php echo $page - 1; ?>&start_date=<?php echo htmlspecialchars($startDate); ?>&end_date=<?php echo htmlspecialchars($endDate); ?>"
+                            class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+                            Previous
+                        </a>
+                    <?php endif; ?>
+
+                    <?php
+                    $start = max(1, $page - 2);
+                    $end = min($totalPages, $page + 2);
+
+                    for ($i = $start; $i <= $end; $i++): ?>
+                        <a href="?page=<?php echo $i; ?>&start_date=<?php echo htmlspecialchars($startDate); ?>&end_date=<?php echo htmlspecialchars($endDate); ?>"
+                            class="px-3 py-2 <?php echo $i == $page ? 'bg-green-600 text-white' : 'bg-gray-200 hover:bg-gray-300'; ?> rounded-md">
+                            <?php echo $i; ?>
+                        </a>
+                    <?php endfor; ?>
+
+                    <?php if ($page < $totalPages): ?>
+                        <a href="?page=<?php echo $page + 1; ?>&start_date=<?php echo htmlspecialchars($startDate); ?>&end_date=<?php echo htmlspecialchars($endDate); ?>"
+                            class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+                            Next
+                        </a>
+                        <a href="?page=<?php echo $totalPages; ?>&start_date=<?php echo htmlspecialchars($startDate); ?>&end_date=<?php echo htmlspecialchars($endDate); ?>"
+                            class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+                            Last
+                        </a>
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
     </main>
