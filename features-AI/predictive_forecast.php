@@ -140,6 +140,22 @@ $fname = $_SESSION['Fname'];
                     </div>
                 </div>
 
+                <div class="mb-4 flex items-center">
+                    <div class="relative">
+                        <input type="text" 
+                            id="searchInput" 
+                            class="w-64 pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500" 
+                            placeholder="Search products...">
+                        <div class="absolute left-3 top-2.5">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                    </div>
+                    <button id="searchButton" 
+                            class="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200">
+                        Search
+                    </button>
+                </div>
+
                 <table class="min-w-full bg-white border border-gray-200">
                     <thead>
                         <tr>
@@ -169,6 +185,31 @@ $fname = $_SESSION['Fname'];
     </main>
 
     <script src="../JS/time.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchButton = document.getElementById('searchButton');
+        const searchInput = document.getElementById('searchInput');
+        const tableRows = document.querySelectorAll('table tbody tr');
+
+        function performSearch() {
+            const searchTerm = searchInput.value.toLowerCase();
+            
+            tableRows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+
+        searchButton.addEventListener('click', performSearch);
+        
+        // Also allow search on Enter key
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+    });
+    </script>
 </body>
 
 </html>
