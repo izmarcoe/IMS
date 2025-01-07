@@ -286,6 +286,29 @@ $fname = $_SESSION['Fname'];
                 setTimeout(() => errorDiv.remove(), 5000);
             }
 
+            const selectedProducts = new Set();
+
+            function updateProductOptions() {
+                const allSelects = document.querySelectorAll('[name="products[]"]');
+                
+                // Get all currently selected values
+                allSelects.forEach(select => {
+                    if (select.value) {
+                        selectedProducts.add(select.value);
+                    }
+                });
+
+                // Update all selects
+                allSelects.forEach(select => {
+                    const currentValue = select.value;
+                    Array.from(select.options).forEach(option => {
+                        if (option.value && option.value !== currentValue) {
+                            option.disabled = selectedProducts.has(option.value);
+                        }
+                    });
+                });
+            }
+
             function setupRow(row) {
                 // Clear existing error messages
                 function clearErrors(row) {
@@ -338,7 +361,20 @@ $fname = $_SESSION['Fname'];
                 const quantityInput = row.querySelector('[name="quantities[]"]');
                 const stockInfo = row.querySelector('.stock-info');
 
-                productSelect.addEventListener('change', async function() {
+                productSelect.addEventListener('change', function() {
+                    // Remove previous selection
+                    if (this.dataset.previousValue) {
+                        selectedProducts.delete(this.dataset.previousValue);
+                    }
+                    
+                    // Add new selection
+                    if (this.value) {
+                        selectedProducts.add(this.value);
+                        this.dataset.previousValue = this.value;
+                    }
+                    
+                    updateProductOptions();
+                    // ...rest of your existing change handler code...
                     const selectedOption = this.options[this.selectedIndex];
                     const categoryName = selectedOption.getAttribute('data-category-name') || 'No Category';
                     const price = selectedOption.getAttribute('data-price');
@@ -368,7 +404,12 @@ $fname = $_SESSION['Fname'];
 
                 row.querySelector('.remove-row').addEventListener('click', function() {
                     if (document.querySelectorAll('.sale-row').length > 1) {
+                        const select = row.querySelector('[name="products[]"]');
+                        if (select.value) {
+                            selectedProducts.delete(select.value);
+                        }
                         row.remove();
+                        updateProductOptions();
                         updateGrandTotal();
                         updateAddButton();
                     }
@@ -414,9 +455,12 @@ $fname = $_SESSION['Fname'];
                     newRow.querySelector('select').selectedIndex = 0;
                     newRow.querySelector('.row-total').textContent = '0.00';
                     newRow.querySelector('.stock-info').textContent = '';
+                    // Reset the previous value data attribute
+                    newRow.querySelector('[name="products[]"]').dataset.previousValue = '';
                     salesContainer.appendChild(newRow);
                     setupRow(newRow);
                     updateAddButton();
+                    updateProductOptions();
                 }
             });
 
@@ -447,6 +491,7 @@ $fname = $_SESSION['Fname'];
             // Initial setup
             setupRow(salesContainer.querySelector('.sale-row'));
             updateAddButton();
+            updateProductOptions();
         });
     </script>
 </body>
