@@ -55,6 +55,8 @@ $fname = $_SESSION['Fname'];
     <script src="../node_modules/@tensorflow/tfjs/dist/tf.min.js"></script>
     <script src="../features-AI/PredictDemand.js"></script>
     <script src="../features-AI/demandForecast.js"></script>
+    <script type="module" src="../features-AI/seasonalTrends.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="../src/output.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -131,27 +133,20 @@ $fname = $_SESSION['Fname'];
             <div class="mt-8">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-xl font-semibold">Product Demand Forecasts</h2>
-                    <div class="relative">
-                        <input
-                            type="text"
-                            id="productSearch"
-                            placeholder="Search products..."
-                            class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
                 </div>
 
                 <div class="mb-4 flex items-center">
                     <div class="relative">
-                        <input type="text" 
-                            id="searchInput" 
-                            class="w-64 pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500" 
+                        <input type="text"
+                            id="productSearch"
+                            class="w-64 pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
                             placeholder="Search products...">
                         <div class="absolute left-3 top-2.5">
                             <i class="fas fa-search text-gray-400"></i>
                         </div>
                     </div>
-                    <button id="searchButton" 
-                            class="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200">
+                    <button id="searchButton"
+                        class="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200">
                         Search
                     </button>
                 </div>
@@ -181,34 +176,49 @@ $fname = $_SESSION['Fname'];
 
                 <div id="paginationControls" class="mt-4 flex justify-center space-x-2"></div>
             </div>
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h2 class="text-xl font-semibold mb-4">
+                    <i class="fas fa-chart-line mr-2 text-blue-500"></i>
+                    Seasonal Trends Analysis
+                </h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                        <canvas id="seasonalTrendsChart"></canvas>
+                    </div>
+                    <div id="seasonalInsights" class="p-4 bg-gray-50 rounded-lg">
+                        <h3 class="font-semibold mb-2">Key Insights</h3>
+                        <ul id="trendsList" class="space-y-2"></ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 
     <script src="../JS/time.js"></script>
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const searchButton = document.getElementById('searchButton');
-        const searchInput = document.getElementById('searchInput');
-        const tableRows = document.querySelectorAll('table tbody tr');
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchButton = document.getElementById('searchButton');
+            const searchInput = document.getElementById('searchInput');
+            const tableRows = document.querySelectorAll('table tbody tr');
 
-        function performSearch() {
-            const searchTerm = searchInput.value.toLowerCase();
-            
-            tableRows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(searchTerm) ? '' : 'none';
-            });
-        }
+            function performSearch() {
+                const searchTerm = searchInput.value.toLowerCase();
 
-        searchButton.addEventListener('click', performSearch);
-        
-        // Also allow search on Enter key
-        searchInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                performSearch();
+                tableRows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(searchTerm) ? '' : 'none';
+                });
             }
+
+            searchButton.addEventListener('click', performSearch);
+
+            // Also allow search on Enter key
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
         });
-    });
     </script>
 </body>
 
