@@ -203,7 +203,7 @@ foreach ($weeklyOrders as $order) {
                 <div class="flex flex-col justify-between p-8 bg-green-600 rounded-lg shadow-md h-full w-80">
                     <!-- Label -->
                     <div class="flex items-center justify-center bg-green-600 text-white p-4 rounded-full h-[40%]">
-                        <img src="../icons/pesosign.svg" alt="User Icon" class="w-24 h-24 object-contain">
+                        <img src="../icons/sales_db.svg" alt="User Icon" class="w-24 h-24 object-contain">
                     </div>
                     <!-- Value and Label -->
                     <div class="flex flex-col items-center text-white p-4 rounded-lg h-[60%]">
