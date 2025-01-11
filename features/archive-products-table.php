@@ -29,6 +29,12 @@ try {
     error_log($e->getMessage());
     $_SESSION['error'] = "Failed to fetch archived products";
 }
+
+// Pagination
+$productsPerPage = 10; // Number of products per page
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Current page
+$offset = ($page - 1) * $productsPerPage; // Offset for SQL query
+
 $fname = $_SESSION['Fname'];
 ?>
 
@@ -90,6 +96,42 @@ $fname = $_SESSION['Fname'];
                         <?php endforeach; ?>
                     </tbody>
                 </table>
+                 <!-- Pagination -->
+                 <div class="flex justify-center items-center mt-4 space-x-2">
+                    <?php if ($page > 1): ?>
+                        <a href="?page=1&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
+                            class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+                            First
+                        </a>
+                        <a href="?page=<?php echo $page - 1; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
+                            class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+                            Previous
+                        </a>
+                    <?php endif; ?>
+
+                    <?php
+                    // Calculate the range of page numbers to display
+                    $start = max(1, $page - 2);
+                    $end = min($totalPages, $page + 2);
+
+                    for ($i = $start; $i <= $end; $i++): ?>
+                        <a href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
+                            class="px-3 py-2 <?php echo $i == $page ? 'bg-green-600 text-white' : 'bg-gray-200 hover:bg-gray-300'; ?> rounded-md">
+                            <?php echo $i; ?>
+                        </a>
+                    <?php endfor; ?>
+
+                    <?php if ($page < $totalPages): ?>
+                        <a href="?page=<?php echo $page + 1; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
+                            class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+                            Next
+                        </a>
+                        <a href="?page=<?php echo $totalPages; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
+                            class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+                            Last
+                        </a>
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
     </main>

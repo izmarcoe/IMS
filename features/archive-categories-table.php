@@ -23,16 +23,22 @@ try {
     $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
     $stmt->execute();
     $archivedCategories = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch(PDOException $e) {
+} catch (PDOException $e) {
     error_log($e->getMessage());
     $_SESSION['error'] = "Failed to fetch archived categories";
 }
+
+// Pagination
+$productsPerPage = 10; // Number of products per page
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Current page
+$offset = ($page - 1) * $productsPerPage; // Offset for SQL query
 
 $fname = $_SESSION['Fname'];
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -40,6 +46,7 @@ $fname = $_SESSION['Fname'];
     <link rel="stylesheet" href="../src/output.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body class="bg-gray-50">
     <?php include '../features/header.php' ?>
 
@@ -87,6 +94,42 @@ $fname = $_SESSION['Fname'];
                         <?php endforeach; ?>
                     </tbody>
                 </table>
+                <!-- Pagination -->
+                <div class="flex justify-center items-center mt-4 space-x-2">
+                    <?php if ($page > 1): ?>
+                        <a href="?page=1&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
+                            class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+                            First
+                        </a>
+                        <a href="?page=<?php echo $page - 1; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
+                            class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+                            Previous
+                        </a>
+                    <?php endif; ?>
+
+                    <?php
+                    // Calculate the range of page numbers to display
+                    $start = max(1, $page - 2);
+                    $end = min($totalPages, $page + 2);
+
+                    for ($i = $start; $i <= $end; $i++): ?>
+                        <a href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
+                            class="px-3 py-2 <?php echo $i == $page ? 'bg-green-600 text-white' : 'bg-gray-200 hover:bg-gray-300'; ?> rounded-md">
+                            <?php echo $i; ?>
+                        </a>
+                    <?php endfor; ?>
+
+                    <?php if ($page < $totalPages): ?>
+                        <a href="?page=<?php echo $page + 1; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
+                            class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+                            Next
+                        </a>
+                        <a href="?page=<?php echo $totalPages; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
+                            class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+                            Last
+                        </a>
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
     </main>
@@ -105,29 +148,30 @@ $fname = $_SESSION['Fname'];
             }).then((result) => {
                 if (result.isConfirmed) {
                     fetch('../endpoint/restore-category.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: `category_id=${categoryId}`
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            Swal.fire('Restored!', 'Category has been restored.', 'success')
-                            .then(() => {
-                                document.getElementById(`archived-category-${categoryId}`).remove();
-                            });
-                        } else {
-                            throw new Error(data.error || 'Failed to restore category');
-                        }
-                    })
-                    .catch(error => {
-                        Swal.fire('Error!', error.message, 'error');
-                    });
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: `category_id=${categoryId}`
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire('Restored!', 'Category has been restored.', 'success')
+                                    .then(() => {
+                                        document.getElementById(`archived-category-${categoryId}`).remove();
+                                    });
+                            } else {
+                                throw new Error(data.error || 'Failed to restore category');
+                            }
+                        })
+                        .catch(error => {
+                            Swal.fire('Error!', error.message, 'error');
+                        });
                 }
             });
         }
     </script>
 </body>
+
 </html>
