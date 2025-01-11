@@ -293,6 +293,8 @@ if (isset($_SESSION['user_id'])) {
                 return CryptoJS.AES.encrypt(data, secretKey).toString();
             }
 
+            let hasInteractedWithPassword = false;
+
             function validatePassword() {
                 const password = document.getElementById('password');
                 const confirmPassword = document.getElementById('confirmPassword');
@@ -304,22 +306,35 @@ if (isset($_SESSION['user_id'])) {
                     special: /[!@#$%^&*(),.?":{}|<>]/.test(password.value)
                 };
 
+                // Only show validation styling if user has interacted with password
+                if (!hasInteractedWithPassword) {
+                    password.style.borderColor = '#D1D5DB'; // gray-300
+                    password.style.boxShadow = 'none';
+                    return true;
+                }
+
                 const isValid = Object.values(requirements).every(req => req === true);
                 const passwordsMatch = password.value === confirmPassword.value;
 
-                // Update password field styling
-                if (!isValid) {
-                    password.style.borderColor = '#ef4444'; // red-500
+                // Update password field styling only if user has interacted
+                if (!isValid && hasInteractedWithPassword) {
+                    password.style.borderColor = '#ef4444';
                     password.style.boxShadow = '0 0 0 1px #ef4444';
+                } else if (isValid && hasInteractedWithPassword) {
+                    password.style.borderColor = '#10b981'; // Green for valid
+                    password.style.boxShadow = '0 0 0 1px #10b981';
                 } else {
-                    password.style.borderColor = '';
-                    password.style.boxShadow = '';
+                    password.style.borderColor = '#D1D5DB';
+                    password.style.boxShadow = 'none';
                 }
 
                 // Update confirm password field styling
                 if (!passwordsMatch && confirmPassword.value) {
                     confirmPassword.style.borderColor = '#ef4444'; // red-500
                     confirmPassword.style.boxShadow = '0 0 0 1px #ef4444';
+                } else if (passwordsMatch && confirmPassword.value) {
+                    confirmPassword.style.borderColor = '#10b981';
+                    confirmPassword.style.boxShadow = '0 0 0 1px #10b981';
                 } else {
                     confirmPassword.style.borderColor = '';
                     confirmPassword.style.boxShadow = '';
@@ -328,7 +343,12 @@ if (isset($_SESSION['user_id'])) {
                 return isValid && passwordsMatch;
             }
 
-            password.addEventListener('input', function() {
+            password.addEventListener('input', function(e) {
+                // Prevent spaces
+                if (e.target.value.includes(' ')) {
+                    e.target.value = e.target.value.replace(/\s/g, '');
+                }
+                
                 validatePassword();
                 const password = this.value;
                 const requirements = {
@@ -353,6 +373,34 @@ if (isset($_SESSION['user_id'])) {
                         element.classList.remove('text-green-600');
                     }
                 });
+            });
+
+            // Add blur event listener
+            password.addEventListener('blur', function() {
+                if (!this.value) {
+                    hasInteractedWithPassword = false;
+                    // Reset to default state if empty
+                    this.style.borderColor = '#D1D5DB'; // gray-300
+                    this.style.boxShadow = 'none';
+                } else if (!validatePassword()) {
+                    // Keep red if invalid
+                    this.style.borderColor = '#ef4444';
+                    this.style.boxShadow = '0 0 0 1px #ef4444';
+                } else {
+                    // Reset to default if valid
+                    this.style.borderColor = '#D1D5DB';
+                    this.style.boxShadow = 'none';
+                }
+            });
+
+            // Add focus event for better UX
+            password.addEventListener('focus', function() {
+                hasInteractedWithPassword = true;
+                validatePassword();
+                if (this.value && !validatePassword()) {
+                    this.style.borderColor = '#ef4444';
+                    this.style.boxShadow = '0 0 0 1px #ef4444';
+                }
             });
 
             confirmPassword.addEventListener('input', validatePassword);
