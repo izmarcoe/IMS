@@ -33,6 +33,17 @@ $query->bindParam(':offset', $offset, PDO::PARAM_INT);
 $query->execute();
 $sales = $query->fetchAll(PDO::FETCH_ASSOC);
 
+// Calculate totals
+$totalQuery = $conn->prepare("
+    SELECT COUNT(*) as total_sales,
+           SUM(quantity * price) as total_amount 
+    FROM sales 
+    WHERE DATE(sale_date) = :date
+");
+$totalQuery->bindParam(':date', $date);
+$totalQuery->execute();
+$totals = $totalQuery->fetch(PDO::FETCH_ASSOC);
+
 // Calculate total pages
 $totalPages = ceil($totalSales / $limit);
 
@@ -88,6 +99,17 @@ $fname = $_SESSION['Fname'];
                     </button>
                 </form>
 
+                <div class="bg-white rounded-lg shadow p-4 mb-4 grid grid-cols-2 gap-4">
+                    <div class="text-center">
+                        <p class="text-gray-600">Total Number of Sales</p>
+                        <p class="text-2xl font-bold"><?php echo number_format($totals['total_sales']); ?></p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-gray-600">Total Amount</p>
+                        <p class="text-2xl font-bold">₱<?php echo number_format($totals['total_amount'], 2); ?></p>
+                    </div>
+                </div>
+
                 <!-- Sales Table -->
                 <div class="bg-white rounded-lg shadow overflow-hidden">
                     <table class="min-w-full divide-y divide-gray-200">
@@ -125,21 +147,22 @@ $fname = $_SESSION['Fname'];
                     <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
                         <?php if ($page > 1): ?>
                             <a href="?date=<?php echo htmlspecialchars($date); ?>&page=<?php echo $page - 1; ?>"
-                                class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                class="relative inline-flex items-center px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300 text-sm font-medium">
                                 Previous
                             </a>
                         <?php endif; ?>
 
                         <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                             <a href="?date=<?php echo htmlspecialchars($date); ?>&page=<?php echo $i; ?>"
-                                class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium <?php echo $i == $page ? 'text-green-600 bg-green-50' : 'text-gray-700 hover:bg-gray-50'; ?>">
+                                class="relative inline-flex items-center px-3 py-2 rounded-md text-sm font-medium 
+                                <?php echo $i == $page ? 'bg-green-600 text-white' : 'bg-gray-200 hover:bg-gray-300'; ?>">
                                 <?php echo $i; ?>
                             </a>
                         <?php endfor; ?>
 
                         <?php if ($page < $totalPages): ?>
                             <a href="?date=<?php echo htmlspecialchars($date); ?>&page=<?php echo $page + 1; ?>"
-                                class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                class="relative inline-flex items-center px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300 text-sm font-medium">
                                 Next
                             </a>
                         <?php endif; ?>

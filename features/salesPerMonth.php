@@ -50,6 +50,19 @@ $totalPages = ceil($totalSales / $limit);
 $startPage = max(1, min($page - 2, $totalPages - 4));
 $endPage = min($totalPages, $startPage + 4);
 
+// Calculate totals
+$totalQuery = $conn->prepare("
+    SELECT COUNT(*) as total_sales,
+           SUM(quantity * price) as total_amount 
+    FROM sales 
+    WHERE MONTH(sale_date) = :month 
+    AND YEAR(sale_date) = :year
+");
+$totalQuery->bindParam(':month', $month);
+$totalQuery->bindParam(':year', $year);
+$totalQuery->execute();
+$totals = $totalQuery->fetch(PDO::FETCH_ASSOC);
+
 $fname = $_SESSION['Fname'];
 ?>
 
@@ -99,6 +112,17 @@ $fname = $_SESSION['Fname'];
                 <div class="mb-4">
                     <button id="download-pdf" class="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">Download as PDF</button>
                 </div>
+                <div class="bg-white rounded-lg shadow p-4 mb-4 grid grid-cols-2 gap-4">
+                    <div class="text-center">
+                        <p class="text-gray-600">Total Number of Sales</p>
+                        <p class="text-2xl font-bold"><?php echo number_format($totals['total_sales']); ?></p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-gray-600">Total Amount</p>
+                        <p class="text-2xl font-bold">₱<?php echo number_format($totals['total_amount'], 2); ?></p>
+                    </div>
+                </div>
+                
                 <div class="overflow-x-auto">
                     <table class="w-full border-collapse bg-white shadow-sm rounded-lg text-sm">
                         <thead>
