@@ -248,7 +248,7 @@ $fname = $_SESSION['Fname'];
         <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
             <div class="mt-3">
                 <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Edit Product</h3>
-                <form id="editProductForm" method="POST" action="../endpoint/edit_product.php">
+                <form id="editProductForm" method="POST">
                     <input type="hidden" name="product_id" id="editProductId">
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="editProductName">Product Name</label>
@@ -258,7 +258,7 @@ $fname = $_SESSION['Fname'];
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="editCategory">Category</label>
                         <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-                            id="editCategory" name="category" required>
+                            id="editCategory" name="category_id" required>
                             <option value="" disabled selected>Select a category</option>
                             <?php foreach ($categories as $category): ?>
                                 <option value="<?php echo htmlspecialchars($category['id']); ?>">

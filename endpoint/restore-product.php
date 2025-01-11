@@ -10,7 +10,7 @@ try {
     $productId = $_POST['product_id'];
     $conn->beginTransaction();
 
-    // Get archived product
+    // Get archived product data
     $stmt = $conn->prepare("SELECT * FROM archive_products WHERE product_id = ?");
     $stmt->execute([$productId]);
     $product = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -19,12 +19,23 @@ try {
         throw new Exception('Archived product not found');
     }
 
-    // Restore to products
+    // Check if category is active
+    $categoryStmt = $conn->prepare("SELECT id FROM product_categories WHERE id = ?");
+    $categoryStmt->execute([$product['category_id']]);
+    $category = $categoryStmt->fetch();
+
+    if (!$category) {
+        throw new Exception('Cannot restore product: Category is archived. Please restore the category first.');
+    }
+
+    // Proceed with restore if category exists
     $restoreStmt = $conn->prepare("
-        INSERT INTO products (product_name, price, quantity, category_id)
-        VALUES (:name, :price, :quantity, :category_id)
+        INSERT INTO products (product_id, product_name, price, quantity, category_id)
+        VALUES (:id, :name, :price, :quantity, :category_id)
     ");
+    
     $restoreStmt->execute([
+        'id' => $product['product_id'],
         'name' => $product['product_name'],
         'price' => $product['price'],
         'quantity' => $product['quantity'],
@@ -39,7 +50,12 @@ try {
     echo json_encode(['success' => true]);
 
 } catch (Exception $e) {
-    if ($conn->inTransaction()) $conn->rollBack();
+    if ($conn->inTransaction()) {
+        $conn->rollBack();
+    }
     http_response_code(500);
-    echo json_encode(['error' => $e->getMessage()]);
+    echo json_encode([
+        'success' => false,
+        'error' => $e->getMessage()
+    ]);
 }

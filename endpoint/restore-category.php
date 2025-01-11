@@ -8,32 +8,59 @@ try {
     }
 
     $categoryId = $_POST['category_id'];
-
-    // Start transaction
     $conn->beginTransaction();
 
-    // Get archived category data
-    $stmt = $conn->prepare("SELECT * FROM archive_categories WHERE id = ?");
-    $stmt->execute([$categoryId]);
-    $category = $stmt->fetch(PDO::FETCH_ASSOC);
+    // 1. Get all data first
+    $categoryStmt = $conn->prepare("SELECT * FROM archive_categories WHERE id = ?");
+    $categoryStmt->execute([$categoryId]);
+    $category = $categoryStmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$category) {
         throw new Exception('Archived category not found');
     }
 
-    // Insert back into product_categories
-    $restoreStmt = $conn->prepare("
-        INSERT INTO product_categories (category_name, description)
-        VALUES (:category_name, :description)
+    $productStmt = $conn->prepare("SELECT * FROM archive_products WHERE category_id = ?");
+    $productStmt->execute([$categoryId]);
+    $products = $productStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // 2. Delete products from archive first
+    if (!empty($products)) {
+        $deleteProductsStmt = $conn->prepare("DELETE FROM archive_products WHERE category_id = ?");
+        $deleteProductsStmt->execute([$categoryId]);
+    }
+
+    // 3. Delete category from archive
+    $deleteCategoryStmt = $conn->prepare("DELETE FROM archive_categories WHERE id = ?");
+    $deleteCategoryStmt->execute([$categoryId]);
+
+    // 4. Restore category
+    $restoreCategoryStmt = $conn->prepare("
+        INSERT INTO product_categories (id, category_name, description)
+        VALUES (:id, :category_name, :description)
     ");
-    $restoreStmt->execute([
+    $restoreCategoryStmt->execute([
+        'id' => $category['id'],
         'category_name' => $category['category_name'],
         'description' => $category['description']
     ]);
 
-    // Delete from archive_categories
-    $deleteStmt = $conn->prepare("DELETE FROM archive_categories WHERE id = ?");
-    $deleteStmt->execute([$categoryId]);
+    // 5. Restore products
+    if (!empty($products)) {
+        $restoreProductStmt = $conn->prepare("
+            INSERT INTO products (product_id, product_name, price, quantity, category_id)
+            VALUES (:id, :name, :price, :quantity, :category_id)
+        ");
+
+        foreach ($products as $product) {
+            $restoreProductStmt->execute([
+                'id' => $product['product_id'],
+                'name' => $product['product_name'],
+                'price' => $product['price'],
+                'quantity' => $product['quantity'],
+                'category_id' => $product['category_id']
+            ]);
+        }
+    }
 
     $conn->commit();
     echo json_encode(['success' => true]);

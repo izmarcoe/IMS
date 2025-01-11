@@ -126,7 +126,7 @@ $fname = $_SESSION['Fname'];
                                                 class="bg-blue-500 hover:bg-blue-600 text-white px-2 md:px-3 py-1 rounded-md text-sm">
                                                 Edit
                                             </button>
-                                            <button onclick="openDeleteModal(<?php echo $category['id']; ?>)"
+                                            <button onclick="openArchiveModal(<?php echo $category['id']; ?>)"
                                                 class="bg-red-500 hover:bg-red-600 text-white px-2 md:px-3 py-1 rounded-md text-sm">
                                                 Archive
                                             </button>
@@ -247,10 +247,10 @@ $fname = $_SESSION['Fname'];
     <script src="../JS/time.js"></script>
     <script src="../JS/category_modal.js"></script>
     <script>
-        function openDeleteModal(categoryId) {
+        function openArchiveModal(categoryId) {
             Swal.fire({
                 title: 'Archive Category?',
-                text: 'This will move the category to archives. Continue?',
+                text: 'This will archive the category and all its products. Continue?',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#EF4444',
@@ -259,33 +259,35 @@ $fname = $_SESSION['Fname'];
             }).then((result) => {
                 if (result.isConfirmed) {
                     fetch('../endpoint/archive-category.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded',
-                            },
-                            body: `category_id=${categoryId}`
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                Swal.fire(
-                                    'Archived!',
-                                    'Category has been moved to archives.',
-                                    'success'
-                                ).then(() => {
-                                    document.getElementById(`category-${categoryId}`).remove();
-                                });
-                            } else {
-                                throw new Error(data.error || 'Failed to archive category');
-                            }
-                        })
-                        .catch(error => {
-                            Swal.fire(
-                                'Error!',
-                                error.message,
-                                'error'
-                            );
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `category_id=${categoryId}`
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'Archived!',
+                                text: `Category and ${data.productsArchived} products have been archived.`,
+                                icon: 'success',
+                                confirmButtonColor: '#10B981'
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            throw new Error(data.error);
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: error.message,
+                            icon: 'error',
+                            confirmButtonColor: '#EF4444'
                         });
+                    });
                 }
             });
         }

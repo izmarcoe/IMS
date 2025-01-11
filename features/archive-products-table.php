@@ -13,11 +13,11 @@ try {
     $total = $countStmt->fetchColumn();
     $totalPages = ceil($total / $limit);
 
-    // Get archived products
+    // Update query to join with archive_categories instead of product_categories
     $stmt = $conn->prepare("
-        SELECT ap.*, pc.category_name 
+        SELECT ap.*, ac.category_name 
         FROM archive_products ap
-        LEFT JOIN product_categories pc ON ap.category_id = pc.id
+        LEFT JOIN archive_categories ac ON ap.category_id = ac.id
         ORDER BY ap.archived_at DESC
         LIMIT :limit OFFSET :offset
     ");

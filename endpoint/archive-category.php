@@ -8,40 +8,36 @@ try {
     }
 
     $categoryId = $_POST['category_id'];
-    
-    // Start transaction
     $conn->beginTransaction();
 
-    // Get category data first
-    $stmt = $conn->prepare("SELECT * FROM product_categories WHERE id = ?");
-    $stmt->execute([$categoryId]);
-    $category = $stmt->fetch(PDO::FETCH_ASSOC);
+    // 1. Get category data
+    $categoryStmt = $conn->prepare("SELECT * FROM product_categories WHERE id = ?");
+    $categoryStmt->execute([$categoryId]);
+    $category = $categoryStmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$category) {
         throw new Exception('Category not found');
     }
 
-    // Get all products in this category
+    // 2. Get products with this category
     $productStmt = $conn->prepare("SELECT * FROM products WHERE category_id = ?");
     $productStmt->execute([$categoryId]);
     $products = $productStmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Archive all products in this category
+    // 3. Archive products first
     foreach ($products as $product) {
         // Insert into archive_products
         $archiveProductStmt = $conn->prepare("
-            INSERT INTO archive_products (
-                product_id, product_name, price, quantity, category_id
-            ) VALUES (
-                :id, :name, :price, :quantity, :category_id
-            )
+            INSERT INTO archive_products 
+            (product_id, product_name, price, quantity, category_id) 
+            VALUES (?, ?, ?, ?, ?)
         ");
         $archiveProductStmt->execute([
-            'id' => $product['product_id'],
-            'name' => $product['product_name'],
-            'price' => $product['price'],
-            'quantity' => $product['quantity'],
-            'category_id' => $product['category_id']
+            $product['product_id'],
+            $product['product_name'],
+            $product['price'],
+            $product['quantity'],
+            $product['category_id']
         ]);
 
         // Delete from products
@@ -49,21 +45,19 @@ try {
         $deleteProductStmt->execute([$product['product_id']]);
     }
 
-    // Archive category
+    // 4. Archive category
     $archiveCategoryStmt = $conn->prepare("
-        INSERT INTO archive_categories (
-            id, category_name, description
-        ) VALUES (
-            :id, :category_name, :description
-        )
+        INSERT INTO archive_categories 
+        (id, category_name, description) 
+        VALUES (?, ?, ?)
     ");
     $archiveCategoryStmt->execute([
-        'id' => $category['id'],
-        'category_name' => $category['category_name'],
-        'description' => $category['description']
+        $category['id'],
+        $category['category_name'],
+        $category['description']
     ]);
 
-    // Delete original category
+    // 5. Delete original category
     $deleteCategoryStmt = $conn->prepare("DELETE FROM product_categories WHERE id = ?");
     $deleteCategoryStmt->execute([$categoryId]);
 
@@ -71,8 +65,8 @@ try {
 
     echo json_encode([
         'success' => true,
-        'message' => 'Category and related products archived successfully',
-        'archived_products_count' => count($products)
+        'message' => 'Category and related products archived',
+        'productsArchived' => count($products)
     ]);
 
 } catch (Exception $e) {
@@ -81,6 +75,7 @@ try {
     }
     http_response_code(500);
     echo json_encode([
+        'success' => false,
         'error' => $e->getMessage()
     ]);
 }

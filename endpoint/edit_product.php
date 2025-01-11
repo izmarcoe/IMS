@@ -2,40 +2,48 @@
 header('Content-Type: application/json');
 include('../conn/conn.php');
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    try {
-        $stmt = $conn->prepare("UPDATE products SET 
-            product_name = :product_name,
-            category_id = :category, 
+try {
+    // Validate inputs
+    if (empty($_POST['product_id']) || empty($_POST['product_name']) || 
+        empty($_POST['category_id']) || empty($_POST['price']) || 
+        empty($_POST['quantity'])) {
+        throw new Exception('All fields are required');
+    }
+
+    $conn->beginTransaction();
+
+    // Update product
+    $stmt = $conn->prepare("
+        UPDATE products 
+        SET product_name = :name,
+            category_id = :category_id,
             price = :price,
             quantity = :quantity
-            WHERE product_id = :product_id");
+        WHERE product_id = :id
+    ");
 
-        $stmt->execute([
-            ':product_name' => $_POST['product_name'],
-            ':category' => $_POST['category'],
-            ':price' => $_POST['price'],
-            ':quantity' => $_POST['quantity'],
-            ':product_id' => $_POST['product_id']
-        ]);
+    $stmt->execute([
+        'name' => $_POST['product_name'],
+        'category_id' => $_POST['category_id'],
+        'price' => $_POST['price'],
+        'quantity' => $_POST['quantity'],
+        'id' => $_POST['product_id']
+    ]);
 
-        // Get updated category name
-        $categoryStmt = $conn->prepare("SELECT category_name FROM product_categories WHERE id = :category_id");
-        $categoryStmt->execute([':category_id' => $_POST['category']]);
-        $category = $categoryStmt->fetch(PDO::FETCH_ASSOC);
+    $conn->commit();
+    
+    echo json_encode([
+        'success' => true,
+        'message' => 'Product updated successfully'
+    ]);
 
-        echo json_encode([
-            'status' => 'success',
-            'message' => 'Product updated successfully',
-            'category_name' => $category['category_name']
-        ]);
-    } catch (PDOException $e) {
-        http_response_code(500);
-        echo json_encode([
-            'status' => 'error',
-            'message' => 'Error updating product: ' . $e->getMessage()
-        ]);
+} catch (Exception $e) {
+    if ($conn->inTransaction()) {
+        $conn->rollBack();
     }
-    exit();
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'error' => $e->getMessage()
+    ]);
 }
-?>
