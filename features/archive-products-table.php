@@ -13,11 +13,13 @@ try {
     $total = $countStmt->fetchColumn();
     $totalPages = ceil($total / $limit);
 
-    // Update query to join with archive_categories instead of product_categories
+    // Update query to properly join with product_categories
     $stmt = $conn->prepare("
-        SELECT ap.*, ac.category_name 
+        SELECT 
+            ap.*,
+            pc.category_name 
         FROM archive_products ap
-        LEFT JOIN archive_categories ac ON ap.category_id = ac.id
+        LEFT JOIN product_categories pc ON ap.category_id = pc.id
         ORDER BY ap.archived_at DESC
         LIMIT :limit OFFSET :offset
     ");
@@ -77,7 +79,7 @@ $fname = $_SESSION['Fname'];
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     <?php echo htmlspecialchars($product['product_name']); ?>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <td class="px-6 py-4">
                                     <?php echo htmlspecialchars($product['category_name'] ?? 'No Category'); ?>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">

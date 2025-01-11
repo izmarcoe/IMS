@@ -11,8 +11,13 @@ try {
     
     $conn->beginTransaction();
 
-    // Get product data
-    $stmt = $conn->prepare("SELECT * FROM products WHERE product_id = ?");
+    // Get product data with category
+    $stmt = $conn->prepare("
+        SELECT p.*, pc.category_name 
+        FROM products p
+        LEFT JOIN product_categories pc ON p.category_id = pc.id 
+        WHERE p.product_id = ?
+    ");
     $stmt->execute([$productId]);
     $product = $stmt->fetch(PDO::FETCH_ASSOC);
 
