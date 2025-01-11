@@ -95,68 +95,83 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">User Settings</h2>
                 <?php echo $notification ? "<div class='mb-6 p-4 rounded-lg bg-blue-50 text-blue-600'>{$notification}</div>" : ''; ?>
 
-                <form class="space-y-6" action="../features/user_settings.php" method="POST">
-                    <div class="space-y-4">
-                        <div>
-                            <div class="flex items-center justify-between">
-                                <label for="current_password" class="block text-sm font-medium text-gray-700">Current Password</label>
-                                <button type="button" class="ml-2" onclick="togglePassword('current_password', 'toggleCurrentPassword')">
-                                    <i class="fas fa-eye text-gray-500 hover:text-gray-700" id="toggleCurrentPassword"></i>
-                                </button>
-                            </div>
-                            <input type="password" id="current_password" name="current_password" required
-                                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                        </div>
-
-                        <div>
-                            <div class="flex items-center justify-between">
-                                <label for="new_password" class="block text-sm font-medium text-gray-700">New Password</label>
-                                <button type="button" class="ml-2" onclick="togglePassword('new_password', 'toggleNewPassword')">
-                                    <i class="fas fa-eye text-gray-500 hover:text-gray-700" id="toggleNewPassword"></i>
-                                </button>
-                            </div>
-                            <input type="password" id="new_password" name="new_password" required
-                                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                            
-                            <!-- Password Requirements Section -->
-                            <div class="mt-2 text-sm text-gray-500 space-y-1" id="password-requirements">
-                                <p class="font-medium mb-1">Password must contain:</p>
-                                <div class="grid grid-cols-2 gap-2">
-                                    <div class="flex items-center">
-                                        <i class="fas fa-check-circle text-green-500 mr-2 requirement-icon" data-req="length"></i>
-                                        <span>At least 8 characters</span>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <i class="fas fa-check-circle text-green-500 mr-2 requirement-icon" data-req="uppercase"></i>
-                                        <span>1 uppercase letter</span>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <i class="fas fa-check-circle text-green-500 mr-2 requirement-icon" data-req="lowercase"></i>
-                                        <span>1 lowercase letter</span>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <i class="fas fa-check-circle text-green-500 mr-2 requirement-icon" data-req="number"></i>
-                                        <span>1 number</span>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <i class="fas fa-check-circle text-green-500 mr-2 requirement-icon" data-req="special"></i>
-                                        <span>1 special character</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div class="flex items-center justify-between">
-                                <label for="confirm_password" class="block text-sm font-medium text-gray-700">Confirm New Password</label>
-                                <button type="button" class="ml-2" onclick="togglePassword('confirm_password', 'toggleConfirmPassword')">
-                                    <i class="fas fa-eye text-gray-500 hover:text-gray-700" id="toggleConfirmPassword"></i>
-                                </button>
-                            </div>
-                            <input type="password" id="confirm_password" name="confirm_password" required
-                                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                <form method="POST" class="space-y-4">
+                    <!-- Current Password -->
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="current_password">
+                            Current Password
+                        </label>
+                        <div class="relative">
+                            <input type="password"
+                                id="current_password"
+                                name="current_password"
+                                class="w-full px-4 py-2 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                                required>
+                            <span class="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer">
+                                <i class="fas fa-eye text-gray-500 hover:text-gray-700" id="toggle_current_password"></i>
+                            </span>
                         </div>
                     </div>
+
+                    <!-- New Password -->
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="new_password">
+                            New Password
+                        </label>
+                        <div class="relative">
+                            <input type="password"
+                                id="new_password"
+                                name="new_password"
+                                class="w-full px-4 py-2 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                                required>
+                            <span class="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer">
+                                <i class="fas fa-eye text-gray-500 hover:text-gray-700" id="toggle_new_password"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <!-- Password Requirements Section -->
+                    <div class="mt-2 text-sm text-gray-500 space-y-1" id="password-requirements">
+                        <p class="font-medium mb-1">Password must contain:</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2 requirement-icon" data-req="length"></i>
+                                <span>At least 8 characters</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2 requirement-icon" data-req="uppercase"></i>
+                                <span>1 uppercase letter</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2 requirement-icon" data-req="lowercase"></i>
+                                <span>1 lowercase letter</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2 requirement-icon" data-req="number"></i>
+                                <span>1 number</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2 requirement-icon" data-req="special"></i>
+                                <span>1 special character</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Confirm Password -->
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="confirm_password">
+                            Confirm Password
+                        </label>
+                        <div class="relative">
+                            <input type="password"
+                                id="confirm_password"
+                                name="confirm_password"
+                                class="w-full px-4 py-2 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                                required>
+                            <span class="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer">
+                                <i class="fas fa-eye text-gray-500 hover:text-gray-700" id="toggle_confirm_password"></i>
+                            </span>
+                        </div>
+                    </div>
+
                     <button type="submit" class="mt-12 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
                         Update Password
                     </button>
@@ -167,21 +182,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <script src="../JS/notificationTimer.js"></script>
     <script src="../JS/time.js"></script>
     <script>
-        function togglePassword(inputId, toggleIconId) {
-            const passwordInput = document.getElementById(inputId);
-            const toggleIcon = document.getElementById(toggleIconId);
-            
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                toggleIcon.classList.remove('fa-eye');
-                toggleIcon.classList.add('fa-eye-slash');
-            } else {
-                passwordInput.type = 'password';
-                toggleIcon.classList.remove('fa-eye-slash');
-                toggleIcon.classList.add('fa-eye');
-            }
-        }
+        // Toggle password visibility for all password fields
+        ['current_password', 'new_password', 'confirm_password'].forEach(id => {
+            const toggleBtn = document.getElementById(`toggle_${id}`);
+            const input = document.getElementById(id);
 
+            toggleBtn.addEventListener('click', function() {
+                const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                input.setAttribute('type', type);
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+        });
+
+        // ...existing password validation code...
         document.getElementById('new_password').addEventListener('input', function(e) {
             const password = e.target.value;
             const requirements = {
