@@ -159,6 +159,15 @@ foreach ($weeklyOrders as $order) {
         <!-- Main Content -->
         <div class="flex-grow p-3">
 
+            <!-- weekly orders graph-->
+            <div class="w-full lg:w-3/4 mx-auto p-6 bg-white rounded-lg shadow-lg mb-8 mt-8">
+                <div class="mb-4">
+                    <h2 class="text-xl font-semibold text-gray-800">Weekly Orders</h2>
+                </div>
+                <div class="bg-white p-4 rounded-lg h-[200px] relative"> <!-- Added relative positioning -->
+                    <canvas id="monthlyOrdersChart" style="width:100% !important; height:100% !important;"></canvas>
+                </div>
+            </div>
             <div class="flex flex-wrap justify-center items-center gap-6 mt-5">
                 <!-- Total Number of Users -->
                 <div class="flex flex-col justify-between text-white p-8 bg-pink-600 rounded-lg shadow-md h-full w-80">
@@ -210,16 +219,6 @@ foreach ($weeklyOrders as $order) {
                         <span class="text-2xl font-bold"><?php echo htmlspecialchars(empty($totalSales) ? '0' : $totalSales); ?></span>
                         <span class="text-md">Sales</span>
                     </div>
-                </div>
-            </div>
-
-            <!-- weekly orders graph-->
-            <div class="w-full lg:w-3/4 mx-auto p-6 bg-white rounded-lg shadow-lg mb-8 mt-8">
-                <div class="mb-4">
-                    <h2 class="text-xl font-semibold text-gray-800">Weekly Orders</h2>
-                </div>
-                <div class="bg-white p-4 rounded-lg h-[200px] relative"> <!-- Added relative positioning -->
-                    <canvas id="monthlyOrdersChart" style="width:100% !important; height:100% !important;"></canvas>
                 </div>
             </div>
 

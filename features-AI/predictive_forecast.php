@@ -11,6 +11,34 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
     exit();
 }
 
+// Add this code near the top of the file after session_start()
+$currentMonth = date('n'); // Get current month number (1-12)
+$currentYear = date('Y');
+
+// Calculate next month and year
+if ($currentMonth == 12) {
+    $nextMonth = 1;
+    $nextYear = $currentYear + 1;
+} else {
+    $nextMonth = $currentMonth + 1;
+    $nextYear = $currentYear;
+}
+
+// Get month name
+$nextMonthName = date('F', mktime(0, 0, 0, $nextMonth, 1, $nextYear));
+
+// Calculate previous month
+if ($currentMonth == 1) {
+    $previousMonth = 12;
+    $previousYear = $currentYear - 1;
+} else {
+    $previousMonth = $currentMonth - 1;
+    $previousYear = $currentYear;
+}
+
+// Get previous month name
+$previousMonthName = date('F', mktime(0, 0, 0, $previousMonth, 1, $previousYear));
+
 // Check if Fname and Lname are set in session; if not, fetch them from the database
 if (!isset($_SESSION['Fname']) || !isset($_SESSION['Lname'])) {
     // Check if the connection variable is set
@@ -157,8 +185,8 @@ $fname = $_SESSION['Fname'];
                             <th class="px-4 py-2 border-b text-center bg-gray-50">Product ID</th>
                             <th class="px-4 py-2 border-b text-left bg-gray-50">Product Name</th>
                             <th class="px-4 py-2 border-b text-center bg-gray-50">Current Stock</th>
-                            <th class="px-4 py-2 border-b text-center bg-gray-50">Previous Month Sales</th>
-                            <th class="px-4 py-2 border-b text-center bg-gray-50">Predicted Demand (Next Month)</th>
+                            <th class="px-4 py-2 border-b text-center bg-gray-50">Last Month Sales (<?php echo $previousMonthName; ?>)</th>
+                            <th class="px-4 py-2 border-b text-center bg-gray-50">Predicted Demand for <?php echo $nextMonthName; ?></th>
                             <th class="px-4 py-2 border-b text-center bg-gray-50">Recommended Stock (at least)</th>
                         </tr>
                     </thead>
