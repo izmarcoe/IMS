@@ -146,9 +146,11 @@ $lname = $_SESSION['Lname'];
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-2xl font-bold">Manage Sales</h2>
                     <div class="flex space-x-4">
-                        <a href="archive-sales-table.php" class="text-blue-500 hover:text-blue-700">
-                            <i class="fas fa-archive mr-2"></i>View Archived Sales
-                        </a>
+                        <?php if ($_SESSION['user_role'] === 'admin'): ?>
+                            <a href="archive-sales-table.php" class="text-blue-500 hover:text-blue-700">
+                                <i class="fas fa-archive mr-2"></i>View Archived Sales
+                            </a>
+                        <?php endif; ?>
                     </div>
                 </div>
 

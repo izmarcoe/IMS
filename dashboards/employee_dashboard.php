@@ -93,9 +93,19 @@ $totalProductsStmt = $conn->prepare("SELECT COUNT(*) AS total_products FROM prod
 $totalProductsStmt->execute();
 $totalProducts = $totalProductsStmt->fetch(PDO::FETCH_ASSOC)['total_products'];
 
-$totalSalesStmt = $conn->prepare("SELECT SUM(quantity) AS total_sales FROM sales");
+$currentMonth = date('m');
+$currentYear = date('Y');
+
+$totalSalesStmt = $conn->prepare("
+    SELECT SUM(quantity) AS total_sales 
+    FROM sales 
+    WHERE MONTH(sale_date) = :month 
+    AND YEAR(sale_date) = :year
+");
+$totalSalesStmt->bindParam(':month', $currentMonth);
+$totalSalesStmt->bindParam(':year', $currentYear);
 $totalSalesStmt->execute();
-$totalSales = $totalSalesStmt->fetch(PDO::FETCH_ASSOC)['total_sales'];
+$totalSales = $totalSalesStmt->fetch(PDO::FETCH_ASSOC)['total_sales'] ?? 0;
 ?>
 
 <!DOCTYPE html>

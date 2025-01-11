@@ -84,10 +84,11 @@ $fname = $_SESSION['Fname'];
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-semibold">Categories</h2>
                 <div class="flex items-center space-x-4">
-                    <a href="archive-categories-table.php" class="text-blue-500 hover:text-blue-700 flex items-center">
-                        <i class="fas fa-archive mr-2"></i>
-                        View Archived Categories
-                    </a>
+                    <?php if ($_SESSION['user_role'] === 'admin'): ?>
+                        <a href="archive-categories-table.php" class="text-blue-500 hover:text-blue-700 flex items-center">
+                            <i class="fas fa-archive mr-2"></i>View Archived Categories
+                        </a>
+                    <?php endif; ?>
                     <button onclick="openAddModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md">
                         Add New Category
                     </button>
@@ -126,10 +127,12 @@ $fname = $_SESSION['Fname'];
                                                 class="bg-blue-500 hover:bg-blue-600 text-white px-2 md:px-3 py-1 rounded-md text-sm">
                                                 Edit
                                             </button>
-                                            <button onclick="openArchiveModal(<?php echo $category['id']; ?>)"
-                                                class="bg-red-500 hover:bg-red-600 text-white px-2 md:px-3 py-1 rounded-md text-sm">
-                                                Archive
-                                            </button>
+                                            <?php if ($_SESSION['user_role'] === 'admin'): ?>
+                                                <button onclick="openArchiveModal(<?php echo $category['id']; ?>)"
+                                                    class="bg-red-500 hover:bg-red-600 text-white px-2 md:px-3 py-1 rounded-md text-sm">
+                                                    Archive
+                                                </button>
+                                            <?php endif; ?>
                                         </div>
                                     </td>
                                 </tr>
