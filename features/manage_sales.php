@@ -143,7 +143,14 @@ $lname = $_SESSION['Lname'];
         </aside>
         <div class="p-4 md:p-8 rounded-lg shadow-md w-full max-w-[95vw] mx-auto flex-col">
             <div class="container mt-3 p-4 mx-auto">
-                <h2 class="text-2xl font-bold mb-4">Manage Sales</h2>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold">Manage Sales</h2>
+                    <div class="flex space-x-4">
+                        <a href="archive-sales-table.php" class="text-blue-500 hover:text-blue-700">
+                            <i class="fas fa-archive mr-2"></i>View Archived Sales
+                        </a>
+                    </div>
+                </div>
 
                 <?php if (isset($_SESSION['notification'])): ?>
                     <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative mb-4" id="notification">
@@ -278,9 +285,9 @@ $lname = $_SESSION['Lname'];
                                                 Edit
                                             </button>
                                             <?php if ($_SESSION['user_role'] === 'admin'): ?>
-                                                <button onclick="deleteSale(<?php echo $sale['id']; ?>)"
+                                                <button onclick="archiveSale(<?php echo $sale['id']; ?>)"
                                                     class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md text-sm">
-                                                    Delete
+                                                    Archive
                                                 </button>
                                             <?php endif; ?>
                                         </td>
@@ -384,7 +391,44 @@ $lname = $_SESSION['Lname'];
     <script src="../JS/manage_sales.js"></script>
     <script src="../JS/notificationTimer.js"></script>
     <script src="../JS/time.js"></script>
-
+    <script>
+        // Update the delete button code in manage_sales.php
+        function archiveSale(saleId) {
+            Swal.fire({
+                title: 'Archive Sale?',
+                text: 'This sale will be moved to archives.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#EF4444',
+                cancelButtonColor: '#6B7280',
+                confirmButtonText: 'Yes, archive it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('../endpoint/archive-sale.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `sale_id=${saleId}`
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire('Archived!', 'Sale has been archived.', 'success')
+                            .then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            throw new Error(data.error || 'Failed to archive sale');
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire('Error!', error.message, 'error');
+                    });
+                }
+            });
+        }
+    </script>
 </body>
 
 </html>
