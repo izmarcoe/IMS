@@ -81,15 +81,17 @@ $fname = $_SESSION['Fname'];
         <!-- Table Container -->
         <div class="p-4 md:p-8 rounded-lg shadow-md w-full max-w-[95vw] mx-auto flex-col">
             <!-- Header with Add Button -->
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl md:text-2xl font-semibold text-gray-800">Categories</h2>
-                <button onclick="openAddModal()"
-                    class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 md:px-4 md:py-2 rounded-lg flex items-center text-sm md:text-base">
-                    <svg class="w-4 h-4 md:w-5 md:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                    Add New Category
-                </button>
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold">Categories</h2>
+                <div class="flex items-center space-x-4">
+                    <a href="archive-categories-table.php" class="text-blue-500 hover:text-blue-700 flex items-center">
+                        <i class="fas fa-archive mr-2"></i>
+                        View Archived Categories
+                    </a>
+                    <button onclick="openAddModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md">
+                        Add New Category
+                    </button>
+                </div>
             </div>
 
             <!-- Table with responsive container -->
@@ -126,7 +128,7 @@ $fname = $_SESSION['Fname'];
                                             </button>
                                             <button onclick="openDeleteModal(<?php echo $category['id']; ?>)"
                                                 class="bg-red-500 hover:bg-red-600 text-white px-2 md:px-3 py-1 rounded-md text-sm">
-                                                Delete
+                                                Archive
                                             </button>
                                         </div>
                                     </td>
@@ -244,6 +246,50 @@ $fname = $_SESSION['Fname'];
     </main>
     <script src="../JS/time.js"></script>
     <script src="../JS/category_modal.js"></script>
+    <script>
+        function openDeleteModal(categoryId) {
+            Swal.fire({
+                title: 'Archive Category?',
+                text: 'This will move the category to archives. Continue?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#EF4444',
+                cancelButtonColor: '#6B7280',
+                confirmButtonText: 'Yes, archive it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('../endpoint/archive-category.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: `category_id=${categoryId}`
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire(
+                                    'Archived!',
+                                    'Category has been moved to archives.',
+                                    'success'
+                                ).then(() => {
+                                    document.getElementById(`category-${categoryId}`).remove();
+                                });
+                            } else {
+                                throw new Error(data.error || 'Failed to archive category');
+                            }
+                        })
+                        .catch(error => {
+                            Swal.fire(
+                                'Error!',
+                                error.message,
+                                'error'
+                            );
+                        });
+                }
+            });
+        }
+    </script>
 </body>
 
 </html>

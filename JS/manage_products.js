@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     let productToDelete = null;
+    let productIdToArchive = null;
 
     // Edit Modal Functions
     function openEditModal(product) {
@@ -179,4 +180,74 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
+
+    // Archive functionality
+    function openArchiveModal(productId) {
+        Swal.fire({
+            title: 'Archive Product?',
+            text: 'This product will be moved to archives. Continue?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#EF4444',
+            cancelButtonColor: '#6B7280',
+            confirmButtonText: 'Yes, archive it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                archiveProduct(productId);
+            }
+        });
+    }
+
+    function archiveProduct(productId) {
+        Swal.fire({
+            title: 'Archiving Product...',
+            text: 'Please wait',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        fetch('../endpoint/archive-product.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `product_id=${productId}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Archived!',
+                    text: 'Product has been moved to archives.',
+                    confirmButtonColor: '#10B981'
+                }).then(() => {
+                    window.location.reload();
+                });
+            } else {
+                throw new Error(data.error || 'Failed to archive product');
+            }
+        })
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: error.message,
+                confirmButtonColor: '#EF4444'
+            });
+        });
+    }
+
+    // Expose functions globally
+    window.openArchiveModal = openArchiveModal;
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('archiveModal');
+        if (event.target === modal) {
+            window.closeArchiveModal();
+        }
+    };
 });

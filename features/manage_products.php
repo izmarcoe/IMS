@@ -85,7 +85,14 @@ $fname = $_SESSION['Fname'];
         </aside>
         <div class="p-4 md:p-8 rounded-lg shadow-md w-full max-w-[95vw] mx-auto flex-col">
             <div class="container mt-3 p-4 mx-auto">
-                <h2 class="text-2xl font-bold mb-4">Manage Products</h2>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold">Manage Products</h2>
+                    <div class="flex space-x-4">
+                        <a href="archive-products-table.php" class="text-blue-500 hover:text-blue-700">
+                            <i class="fas fa-archive mr-2"></i>View Archived Products
+                        </a>
+                    </div>
+                </div>
 
                 <?php if (isset($_SESSION['notification'])): ?>
                     <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative mb-4" id="notification">
@@ -183,9 +190,9 @@ $fname = $_SESSION['Fname'];
                                                 Edit
                                             </button>
                                             <?php if ($_SESSION['user_role'] === 'admin'): ?>
-                                                <button onclick="openDeleteModal(<?php echo $product['product_id']; ?>)"
+                                                <button onclick="openArchiveModal(<?php echo $product['product_id']; ?>)"
                                                     class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md text-sm">
-                                                    Delete
+                                                    Archive
                                                 </button>
                                             <?php endif; ?>
                                         </td>
@@ -279,14 +286,14 @@ $fname = $_SESSION['Fname'];
         </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
-    <div id="deleteModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+    <!-- Replace Delete Modal with Archive Modal -->
+    <div id="archiveModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
         <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Confirm Action</h3>
-            <p class="mb-4">Are you sure you want to delete this item?</p>
+            <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Archive Product</h3>
+            <p class="mb-4">Are you sure you want to archive this product?</p>
             <div class="flex justify-end gap-2">
-                <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded" onclick="closeDeleteModal()">Cancel</button>
-                <button type="button" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded" id="confirmDelete">Delete</button>
+                <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded" onclick="closeArchiveModal()">Cancel</button>
+                <button type="button" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded" id="confirmArchive">Archive</button>
             </div>
         </div>
     </div>
@@ -294,6 +301,50 @@ $fname = $_SESSION['Fname'];
     <script src="../JS/time.js"></script>
     <script src="../JS/notificationTimer.js"></script>
     <script src="../JS/manage_products.js"></script>
+    <script>
+function openArchiveModal(productId) {
+    Swal.fire({
+        title: 'Archive Product?',
+        text: 'This will move the product to archives. Continue?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#EF4444',
+        cancelButtonColor: '#6B7280',
+        confirmButtonText: 'Yes, archive it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch('../endpoint/archive-product.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `product_id=${productId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire(
+                        'Archived!',
+                        'Product has been moved to archives.',
+                        'success'
+                    ).then(() => {
+                        document.getElementById(`product-${productId}`).remove();
+                    });
+                } else {
+                    throw new Error(data.error || 'Failed to archive product');
+                }
+            })
+            .catch(error => {
+                Swal.fire(
+                    'Error!',
+                    error.message,
+                    'error'
+                );
+            });
+        }
+    });
+}
+</script>
 </body>
 
 </html>
