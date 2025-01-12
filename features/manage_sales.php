@@ -364,9 +364,14 @@ $lname = $_SESSION['Lname'];
 
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="editQuantity">Quantity</label>
-                            <input type="number" step="0.01" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 bg-gray-100 leading-tight focus:outline-none focus:shadow-outline"
-                                id="editQuantity" name="quantity" min="1" readonly>
+                            <input type="number" 
+                                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                   id="editQuantity" 
+                                   name="quantity" 
+                                   min="1" 
+                                   required>
                             <small id="stockInfo" class="text-gray-500"></small>
+                            <div id="quantityError" class="text-red-500 text-sm hidden"></div>
                         </div>
 
                         <div class="mb-4">

@@ -1,3 +1,22 @@
+let originalQuantity = 0;
+let availableStock = 0;
+
+async function checkStock(productId, requestedQuantity, originalQty) {
+    try {
+        const response = await fetch('../endpoint/check_stock.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `product_id=${productId}&quantity=${requestedQuantity}&original_quantity=${originalQty}`
+        });
+        return await response.json();
+    } catch (error) {
+        console.error('Error checking stock:', error);
+        return { success: false, message: 'Error checking stock availability' };
+    }
+}
+
 function openEditModal(sale) {
     document.getElementById('editSalesModal').classList.remove('hidden');
     
@@ -17,6 +36,21 @@ function openEditModal(sale) {
     const saleDate = new Date(sale.sale_date).toISOString().split('T')[0];
     document.getElementById('editSaleDate').value = saleDate;
     document.getElementById('editSaleDate').max = new Date().toISOString().split('T')[0];
+
+    originalQuantity = parseInt(sale.quantity);
+    
+    // Fetch current stock information
+    fetch(`../endpoint/get_product.php?id=${sale.product_id}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                availableStock = parseInt(data.product.quantity) + originalQuantity;
+                document.getElementById('stockInfo').textContent = 
+                    `Available Stock: ${availableStock}`;
+            }
+        });
+    
+    updateTotalSales();
 }
 
 function closeEditModal() {
@@ -32,7 +66,31 @@ function updateTotalSales() {
 }
 
 // Add event listeners for real-time updates
-document.getElementById('editQuantity').addEventListener('input', updateTotalSales);
+document.getElementById('editQuantity').addEventListener('input', async function() {
+    const quantity = parseInt(this.value) || 0;
+    const productId = document.getElementById('editProductId').value;
+    const errorDiv = document.getElementById('quantityError');
+    
+    if (quantity <= 0) {
+        errorDiv.textContent = 'Quantity must be greater than 0';
+        errorDiv.classList.remove('hidden');
+        return;
+    }
+
+    const stockCheck = await checkStock(productId, quantity, originalQuantity);
+    
+    if (!stockCheck.success || !stockCheck.isAvailable) {
+        errorDiv.textContent = 'Exceeded available stock';
+        errorDiv.classList.remove('hidden');
+        this.classList.add('border-red-500');
+    } else {
+        errorDiv.classList.add('hidden');
+        this.classList.remove('border-red-500');
+    }
+    
+    updateTotalSales();
+});
+
 document.getElementById('editPrice').addEventListener('input', updateTotalSales);
 
 document.getElementById('editSaleForm').addEventListener('submit', async function(e) {
@@ -41,16 +99,26 @@ document.getElementById('editSaleForm').addEventListener('submit', async functio
     const quantity = parseInt(document.getElementById('editQuantity').value);
     const price = parseFloat(document.getElementById('editPrice').value);
     const saleDate = document.getElementById('editSaleDate').value;
+    const errorDiv = document.getElementById('quantityError');
     
     if (quantity <= 0) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Invalid Input',
-            text: 'Quantity must be greater than zero!'
-        });
-        return false;
+        errorDiv.textContent = 'Quantity must be greater than 0';
+        errorDiv.classList.remove('hidden');
+        return;
     }
-    
+
+    const stockCheck = await checkStock(
+        document.getElementById('editProductId').value,
+        quantity,
+        originalQuantity
+    );
+
+    if (!stockCheck.success || !stockCheck.isAvailable) {
+        errorDiv.textContent = 'Exceeded available stock';
+        errorDiv.classList.remove('hidden');
+        return;
+    }
+
     const formData = new FormData(this);
     
     try {
