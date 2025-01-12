@@ -88,7 +88,6 @@ $fname = $_SESSION['Fname'];
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead>
                         <tr>
-                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">Sales ID</th>
                             <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">Product Name</th>
                             <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
                             <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
@@ -109,7 +108,6 @@ $fname = $_SESSION['Fname'];
                         <?php else: ?>
                             <?php foreach ($archivedSales as $sale): ?>
                                 <tr id="archived-sale-<?php echo $sale['id']; ?>">
-                                    <td class="px-6 py-4"><?php echo htmlspecialchars($sale['id']); ?></td>
                                     <td class="px-6 py-4"><?php echo htmlspecialchars($sale['product_name']); ?></td>
                                     <td class="px-6 py-4"><?php echo htmlspecialchars($sale['category_name'] ?? 'No Category'); ?></td>
                                     <td class="px-6 py-4">₱<?php echo number_format($sale['price'], 2); ?></td>

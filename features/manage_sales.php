@@ -183,11 +183,6 @@ $lname = $_SESSION['Lname'];
                             <tr class="bg-gray-100">
                                 <th class="px-3 py-3 text-left">
                                     <div class="flex items-center gap-1">
-                                        Sales ID
-                                    </div>
-                                </th>
-                                <th class="px-3 py-3 text-left">
-                                    <div class="flex items-center gap-1">
                                         Product Name
                                         <div class="flex flex-col text-xs text-gray-400 ml-1">
                                             <a href="?sort=name_asc" class="hover:text-black">
@@ -276,7 +271,6 @@ $lname = $_SESSION['Lname'];
                             <?php else: ?>
                                 <?php foreach ($sales as $sale): ?>
                                     <tr class="border-t hover:bg-gray-50" data-sale-id="<?php echo htmlspecialchars($sale['id']); ?>">
-                                        <td class="px-3 py-4 sale-id"><?php echo htmlspecialchars($sale['id']); ?></td>
                                         <td class="px-3 py-4 product-name"><?php echo htmlspecialchars($sale['product_name']); ?></td>
                                         <td class="px-3 py-4 category-name"><?php echo htmlspecialchars($sale['category_name'] ?? 'No Category'); ?></td>
                                         <td class="px-3 py-4 price"><?php echo htmlspecialchars($sale['price']); ?></td>

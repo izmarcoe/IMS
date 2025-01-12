@@ -74,6 +74,7 @@ function openEditModal(sale) {
 
 function closeEditModal() {
     document.getElementById('editSalesModal').classList.add('hidden');
+    window.location.reload();
 }
 
 // Real-time update functions
