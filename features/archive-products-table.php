@@ -13,11 +13,11 @@ try {
     $total = $countStmt->fetchColumn();
     $totalPages = ceil($total / $limit);
 
-    // Update query to properly join with product_categories
+    // Update query to use stored category_name
     $stmt = $conn->prepare("
         SELECT 
             ap.*,
-            pc.category_name 
+            COALESCE(ap.category_name, pc.category_name, 'No Category') as category_name
         FROM archive_products ap
         LEFT JOIN product_categories pc ON ap.category_id = pc.id
         ORDER BY ap.archived_at DESC

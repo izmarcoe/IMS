@@ -26,18 +26,19 @@ try {
 
     // 3. Archive products first
     foreach ($products as $product) {
-        // Insert into archive_products
+        // Insert into archive_products with category_name
         $archiveProductStmt = $conn->prepare("
             INSERT INTO archive_products 
-            (product_id, product_name, price, quantity, category_id) 
-            VALUES (?, ?, ?, ?, ?)
+            (product_id, product_name, price, quantity, category_id, category_name) 
+            VALUES (?, ?, ?, ?, ?, ?)
         ");
         $archiveProductStmt->execute([
             $product['product_id'],
             $product['product_name'],
             $product['price'],
             $product['quantity'],
-            $product['category_id']
+            $product['category_id'],
+            $category['category_name']  // Store category name directly
         ]);
 
         // Delete from products
