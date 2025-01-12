@@ -354,8 +354,43 @@ $lname = $_SESSION['Lname'];
 
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="editProductName">Product</label>
-                            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 bg-gray-100 leading-tight focus:outline-none focus:shadow-outline"
-                                id="editProductName" name="product_name" readonly>
+                            <?php if ($user_role == 'admin'): ?>
+                                <div class="relative">
+                                    <input type="text" 
+                                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                           id="editProductName" 
+                                           name="product_name" 
+                                           autocomplete="off"
+                                           placeholder="Search product...">
+                                    
+                                    <div id="productDropdownContainer" class="hidden absolute z-50 w-full mt-1">
+                                        <select id="editProductSelect" 
+                                                class="w-full max-h-60 overflow-y-auto bg-white border border-gray-300 rounded-md shadow-lg" 
+                                                size="5">
+                                            <?php
+                                            $stmt = $conn->prepare("SELECT product_id, product_name, price, quantity FROM products WHERE quantity > 0 ORDER BY product_name");
+                                            $stmt->execute();
+                                            $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                                            
+                                            foreach($products as $product): ?>
+                                                <option value="<?php echo $product['product_id']; ?>"
+                                                        data-id="<?php echo $product['product_id']; ?>"
+                                                        data-price="<?php echo $product['price']; ?>"
+                                                        data-stock="<?php echo $product['quantity']; ?>"
+                                                        class="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                                                    <?php echo htmlspecialchars($product['product_name']); ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                </div>
+                            <?php else: ?>
+                                <input type="text" 
+                                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 bg-gray-100 leading-tight focus:outline-none focus:shadow-outline"
+                                       id="editProductName" 
+                                       name="product_name" 
+                                       readonly>
+                            <?php endif; ?>
                         </div>
 
                         <div class="mb-4">

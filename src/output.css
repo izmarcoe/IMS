@@ -901,6 +901,10 @@ video {
   max-height: 70vh;
 }
 
+.max-h-60 {
+  max-height: 15rem;
+}
+
 .min-h-full {
   min-height: 100%;
 }

@@ -17,6 +17,27 @@ async function checkStock(productId, requestedQuantity, originalQty) {
     }
 }
 
+// Add new function to fetch products
+async function fetchProducts(searchTerm) {
+    try {
+        const response = await fetch(`../endpoint/search_products.php?term=${encodeURIComponent(searchTerm)}`);
+        const data = await response.json();
+        const datalist = document.getElementById('productsList');
+        datalist.innerHTML = '';
+        
+        data.products.forEach(product => {
+            const option = document.createElement('option');
+            option.value = product.product_name;
+            option.dataset.id = product.product_id;
+            option.dataset.price = product.price;
+            option.dataset.stock = product.quantity;
+            datalist.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error fetching products:', error);
+    }
+}
+
 function openEditModal(sale) {
     document.getElementById('editSalesModal').classList.remove('hidden');
     
@@ -195,4 +216,90 @@ function deleteSale(id) {
     });
 }
 
+// Add product input event listener
+if (document.getElementById('editProductName')) {
+    document.getElementById('editProductName').addEventListener('input', function(e) {
+        if (this.readOnly) return;
+        fetchProducts(this.value);
+    });
+
+    // Handle product selection
+    document.getElementById('editProductName').addEventListener('change', function() {
+        const datalist = document.getElementById('editProductsList');
+        const options = datalist.getElementsByTagName('option');
+        
+        for(let option of options) {
+            if(option.value === this.value) {
+                const productId = option.dataset.id;
+                const price = option.dataset.price;
+                const stock = option.dataset.stock;
+                
+                document.getElementById('editProductId').value = productId;
+                document.getElementById('editPrice').value = price;
+                document.getElementById('stockInfo').textContent = `Available Stock: ${stock}`;
+                
+                // Reset quantity to 1 when product changes
+                document.getElementById('editQuantity').value = 1;
+                updateTotalSales();
+                break;
+            }
+        }
+    });
+}
+
 // Remove old delete modal HTML from manage_sales.php if it exists
+
+// Add these functions after existing code
+
+function initializeProductDropdown() {
+    const productSelect = document.getElementById('editProductSelect');
+    const productInput = document.getElementById('editProductName');
+    const dropdownContainer = document.getElementById('productDropdownContainer');
+
+    // Show/hide dropdown on input focus
+    productInput.addEventListener('focus', () => {
+        if (!productInput.readOnly) {
+            dropdownContainer.classList.remove('hidden');
+        }
+    });
+
+    // Handle clicking outside
+    document.addEventListener('click', (e) => {
+        if (!dropdownContainer.contains(e.target) && !productInput.contains(e.target)) {
+            dropdownContainer.classList.add('hidden');
+        }
+    });
+
+    // Filter products on input
+    productInput.addEventListener('input', function() {
+        if (this.readOnly) return;
+        
+        const searchTerm = this.value.toLowerCase();
+        const options = productSelect.getElementsByTagName('option');
+        
+        Array.from(options).forEach(option => {
+            const text = option.textContent.toLowerCase();
+            option.style.display = text.includes(searchTerm) ? '' : 'none';
+        });
+        
+        dropdownContainer.classList.remove('hidden');
+    });
+
+    // Handle product selection
+    productSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        productInput.value = selectedOption.textContent;
+        
+        document.getElementById('editProductId').value = selectedOption.dataset.id;
+        document.getElementById('editPrice').value = selectedOption.dataset.price;
+        document.getElementById('stockInfo').textContent = `Available Stock: ${selectedOption.dataset.stock}`;
+        
+        document.getElementById('editQuantity').value = 1;
+        updateTotalSales();
+        
+        dropdownContainer.classList.add('hidden');
+    });
+}
+
+// Initialize when document is ready
+document.addEventListener('DOMContentLoaded', initializeProductDropdown);
