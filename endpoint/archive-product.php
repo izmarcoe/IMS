@@ -1,4 +1,5 @@
 <?php
+session_start();
 include '../conn/conn.php';
 header('Content-Type: application/json');
 
@@ -13,7 +14,9 @@ try {
 
     // Get product data with category
     $stmt = $conn->prepare("
-        SELECT p.*, pc.category_name 
+        SELECT 
+            p.*,
+            COALESCE(pc.category_name, 'No Category') as category_name
         FROM products p
         LEFT JOIN product_categories pc ON p.category_id = pc.id 
         WHERE p.product_id = ?
@@ -27,15 +30,18 @@ try {
 
     // Insert into archive_products
     $archiveStmt = $conn->prepare("
-        INSERT INTO archive_products (product_id, product_name, price, quantity, category_id)
-        VALUES (:id, :name, :price, :quantity, :category_id)
+        INSERT INTO archive_products 
+        (product_id, product_name, price, quantity, category_id, category_name)
+        VALUES (?, ?, ?, ?, ?, ?)
     ");
+    
     $archiveStmt->execute([
-        'id' => $product['product_id'],
-        'name' => $product['product_name'],
-        'price' => $product['price'],
-        'quantity' => $product['quantity'],
-        'category_id' => $product['category_id']
+        $product['product_id'],
+        $product['product_name'],
+        $product['price'],
+        $product['quantity'],
+        $product['category_id'],
+        $product['category_name']
     ]);
 
     // Delete from products
@@ -49,6 +55,7 @@ try {
     if ($conn->inTransaction()) {
         $conn->rollBack();
     }
-    http_response_code(500);
-    echo json_encode(['error' => $e->getMessage()]);
+    error_log('Archive Error: ' . $e->getMessage());
+    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
 }
+?>
