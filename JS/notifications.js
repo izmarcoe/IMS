@@ -144,67 +144,84 @@ function handleRequest(requestId, action) {
 }
 
 function createModificationRequest(product) {
-  console.log('Creating request for product:', product);
-  
-  Swal.fire({
-      title: 'Request Product Modification',
-      html: `
-          <div class="mb-4">
-              <label class="block text-sm font-medium text-gray-700">Product Name</label>
-              <input type="text" id="newName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
-                     value="${product.product_name}">
-          </div>
-          <div class="mb-4">
-              <label class="block text-sm font-medium text-gray-700">Price</label>
-              <input type="number" id="newPrice" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
-                     value="${product.price}" step="0.01" min="0">
-          </div>
-          <div class="mb-4">
-              <label class="block text-sm font-medium text-gray-700">Quantity</label>
-              <input type="number" id="newQuantity" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
-                     value="${product.quantity}" min="0">
-          </div>
-      `,
-      showCancelButton: true,
-      confirmButtonText: 'Submit Request',
-      showLoaderOnConfirm: true,
-      preConfirm: () => {
-          const formData = new FormData();
-          formData.append('product_id', product.product_id);
-          formData.append('new_name', document.getElementById('newName').value);
-          formData.append('new_price', document.getElementById('newPrice').value);
-          formData.append('new_quantity', document.getElementById('newQuantity').value);
+  console.log("Creating request for product:", product);
 
-          return fetch('../endpoint/create_product_request.php', {
-              method: 'POST',
-              body: formData
-          })
-          .then(response => {
-              console.log('Raw response:', response);
-              return response.json();
-          })
-          .then(data => {
-              console.log('Response data:', data);
-              if (!data.success) {
-                  throw new Error(data.message || 'Failed to submit request');
-              }
-              return data;
-          });
-      }
-  }).then((result) => {
+  Swal.fire({
+    title: "Request Product Modification",
+    html: `
+          <div class="space-y-6 p-4">
+    <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-600 mb-2">Product Name</label>
+        <input type="text" id="newName" 
+            class="mt-1 block w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-600 cursor-not-allowed" 
+            value="${product.product_name}"
+            readonly>
+    </div>
+    <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-600 mb-2">Price</label>
+        <input type="number" id="newPrice" 
+            class="mt-1 block w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-600 cursor-not-allowed" 
+            value="${product.price}" 
+            step="0.01" 
+            readonly>
+    </div>
+    <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-2">New Quantity</label>
+        <input type="number" id="newQuantity" 
+            class="mt-1 block w-full px-4 py-2 bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
+            value="${product.quantity}" 
+            min="1"
+            oninput="this.value = this.value < 1 ? 1 : Math.abs(this.value)"
+            onkeypress="return event.charCode >= 48 && this.value.length < 4">
+        <p class="mt-2 text-sm text-gray-500">Minimum quantity is 1 (Maximum is 9999)</p>
+    </div>
+</div>
+      `,
+    showCancelButton: true,
+    confirmButtonText: "Submit Request",
+    showLoaderOnConfirm: true,
+    preConfirm: () => {
+      const formData = new FormData();
+      formData.append("product_id", product.product_id);
+      formData.append("new_name", document.getElementById("newName").value);
+      formData.append("new_price", document.getElementById("newPrice").value);
+      formData.append(
+        "new_quantity",
+        document.getElementById("newQuantity").value
+      );
+
+      return fetch("../endpoint/create_product_request.php", {
+        method: "POST",
+        body: formData,
+      })
+        .then((response) => {
+          console.log("Raw response:", response);
+          return response.json();
+        })
+        .then((data) => {
+          console.log("Response data:", data);
+          if (!data.success) {
+            throw new Error(data.message || "Failed to submit request");
+          }
+          return data;
+        });
+    },
+  })
+    .then((result) => {
       if (result.isConfirmed) {
-          Swal.fire({
-              icon: 'success',
-              title: 'Request Submitted',
-              text: 'Your modification request has been sent to admin for approval.'
-          });
+        Swal.fire({
+          icon: "success",
+          title: "Request Submitted",
+          text: "Your modification request has been sent to admin for approval.",
+        });
       }
-  }).catch(error => {
-      console.error('Error:', error);
+    })
+    .catch((error) => {
+      console.error("Error:", error);
       Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: error.message
+        icon: "error",
+        title: "Error",
+        text: error.message,
       });
-  });
+    });
 }
