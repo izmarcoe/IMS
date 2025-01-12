@@ -198,7 +198,7 @@ $fname = $_SESSION['Fname'];
     </main>
     <script src="../JS/time.js"></script>
     <script>
-        document.getElementElementById('download-pdf').addEventListener('click', function() {
+        document.getElementById('download-pdf').addEventListener('click', function() {
             const {
                 jsPDF
             } = window.jspdf;
