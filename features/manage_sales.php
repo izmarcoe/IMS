@@ -8,6 +8,8 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'employee' && $_S
     exit();
 }
 
+$user_role = $_SESSION['user_role'];
+
 // Search logic
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $searchParam = "%$search%";
@@ -365,11 +367,12 @@ $lname = $_SESSION['Lname'];
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="editQuantity">Quantity</label>
                             <input type="number" 
-                                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline <?php if ($user_role == 'employee') echo 'bg-gray-100'; ?>"
                                    id="editQuantity" 
                                    name="quantity" 
                                    min="1" 
-                                   required>
+                                   required
+                                   <?php if ($user_role == 'employee') echo 'readonly'; ?>>
                             <small id="stockInfo" class="text-gray-500"></small>
                             <div id="quantityError" class="text-red-500 text-sm hidden"></div>
                         </div>

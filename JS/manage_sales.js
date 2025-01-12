@@ -28,15 +28,6 @@ function openEditModal(sale) {
     document.getElementById('editQuantity').value = sale.quantity;
     document.getElementById('editOldQuantity').value = sale.quantity;
     
-    // Calculate and set total sales
-    const totalSales = (parseFloat(sale.price) * parseInt(sale.quantity)).toFixed(2);
-    document.getElementById('editTotalSales').value = totalSales;
-    
-    // Format and set date
-    const saleDate = new Date(sale.sale_date).toISOString().split('T')[0];
-    document.getElementById('editSaleDate').value = saleDate;
-    document.getElementById('editSaleDate').max = new Date().toISOString().split('T')[0];
-
     originalQuantity = parseInt(sale.quantity);
     
     // Fetch current stock information
@@ -50,7 +41,14 @@ function openEditModal(sale) {
             }
         });
     
-    updateTotalSales();
+    // Calculate and set total sales
+    const totalSales = (parseFloat(sale.price) * parseInt(sale.quantity)).toFixed(2);
+    document.getElementById('editTotalSales').value = totalSales;
+    
+    // Format and set date
+    const saleDate = new Date(sale.sale_date).toISOString().split('T')[0];
+    document.getElementById('editSaleDate').value = saleDate;
+    document.getElementById('editSaleDate').max = new Date().toISOString().split('T')[0];
 }
 
 function closeEditModal() {
@@ -86,9 +84,8 @@ document.getElementById('editQuantity').addEventListener('input', async function
     } else {
         errorDiv.classList.add('hidden');
         this.classList.remove('border-red-500');
+        updateTotalSales();
     }
-    
-    updateTotalSales();
 });
 
 document.getElementById('editPrice').addEventListener('input', updateTotalSales);
