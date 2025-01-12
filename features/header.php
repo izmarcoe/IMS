@@ -9,6 +9,27 @@
             <div class="flex justify-end flex-grow text-white">
                 <span class="px-4 font-bold text-[1rem]" id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
             </div>
+            <?php if ($_SESSION['user_role'] === 'admin'): ?>
+                <div class="relative mr-4">
+                    <button id="notificationBtn" class="relative p-2 text-white hover:text-gray-200">
+                        <i class="fas fa-bell"></i>
+                        <?php
+                        $stmt = $conn->prepare("SELECT COUNT(*) FROM product_modification_requests WHERE status = 'pending'");
+                        $stmt->execute();
+                        $pendingCount = $stmt->fetchColumn();
+                        if ($pendingCount > 0): ?>
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full px-2 py-1 text-xs">
+                                <?php echo $pendingCount; ?>
+                            </span>
+                        <?php endif; ?>
+                    </button>
+                    <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-xl z-50">
+                        <div id="notificationContent" class="max-h-96 overflow-y-auto">
+                            <!-- Content loaded via JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            <?php endif; ?>
             <!-- User dropdown component -->
             <div class="relative"
                 x-data="{ isOpen: false }"
@@ -61,4 +82,6 @@
                 </div>
             </div>
         </div>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="../JS/notifications.js"></script>
     </header>

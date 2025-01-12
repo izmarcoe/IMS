@@ -187,10 +187,17 @@ $fname = $_SESSION['Fname'];
                                         <td class="px-3 py-4"><?php echo htmlspecialchars($product['price']); ?></td>
                                         <td class="px-3 py-4"><?php echo htmlspecialchars($product['quantity']); ?></td>
                                         <td class="px-3 py-4">
-                                            <button onclick="openEditModal(<?php echo htmlspecialchars(json_encode($product)); ?>)"
-                                                class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-md text-sm">
-                                                Edit
-                                            </button>
+                                            <?php if ($_SESSION['user_role'] === 'employee'): ?>
+                                                <button onclick="createModificationRequest(<?php echo htmlspecialchars(json_encode($product)); ?>)"
+                                                    class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-md text-sm">
+                                                    Request Edit
+                                                </button>
+                                            <?php else: ?>
+                                                <button onclick="openEditModal(<?php echo htmlspecialchars(json_encode($product)); ?>)"
+                                                    class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-md text-sm">
+                                                    Edit
+                                                </button>
+                                            <?php endif; ?>
                                             <?php if ($_SESSION['user_role'] === 'admin'): ?>
                                                 <button onclick="openArchiveModal(<?php echo $product['product_id']; ?>)"
                                                     class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md text-sm">
