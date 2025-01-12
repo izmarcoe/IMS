@@ -20,23 +20,22 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-   // Edit Category Form Submission
+// Get user role from PHP session
+const userRole = '<?php echo $_SESSION["user_role"]; ?>';
+
+// Update the editCategoryForm event listener
 document.getElementById('editCategoryForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
-    const formData = new FormData(this);
-    
     fetch('../endpoint/process_category.php', {
         method: 'POST',
-        body: formData
+        body: new FormData(this)
     })
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-            // Update row in table
-            const row = document.querySelector(`#category-${data.category.id}`);
+            const row = document.getElementById(`category-${data.category.id}`);
             if (row) {
-                // Update the row content
                 row.innerHTML = `
                     <td class="px-4 md:px-6 py-4 whitespace-nowrap">
                         <div class="text-sm md:text-base text-gray-900">${data.category.category_name}</div>
@@ -50,34 +49,28 @@ document.getElementById('editCategoryForm').addEventListener('submit', function(
                                     class="bg-blue-500 hover:bg-blue-600 text-white px-2 md:px-3 py-1 rounded-md text-sm">
                                 Edit
                             </button>
-                            <button onclick="openDeleteModal(${data.category.id})" 
-                                    class="bg-red-500 hover:bg-red-600 text-white px-2 md:px-3 py-1 rounded-md text-sm">
-                                Delete
-                            </button>
+                            ${userRole === 'admin' ? 
+                                `<button onclick="openArchiveModal(${data.category.id})" 
+                                        class="bg-red-500 hover:bg-red-600 text-white px-2 md:px-3 py-1 rounded-md text-sm">
+                                    Archive
+                                </button>` : ''
+                            }
                         </div>
                     </td>
                 `;
-                
-                // Close modal
-                closeEditModal();
-
-                // Show success message
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success!',
-                    text: 'Category updated successfully',
-                    confirmButtonColor: '#16a34a',
-                    timer: 1500,
-                    showConfirmButton: false
-                });
             }
-        } else {
-            alert(data.message);
+            
+            closeEditModal();
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: 'Category updated successfully',
+                confirmButtonColor: '#16a34a',
+                timer: 1500,
+                showConfirmButton: false
+            });
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while updating the category.');
     });
 });
 
@@ -159,6 +152,7 @@ function confirmDelete() {
     }
 }
 
+// Update addNewCategoryToTable function
 function addNewCategoryToTable(category) {
     const tableBody = document.querySelector('tbody');
     const rows = Array.from(tableBody.children);
@@ -167,24 +161,26 @@ function addNewCategoryToTable(category) {
     newRow.id = `category-${category.id}`;
     newRow.className = 'hover:bg-gray-50';
     newRow.innerHTML = `
-            <td class="px-4 md:px-6 py-4 whitespace-nowrap">
-                <div class="text-sm md:text-base text-gray-900">${category.category_name}</div>
-            </td>
-            <td class="px-4 md:px-6 py-4">
-                <div class="text-sm md:text-base text-gray-900 break-words">${category.description}</div>
-            </td>
-            <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm md:text-base">
-                <div class="flex space-x-2">
-                    <button onclick='openEditModal(${JSON.stringify(category)})' 
-                            class="bg-blue-500 hover:bg-blue-600 text-white px-2 md:px-3 py-1 rounded-md text-sm">
-                        Edit
-                    </button>
-                    <button onclick="openDeleteModal(${category.id})" 
+        <td class="px-4 md:px-6 py-4 whitespace-nowrap">
+            <div class="text-sm md:text-base text-gray-900">${category.category_name}</div>
+        </td>
+        <td class="px-4 md:px-6 py-4">
+            <div class="text-sm md:text-base text-gray-900 break-words">${category.description}</div>
+        </td>
+        <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm md:text-base">
+            <div class="flex space-x-2">
+                <button onclick='openEditModal(${JSON.stringify(category)})' 
+                        class="bg-blue-500 hover:bg-blue-600 text-white px-2 md:px-3 py-1 rounded-md text-sm">
+                    Edit
+                </button>
+                ${userRole === 'admin' ? 
+                    `<button onclick="openArchiveModal(${category.id})" 
                             class="bg-red-500 hover:bg-red-600 text-white px-2 md:px-3 py-1 rounded-md text-sm">
-                        Delete
-                    </button>
-                </div>
-            </td>
+                        Archive
+                    </button>` : ''
+                }
+            </div>
+        </td>
     `;
 
     // Find correct position for new category
@@ -194,10 +190,8 @@ function addNewCategoryToTable(category) {
     });
 
     if (insertIndex === -1) {
-        // Add to end if no categories come after it alphabetically
         tableBody.appendChild(newRow);
     } else {
-        // Insert before the found position
         rows[insertIndex].parentNode.insertBefore(newRow, rows[insertIndex]);
     }
 }
