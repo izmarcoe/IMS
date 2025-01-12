@@ -121,9 +121,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
 
             <!-- Login Toggle Options -->
-            <div class="text-center mt-4 text-sm text-gray-600">
-                <div>Login using</div>
-                <div class="flex justify-center space-x-4 mt-2">
+            <div class="flex flex-col items-center justify-center mt-4">
+                <div class="text-sm text-gray-600 mb-2">Login using</div>
+                <div class="flex items-center justify-center space-x-6">
                     <span id="qrCodeLoginLink"
                         class="text-green-600 hover:text-green-700 cursor-pointer hidden"
                         onclick="togglePasswordLogin(false)">

@@ -133,8 +133,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <!-- Login Toggle Options -->
             <div class="text-center mt-4 text-sm text-gray-600">
-                <div>Login using</div>
-                <div class="flex justify-center text-center space-x-4 mt-2">
+                <div class="mb-2">Login using</div>
+                <div class="flex justify-center items-center gap-6">
                     <span id="qrCodeLoginLink"
                         class="text-green-600 hover:text-green-700 cursor-pointer hidden"
                         onclick="togglePasswordLogin(false)">
@@ -149,8 +149,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
 
             <div class="mt-6 text-center">
-                <p class="text-sm text-gray-600 mb-2">Don't have an account?
-                    <a href="./register.php" class="text-green-600 hover:text-green-700">Register here</a>
+                <p class="text-sm text-gray-600">Don't have an account?
+                    <a href="./register.php" class="text-green-600 hover:text-green-700 ml-1">Register here</a>
                 </p>
             </div>
         </div>
