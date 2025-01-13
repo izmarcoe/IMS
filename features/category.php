@@ -54,8 +54,7 @@ $fname = $_SESSION['Fname'];
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
-<body class="bg-[#DADBDF] h-screen overflow-hidden">
-    <!-- Header -->
+<body class="bg-[#DADBDF] h-screen overflow-hidden" data-user-role="<?php echo $_SESSION['user_role']; ?>">  
     <?php include '../features/header.php' ?>
     <main class="flex">
         <aside>

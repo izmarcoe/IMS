@@ -15,58 +15,71 @@ document.addEventListener('DOMContentLoaded', function() {
                 addNewCategoryToTable(data.category);
                 closeAddModal();
                 this.reset();
-                }
-            });
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: 'Category added successfully',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            }
         });
     });
+});
 
 // Get user role from PHP session
 const userRole = '<?php echo $_SESSION["user_role"]; ?>';
-
-// Update the editCategoryForm event listener
 document.getElementById('editCategoryForm').addEventListener('submit', function(e) {
     e.preventDefault();
+    const formData = new FormData(this);
     
     fetch('../endpoint/process_category.php', {
         method: 'POST',
-        body: new FormData(this)
+        body: formData
     })
     .then(response => response.json())
     .then(data => {
-        if (data.status === 'success') {
-            const row = document.getElementById(`category-${data.category.id}`);
+        if (data.success) {
+            const categoryId = formData.get('id');
+            const categoryName = formData.get('category_name');
+            const description = formData.get('description');
+            
+            // Update row content
+            const row = document.getElementById(`category-${categoryId}`);
             if (row) {
+                // Always check for admin role from body attribute
+                const isAdmin = document.body.getAttribute('data-user-role') === 'admin';
+                
+                // Update row content while preserving admin buttons
                 row.innerHTML = `
                     <td class="px-4 md:px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm md:text-base text-gray-900">${data.category.category_name}</div>
+                        <div class="text-sm md:text-base text-gray-900">${categoryName}</div>
                     </td>
                     <td class="px-4 md:px-6 py-4">
-                        <div class="text-sm md:text-base text-gray-900 break-words">${data.category.description}</div>
+                        <div class="text-sm md:text-base text-gray-900 break-words">${description}</div>
                     </td>
                     <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm md:text-base">
                         <div class="flex space-x-2">
-                            <button onclick='openEditModal(${JSON.stringify(data.category)})' 
-                                    class="bg-blue-500 hover:bg-blue-600 text-white px-2 md:px-3 py-1 rounded-md text-sm">
+                            <button onclick="openEditModal({id: ${categoryId}, category_name: '${categoryName}', description: '${description}'})" 
+                                class="bg-blue-500 hover:bg-blue-600 text-white px-2 md:px-3 py-1 rounded-md text-sm">
                                 Edit
                             </button>
-                            ${userRole === 'admin' ? 
-                                `<button onclick="openArchiveModal(${data.category.id})" 
-                                        class="bg-red-500 hover:bg-red-600 text-white px-2 md:px-3 py-1 rounded-md text-sm">
+                            ${isAdmin ? `
+                                <button onclick="openArchiveModal(${categoryId})"
+                                    class="bg-red-500 hover:bg-red-600 text-white px-2 md:px-3 py-1 rounded-md text-sm">
                                     Archive
-                                </button>` : ''
-                            }
+                                </button>
+                            ` : ''}
                         </div>
                     </td>
                 `;
             }
             
             closeEditModal();
-            
             Swal.fire({
                 icon: 'success',
                 title: 'Success!',
                 text: 'Category updated successfully',
-                confirmButtonColor: '#16a34a',
                 timer: 1500,
                 showConfirmButton: false
             });
@@ -148,6 +161,9 @@ function addNewCategoryToTable(category) {
     const rows = Array.from(tableBody.children);
     const newRow = document.createElement('tr');
     
+    // Get admin status from body attribute instead of userRole variable
+    const isAdmin = document.body.getAttribute('data-user-role') === 'admin';
+    
     newRow.id = `category-${category.id}`;
     newRow.className = 'hover:bg-gray-50';
     newRow.innerHTML = `
@@ -163,7 +179,7 @@ function addNewCategoryToTable(category) {
                         class="bg-blue-500 hover:bg-blue-600 text-white px-2 md:px-3 py-1 rounded-md text-sm">
                     Edit
                 </button>
-                ${userRole === 'admin' ? 
+                ${isAdmin ? 
                     `<button onclick="openArchiveModal(${category.id})" 
                             class="bg-red-500 hover:bg-red-600 text-white px-2 md:px-3 py-1 rounded-md text-sm">
                         Archive
