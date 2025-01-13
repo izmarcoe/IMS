@@ -95,16 +95,6 @@ function closeEditModal() {
     document.getElementById('editModal').classList.add('hidden');
 }
 
-function openDeleteModal(id) {
-    categoryToDelete = id;
-    document.getElementById('deleteModal').classList.remove('hidden');
-}
-
-function closeDeleteModal() {
-    document.getElementById('deleteModal').classList.add('hidden');
-    categoryToDelete = null;
-}
-
 function confirmDelete() {
     if (categoryToDelete) {
         const formData = new FormData();

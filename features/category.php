@@ -8,22 +8,6 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'employee' && $_S
     exit();
 }
 
-// Handle category deletion
-if (isset($_GET['delete_id'])) {
-    try {
-        $delete_id = $_GET['delete_id'];
-
-        $stmt = $conn->prepare("DELETE FROM product_categories WHERE id = :id");
-        $stmt->bindParam(':id', $delete_id, PDO::PARAM_INT);
-        $stmt->execute();
-
-        header("Location: category.php");
-        exit();
-    } catch (PDOException $e) {
-        echo "Error: " . $e->getMessage();
-    }
-}
-
 // Pagination setup
 $limit = 10;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -228,20 +212,6 @@ $fname = $_SESSION['Fname'];
                                 class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Save Changes</button>
                         </div>
                     </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- Delete Confirmation Modal -->
-        <div id="deleteModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-            <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white z-50">
-                <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Delete Category</h3>
-                <p class="mb-4 text-sm text-gray-500">Are you sure you want to delete this category? This action cannot be undone.</p>
-                <div class="flex justify-end gap-2">
-                    <button onclick="closeDeleteModal()"
-                        class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Cancel</button>
-                    <button onclick="confirmDelete()"
-                        class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Delete</button>
                 </div>
             </div>
         </div>
