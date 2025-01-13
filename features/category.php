@@ -232,35 +232,35 @@ $fname = $_SESSION['Fname'];
             }).then((result) => {
                 if (result.isConfirmed) {
                     fetch('../endpoint/archive-category.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: `category_id=${categoryId}`
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: `category_id=${categoryId}`
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    title: 'Archived!',
+                                    text: `Category and ${data.productsArchived} products have been archived.`,
+                                    icon: 'success',
+                                    confirmButtonColor: '#10B981'
+                                }).then(() => {
+                                    window.location.reload();
+                                });
+                            } else {
+                                throw new Error(data.error);
+                            }
+                        })
+                        .catch(error => {
                             Swal.fire({
-                                title: 'Archived!',
-                                text: `Category and ${data.productsArchived} products have been archived.`,
-                                icon: 'success',
-                                confirmButtonColor: '#10B981'
-                            }).then(() => {
-                                window.location.reload();
+                                title: 'Error!',
+                                text: error.message,
+                                icon: 'error',
+                                confirmButtonColor: '#EF4444'
                             });
-                        } else {
-                            throw new Error(data.error);
-                        }
-                    })
-                    .catch(error => {
-                        Swal.fire({
-                            title: 'Error!',
-                            text: error.message,
-                            icon: 'error',
-                            confirmButtonColor: '#EF4444'
                         });
-                    });
                 }
             });
         }
