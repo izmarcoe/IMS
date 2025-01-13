@@ -19,12 +19,21 @@ try {
         throw new Exception('Category not found');
     }
 
-    // 2. Get products with this category
+    // 2. Update sales records to maintain category info
+    $updateSalesStmt = $conn->prepare("
+        UPDATE sales s 
+        JOIN products p ON s.product_id = p.product_id 
+        SET s.category_name = ? 
+        WHERE p.category_id = ?
+    ");
+    $updateSalesStmt->execute([$category['category_name'], $categoryId]);
+
+    // 3. Get products with this category
     $productStmt = $conn->prepare("SELECT * FROM products WHERE category_id = ?");
     $productStmt->execute([$categoryId]);
     $products = $productStmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // 3. Archive products first
+    // 4. Archive products first
     foreach ($products as $product) {
         // Insert into archive_products with category_name
         $archiveProductStmt = $conn->prepare("
@@ -46,7 +55,7 @@ try {
         $deleteProductStmt->execute([$product['product_id']]);
     }
 
-    // 4. Archive category
+    // 5. Archive category
     $archiveCategoryStmt = $conn->prepare("
         INSERT INTO archive_categories 
         (id, category_name, description) 
@@ -58,7 +67,7 @@ try {
         $category['description']
     ]);
 
-    // 5. Delete original category
+    // 6. Delete original category
     $deleteCategoryStmt = $conn->prepare("DELETE FROM product_categories WHERE id = ?");
     $deleteCategoryStmt->execute([$categoryId]);
 

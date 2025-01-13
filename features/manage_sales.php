@@ -104,12 +104,18 @@ $totalPages = ceil($totalSales / $productsPerPage);
 
 // Fetch sales data with limit and offset (with optional search filter)
 $stmt = $conn->prepare("
-    SELECT s.id, s.product_id, s.product_name, s.price, s.quantity, s.sale_date, (s.price * s.quantity) AS total_sales, pc.category_name
-    FROM sales s
-    LEFT JOIN products p ON s.product_id = p.product_id
-    LEFT JOIN product_categories pc ON p.category_id = pc.id
-    WHERE s.product_name LIKE :search
-    ORDER BY $orderBy
+    SELECT 
+        s.*,
+        COALESCE(s.category_name, pc.category_name, ac.category_name) as category_name
+    FROM 
+        sales s
+        LEFT JOIN products p ON s.product_id = p.product_id
+        LEFT JOIN product_categories pc ON p.category_id = pc.id
+        LEFT JOIN archive_categories ac ON p.category_id = ac.id
+    WHERE 
+        s.product_name LIKE :search
+    ORDER BY 
+        $orderBy
     LIMIT :offset, :limit
 ");
 $stmt->bindValue(':search', "%$search%", PDO::PARAM_STR);
