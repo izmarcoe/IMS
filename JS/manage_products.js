@@ -315,3 +315,87 @@ const categorySelectHTML = `
 
 // Insert the select element into the DOM
 document.getElementById('editCategoryContainer').innerHTML = categorySelectHTML;
+
+// Function to create a modification request
+function createModificationRequest(product) {
+    Swal.fire({
+        title: 'Request Product Modification',
+        html: `
+            <div class="space-y-6 p-4">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
+                    <input type="text" id="newName" 
+                        class="mt-1 block w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-600 cursor-not-allowed" 
+                        value="${product.product_name}"
+                        readonly>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Price</label>
+                    <input type="number" id="newPrice" 
+                        class="mt-1 block w-full px-4 py-2 bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                        value="${product.price}"
+                        min="0.01"
+                        step="0.01">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
+                    <input type="number" id="newQuantity" 
+                        class="mt-1 block w-full px-4 py-2 bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                        value="${product.quantity}"
+                        min="1"
+                        max="999">
+                    <p class="mt-1 text-sm text-gray-500">Enter a quantity between 1 and 999</p>
+                </div>
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Submit Request',
+        showLoaderOnConfirm: true,
+        preConfirm: () => {
+            const newQuantity = parseInt(document.getElementById('newQuantity').value);
+            const newPrice = parseFloat(document.getElementById('newPrice').value);
+
+            if (newQuantity < 1 || newQuantity > 999) {
+                Swal.showValidationMessage('Quantity must be between 1 and 999');
+                return false;
+            }
+
+            if (newPrice <= 0) {
+                Swal.showValidationMessage('Price must be greater than 0');
+                return false;
+            }
+
+            const formData = new FormData();
+            formData.append('product_id', product.product_id);
+            formData.append('new_name', document.getElementById('newName').value);
+            formData.append('new_price', document.getElementById('newPrice').value);
+            formData.append('new_quantity', document.getElementById('newQuantity').value);
+
+            return fetch('../endpoint/create_product_request.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    throw new Error(data.message || 'Failed to submit request');
+                }
+                return data;
+            });
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Request Submitted',
+                text: 'Your modification request has been sent to admin for approval.'
+            });
+        }
+    }).catch(error => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message
+        });
+    });
+}

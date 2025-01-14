@@ -282,9 +282,17 @@ $fname = $_SESSION['Fname'];
                             id="editPrice" name="price" min="1" required>
                     </div>
                     <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="editQuantity">Quantity</label>
-                        <input type="number" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            id="editQuantity" name="quantity" min="1" required>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="editQuantity">
+                            Quantity <span class="text-gray-500 text-xs">(Min: 1, Max: 999)</span>
+                        </label>
+                        <input type="number" 
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            id="editQuantity" 
+                            name="quantity" 
+                            min="1" 
+                            max="999"
+                            required>
+                        <p class="text-sm text-gray-500 mt-1">Enter a quantity between 1 and 999</p>
                     </div>
                     <div class="flex justify-end gap-2">
                         <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded" onclick="closeEditModal()">Cancel</button>
@@ -354,15 +362,15 @@ $fname = $_SESSION['Fname'];
             });
         }
         document.getElementById('editQuantity').addEventListener('input', function(e) {
-            if (this.value <= 0) {
+            const value = parseInt(this.value);
+            if (value < 1 || value > 999) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Invalid Quantity',
-                    text: 'Quantity must be greater than 0',
+                    text: 'Please enter a quantity between 1 and 999',
                     confirmButtonColor: '#3085d6'
                 });
-                this.value = 1; // Reset to minimum value
-                return false;
+                this.value = value < 1 ? 1 : 999;
             }
         });
 

@@ -26,6 +26,12 @@ try {
         throw new Exception('Request not found');
     }
 
+    
+    // Validate quantity range (1-999)
+    if ($action === 'approve' && ($request['new_quantity'] < 1 || $request['new_quantity'] > 999)) {
+        throw new Exception('Quantity must be between 1 and 999');
+    }
+
     if ($action === 'approve') {
         // Update product
         $updateStmt = $conn->prepare("

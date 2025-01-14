@@ -8,14 +8,21 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'employee' && $_S
     exit();
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $product_name = trim($_POST['product_name']);
-    $category_id = $_POST['category_id'];
-    $price = $_POST['price'];
-    $quantity = $_POST['quantity'];
+    // Check if category_id exists in POST data
+    $category_id = isset($_POST['category_id']) ? $_POST['category_id'] : null;
+    $price = floatval($_POST['price']);
+    $quantity = intval($_POST['quantity']);
+    $error = '';
 
-    if (empty($product_name) || empty($category_id) || empty($price) || empty($quantity)) {
-        $error = "Please fill in all required fields.";
+    // Validate all required fields
+    if (!$category_id) {
+        $error = "Category is required";
+    } elseif ($price <= 0 || $price > 99999.00) {
+        $error = "Price must be between 0 and 99,999.00 pesos";
+    } elseif ($quantity <= 0 || $quantity > 999) {
+        $error = "Quantity must be between 1 and 999";
     } else {
         try {
             // Check if product with the same name and price already exists
@@ -127,13 +134,22 @@ $fname = $_SESSION['Fname'];
                 </div>
                 <div class="mb-4">
                     <label for="price" class="block text-gray-700 text-sm font-bold mb-2">Price</label>
-                    <input type="number" step="0.01" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        id="price" name="price">
+                    <input type="number"
+                        name="price"
+                        step="1"
+                        min="1"
+                        max="99999.00"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        required>
                 </div>
                 <div class="mb-4">
                     <label for="quantity" class="block text-gray-700 text-sm font-bold mb-2">Quantity</label>
-                    <input type="number" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        id="quantity" name="quantity">
+                    <input type="number"
+                        name="quantity"
+                        min="1"
+                        max="999"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        required>
                 </div>
                 <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                     Add Product
@@ -173,10 +189,14 @@ $fname = $_SESSION['Fname'];
         function validateForm(event) {
             event.preventDefault();
 
-            const price = parseFloat(document.getElementById('price').value);
-            const quantity = parseInt(document.getElementById('quantity').value);
+            // Get trimmed product name
             const productName = document.getElementById('product_name').value.trim();
             const category = document.getElementById('category').value;
+            const price = parseFloat(document.getElementById('price').value);
+            const quantity = parseInt(document.getElementById('quantity').value);
+
+            // Update product name field with trimmed value
+            document.getElementById('product_name').value = productName;
 
             if (!productName) {
                 Swal.fire({
@@ -218,7 +238,75 @@ $fname = $_SESSION['Fname'];
             document.getElementById('addProductForm').submit();
             return true;
         }
+
+        // Add input event listener for real-time trimming
+        document.getElementById('product_name').addEventListener('input', function(e) {
+            this.value = this.value.trim();
+        });
+
+        document.getElementById('addProductForm').addEventListener('submit', function(e) {
+            const price = parseFloat(document.querySelector('input[name="price"]').value);
+            const quantity = parseInt(document.querySelector('input[name="quantity"]').value);
+
+            if (price <= 0 || price > 99999.00) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Price',
+                    text: 'Price must be between 0 and 99,999.00 pesos'
+                });
+                return;
+            }
+
+            if (quantity <= 0 || quantity > 999) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Quantity',
+                    text: 'Quantity must be between 1 and 999'
+                });
+                return;
+            }
+        });
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const addProductForm = document.getElementById('addProductForm');
+            
+            addProductForm.addEventListener('submit', function(e) {
+                e.preventDefault(); // Prevent form submission first
+                
+                const price = parseFloat(document.querySelector('input[name="price"]').value);
+                const quantity = parseInt(document.querySelector('input[name="quantity"]').value);
+
+                // Validate price
+                if (isNaN(price) || price <= 0 || price > 99999.00) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Price',
+                        text: 'Price must be between 0 and 99,999.00 pesos',
+                        confirmButtonColor: '#3085d6'
+                    });
+                    return false;
+                }
+
+                // Validate quantity
+                if (isNaN(quantity) || quantity <= 0 || quantity > 999) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Quantity',
+                        text: 'Quantity must be between 1 and 999',
+                        confirmButtonColor: '#3085d6'
+                    });
+                    return false;
+                }
+
+                // If validation passes, submit the form
+                this.submit();
+            });
+        });
+    </script>
+
 </body>
 
 </html>
