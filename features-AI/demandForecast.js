@@ -1,6 +1,21 @@
 /**
  * DemandForecaster - Handles product demand prediction and stock recommendations
  * Uses machine learning to analyze sales history and predict future demand
+ * 
+ * @class DemandForecaster
+ * @description Neural Network model for demand prediction
+ * 
+ * Architecture:
+ * - Input Layer: 3 neurons (3-month historical data)
+ * - Hidden Layer 1: 32 neurons with ReLU activation
+ * - Hidden Layer 2: 16 neurons with ReLU activation
+ * - Output Layer: 1 neuron (next month prediction)
+ * 
+ * Features:
+ * - Uses TensorFlow.js sequential model
+ * - Adam optimizer with learning rate 0.001
+ * - Mean Squared Error loss function
+ * - Includes seasonal adjustments and growth rate calculations
  */
 class DemandForecaster {
     /**

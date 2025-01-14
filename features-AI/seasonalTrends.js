@@ -1,3 +1,23 @@
+/**
+ * @class SeasonalTrendAnalyzer
+ * @description Statistical model for seasonal trend analysis
+ * 
+ * Components:
+ * 1. Seasonal Decomposition
+ *    - Calculates seasonal indices
+ *    - Identifies yearly patterns
+ * 
+ * 2. Growth Trend Analysis
+ *    - Weighted average of recent (30%) and historical (20%) growth
+ *    - Market adjustment factor (8% growth assumption)
+ * 
+ * 3. Prediction Formula:
+ *    prediction = baseValue * (1 + weightedGrowthRate)^monthsAhead * 
+ *                 seasonalFactor * marketAdjustment * varianceFactor
+ * 
+ * Confidence calculation:
+ * - Decreases by 5% per month into the future
+ */
 class SeasonalTrendAnalyzer {
     constructor() {
         this.yearlyPatterns = {};
