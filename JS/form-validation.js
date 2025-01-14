@@ -1,5 +1,8 @@
 function validateName(name) {
-    return name.length <= 25;
+    // Only allow letters, no spaces, numbers or special characters
+    const nameRegex = /^[a-zA-Z]+$/;
+    name = name.trim(); // Remove any whitespace
+    return nameRegex.test(name) && name.length <= 25;
 }
 
 function validatePassword(password) {
@@ -28,17 +31,26 @@ async function checkEmailExists(email) {
         return false;
     }
 }
+
+function validateContactNumber(number) {
+    // Ensure exactly 11 digits for Philippine numbers
+    const phoneRegex = /^(09|\+639)\d{9}$/;
+    return phoneRegex.test(number);
+}
+
 document.getElementById('contactNumber').addEventListener('input', function() {
     if (this.value.length > 11) {
         this.value = this.value.slice(0, 11);
     }
 });
+
 function validateForm() {
-    const firstName = document.getElementById('fname').value;  // Changed from firstName
-    const lastName = document.getElementById('lname').value;   // Changed from lastName
+    const firstName = document.getElementById('fname').value.trim();  // Changed from firstName
+    const lastName = document.getElementById('lname').value.trim();   // Changed from lastName
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
+    const contactNumber = document.getElementById('contactNumber').value.trim();
 
     let isValid = true;
     let errorMessage = '';
@@ -48,12 +60,18 @@ function validateForm() {
 
     // Name validations
     if (!validateName(firstName)) {
-        showError('fname', 'First name must be 25 characters or less');  // Changed from firstName
+        showError('fname', 'First name must contain only letters (no spaces or special characters)');  // Changed from firstName
         isValid = false;
     }
 
     if (!validateName(lastName)) {
-        showError('lname', 'Last name must be 25 characters or less');  // Changed from lastName
+        showError('lname', 'Last name must contain only letters (no spaces or special characters)');  // Changed from lastName
+        isValid = false;
+    }
+
+    // Contact number validation
+    if (!validateContactNumber(contactNumber)) {
+        showError('contactNumber', 'Please enter a valid 11-digit phone number starting with 09');
         isValid = false;
     }
 

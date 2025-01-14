@@ -31,7 +31,13 @@ if (isset($_SESSION['user_id'])) {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
+    <script>
+        function handleInput(inputId) {
+            const input = document.getElementById(inputId);
+            const asterisk = document.getElementById(`${inputId}Asterisk`);
+            asterisk.style.display = input.value ? 'none' : 'inline';
+        }
+    </script>
 </head>
 
 <body class="flex items-center justify-center min-h-screen p-6 bg-gradient-to-br from-green-800 to-green-950">
@@ -73,35 +79,68 @@ if (isset($_SESSION['user_id'])) {
                 <div class="hide-registration-inputs">
                     <div class="grid grid-cols-2 gap-6">
                         <div>
-                            <label for="fname" class="block text-sm font-medium text-gray-700">First Name</label>
-                            <input type="text" id="fname" name="fname" required maxlength="25"
+                            <label for="firstName" class="block text-sm font-medium text-gray-700">
+                                First Name<span id="firstNameAsterisk" class="text-red-500 ml-1">*</span>
+                            </label>
+                            <input type="text"
+                                id="firstName"
+                                name="first_name"
+                                required
+                                maxlength="25"
+                                pattern="[a-zA-Z]+"
+                                oninput="handleInput('firstName')"
                                 class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                         </div>
                         <div>
-                            <label for="lname" class="block text-sm font-medium text-gray-700">Last Name</label>
-                            <input type="text" id="lname" name="lname" required maxlength="25"
+                            <label for="lastName" class="block text-sm font-medium text-gray-700">
+                                Last Name<span id="lastNameAsterisk" class="text-red-500 ml-1">*</span>
+                            </label>
+                            <input type="text"
+                                id="lastName"
+                                name="last_name"
+                                required
+                                maxlength="25"
+                                pattern="[a-zA-Z]+"
+                                oninput="handleInput('lastName')"
                                 class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-6">
                         <div>
-                            <label for="contactNumber" class="block text-sm font-medium text-gray-700">Contact Number</label>
-                            <input type="text" id="contactNumber" name="contact_number" required maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+                            <label for="contactNumber" class="block text-sm font-medium text-gray-700">
+                                Contact Number<span id="contactNumberAsterisk" class="text-red-500 ml-1">*</span>
+                            </label>
+                            <input type="tel"
+                                id="contactNumber"
+                                name="contact_number"
+                                required
+                                maxlength="11"
+                                pattern="[0-9]+"
+                                placeholder="09XXXXXXXXX"
+                                inputmode="numeric"
+                                onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                                oninput="handleInput('contactNumber'); this.value = this.value.replace(/[^0-9]/g, '')"
+                                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                         </div>
                         <div>
-                            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                            <label for="email" class="block text-sm font-medium text-gray-700">
+                                Email<span id="emailAsterisk" class="text-red-500 ml-1">*</span>
+                            </label>
                             <input type="email" id="email" name="email" required
+                                oninput="handleInput('email')"
                                 class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-6">
                         <div>
-                            <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                            <label for="password" class="block text-sm font-medium text-gray-700">
+                                Password<span id="passwordAsterisk" class="text-red-500 ml-1">*</span>
+                            </label>
                             <div class="relative group">
                                 <input type="password" id="password" name="password" required
+                                    oninput="handleInput('password')"
                                     class="mt-1 block w-full px-3 py-2 pr-10 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent focus:invalid:ring-red-500 focus:invalid:border-red-500">
                                 <button type="button" onclick="togglePassword('password', 'togglePassword1')"
                                     class="absolute inset-y-0 right-0 flex items-center pr-3 mt-1">
@@ -176,7 +215,7 @@ if (isset($_SESSION['user_id'])) {
 
                 const passwordsMatch = password.value === confirmPassword.value;
                 const passwordValid = validatePassword();
-                
+
                 registerButton.disabled = !allFilled || !passwordsMatch || !emailIsValid || !passwordValid;
             }
 
@@ -348,7 +387,7 @@ if (isset($_SESSION['user_id'])) {
                 if (e.target.value.includes(' ')) {
                     e.target.value = e.target.value.replace(/\s/g, '');
                 }
-                
+
                 validatePassword();
                 const password = this.value;
                 const requirements = {
@@ -404,41 +443,41 @@ if (isset($_SESSION['user_id'])) {
             });
 
             confirmPassword.addEventListener('input', validatePassword);
-            
+
             const emailInput = document.getElementById('email');
             let emailIsValid = true;
 
             emailInput.addEventListener('input', function() {
                 const email = this.value;
-                if(email) {
+                if (email) {
                     fetch('./endpoint/check-email.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: `email=${encodeURIComponent(email)}`
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if(data.exists) {
-                            emailIsValid = false;
-                            emailInput.style.borderColor = '#ef4444';
-                            emailInput.style.boxShadow = '0 0 0 1px #ef4444';
-                            registerButton.disabled = true;
-                            
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Email Already Exists',
-                                text: 'Please use a different email address',
-                                confirmButtonColor: '#047857'
-                            });
-                        } else {
-                            emailIsValid = true;
-                            emailInput.style.borderColor = '#10b981';
-                            emailInput.style.boxShadow = '';
-                            validateForm();
-                        }
-                    });
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: `email=${encodeURIComponent(email)}`
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.exists) {
+                                emailIsValid = false;
+                                emailInput.style.borderColor = '#ef4444';
+                                emailInput.style.boxShadow = '0 0 0 1px #ef4444';
+                                registerButton.disabled = true;
+
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Email Already Exists',
+                                    text: 'Please use a different email address',
+                                    confirmButtonColor: '#047857'
+                                });
+                            } else {
+                                emailIsValid = true;
+                                emailInput.style.borderColor = '#10b981';
+                                emailInput.style.boxShadow = '';
+                                validateForm();
+                            }
+                        });
                 }
             });
         });
