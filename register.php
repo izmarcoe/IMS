@@ -75,7 +75,8 @@ if (isset($_SESSION['user_id'])) {
                 <p class="text-gray-500 mt-2">Fill in your personal details</p>
             </div>
 
-            <form action="./endpoint/add-user.php" method="POST" class="space-y-6" id="registrationForm" enctype="application/x-www-form-urlencoded">                <div class="hide-registration-inputs">
+            <form action="./endpoint/add-user.php" method="POST" class="space-y-6" id="registrationForm" enctype="application/x-www-form-urlencoded">
+                <div class="hide-registration-inputs">
                     <div class="grid grid-cols-2 gap-6">
                         <div>
                             <label for="firstName" class="block text-sm font-medium text-gray-700">
@@ -165,6 +166,15 @@ if (isset($_SESSION['user_id'])) {
                         </div>
                     </div>
 
+                    <div class="flex items-center space-x-2 mt-4">
+                        <input type="checkbox" id="termsCheckbox" class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500">
+                        <label for="termsCheckbox" class="text-sm text-gray-600">
+                            I agree to the
+                            <button type="button" onclick="showTermsModal()" class="text-green-600 hover:text-green-700 font-medium">
+                                Terms and Conditions
+                            </button>
+                        </label>
+                    </div>
                     <div class="flex flex-col space-y-4 mt-4">
                         <button type="button" id="registerButton" onclick="generateQrCode()" disabled
                             class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transform transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed">
@@ -180,6 +190,74 @@ if (isset($_SESSION['user_id'])) {
             </form>
         </div>
     </div>
+
+
+    <div id="termsModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3 text-center">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">Terms and Conditions</h3>
+                <div class="mt-2 px-7 py-3 text-left">
+                    <p class="text-sm text-gray-500"> 
+    <!--
+                        1. All users must maintain confidentiality of their account credentials.<br>
+                        2. Users are responsible for all activities under their account.<br>
+                        3. Unauthorized access attempts are strictly prohibited.<br>
+                        4. The system must be used only for authorized business purposes.<br>
+                        5. Users must comply with all data protection regulations.
+                        -->
+                    </p>
+                </div>
+                <div class="items-center px-4 py-3">
+                    <button id="closeTermsModal" class="px-4 py-2 bg-green-700 text-white text-base font-medium rounded-md shadow-sm hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const termsCheckbox = document.getElementById('termsCheckbox');
+            const registerButton = document.getElementById('registerButton');
+            const modal = document.getElementById('termsModal');
+            const closeButton = document.getElementById('closeTermsModal');
+
+            // Toggle button state based on checkbox
+            termsCheckbox.addEventListener('change', function() {
+                registerButton.disabled = !this.checked;
+            });
+
+            // Show terms modal
+            window.showTermsModal = function() {
+                modal.classList.remove('hidden');
+            }
+
+            // Close modal on button click
+            closeButton.addEventListener('click', function() {
+                modal.classList.add('hidden');
+            });
+
+            // Close modal when clicking outside
+            window.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.classList.add('hidden');
+                }
+            });
+        });
+
+        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            if (!document.getElementById('termsCheckbox').checked) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Terms & Conditions',
+                    text: 'Please accept the terms and conditions to continue',
+                    confirmButtonColor: '#047857'
+                });
+            }
+        });
+    </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
     <script src="./JS/QR.js"></script>
@@ -209,9 +287,20 @@ if (isset($_SESSION['user_id'])) {
             });
 
             window.generateQrCode = async function() {
+                // Check terms acceptance first
+                if (!document.getElementById('termsCheckbox').checked) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Terms & Conditions Required',
+                        text: 'Please agree to the terms and conditions first before proceeding.',
+                        confirmButtonColor: '#047857'
+                    });
+                    return; // Stop execution if terms not accepted
+                }
+
                 const fname = document.getElementById('firstName').value; // Changed from fname to firstName
                 const lname = document.getElementById('lastName').value; // Changed from lname to lastName
-                
+
                 // Show loading overlay
                 Swal.fire({
                     title: 'Generating QR Code...',
@@ -232,7 +321,7 @@ if (isset($_SESSION['user_id'])) {
                     // Generate QR Code
                     const apiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(encryptedText)}`;
                     const qrImg = document.getElementById('qrImg');
-                    
+
                     // Hide registration inputs and show QR code
                     document.querySelector('.hide-registration-inputs').classList.add('hidden');
                     document.querySelector('.qr-code-container').classList.remove('hidden');
@@ -246,23 +335,29 @@ if (isset($_SESSION['user_id'])) {
                     });
 
                     // Generate PDF
-                    const { jsPDF } = window.jspdf;
+                    const {
+                        jsPDF
+                    } = window.jspdf;
                     const doc = new jsPDF();
 
                     // Add user info to PDF
                     doc.setFontSize(16);
-                    doc.text('Your QR Code Login Credentials', 105, 20, {align: 'center'});
+                    doc.text('Your QR Code Login Credentials', 105, 20, {
+                        align: 'center'
+                    });
                     doc.setFontSize(12);
                     doc.text(`Name: ${fname} ${lname}`, 20, 40);
                     doc.text('Please keep this QR code safe and private.', 20, 50);
-                    
+
                     // Add QR code to PDF
                     doc.addImage(qrImg, 'PNG', 65, 60, 80, 80);
-                    
+
                     // Add instructions
                     doc.setFontSize(10);
-                    doc.text('To login, use this QR code with the scanner on the login page.', 105, 160, {align: 'center'});
-                    
+                    doc.text('To login, use this QR code with the scanner on the login page.', 105, 160, {
+                        align: 'center'
+                    });
+
                     // Save PDF
                     doc.save(`QRCode_${fname}${lname}.pdf`);
 

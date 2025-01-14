@@ -97,6 +97,16 @@ function validateForm() {
         });
     }
 
+    // Add terms checkbox validation
+    const termsCheckbox = document.getElementById('termsCheckbox');
+    if (!termsCheckbox.checked) {
+        isValid = false;
+    }
+
+    // Update register button state based on both form validation and terms
+    const registerButton = document.getElementById('registerButton');
+    registerButton.disabled = !isValid || !termsCheckbox.checked;
+
     return isValid;
 }
 
@@ -177,10 +187,36 @@ function setupPasswordValidation() {
 document.addEventListener('DOMContentLoaded', function() {
     const registerButton = document.getElementById('registerButton');
     const formInputs = document.querySelectorAll('#registrationForm input[required]');
+    const termsCheckbox = document.getElementById('termsCheckbox');
 
-    setupPasswordValidation(); // Add this line
+    setupPasswordValidation();
+
+    // Disable register button initially
+    registerButton.disabled = true;
 
     formInputs.forEach(input => {
         input.addEventListener('input', validateForm);
+    });
+
+    // Add terms checkbox listener
+    termsCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            validateForm(); // Revalidate form when terms are checked
+        } else {
+            registerButton.disabled = true;
+        }
+    });
+
+    // Add form submission handler
+    document.getElementById('registrationForm').addEventListener('submit', function(e) {
+        if (!termsCheckbox.checked) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'error',
+                title: 'Terms & Conditions Required',
+                text: 'Please agree to the terms and conditions before proceeding.',
+                confirmButtonColor: '#047857'
+            });
+        }
     });
 });
