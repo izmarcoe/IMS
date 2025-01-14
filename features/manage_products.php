@@ -311,49 +311,78 @@ $fname = $_SESSION['Fname'];
     <script src="../JS/notificationTimer.js"></script>
     <script src="../JS/manage_products.js"></script>
     <script>
-function openArchiveModal(productId) {
-    Swal.fire({
-        title: 'Archive Product?',
-        text: 'This will move the product to archives. Continue?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#EF4444',
-        cancelButtonColor: '#6B7280',
-        confirmButtonText: 'Yes, archive it!'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            fetch('../endpoint/archive-product.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `product_id=${productId}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire(
-                        'Archived!',
-                        'Product has been moved to archives.',
-                        'success'
-                    ).then(() => {
-                        document.getElementById(`product-${productId}`).remove();
-                    });
-                } else {
-                    throw new Error(data.error || 'Failed to archive product');
+        function openArchiveModal(productId) {
+            Swal.fire({
+                title: 'Archive Product?',
+                text: 'This will move the product to archives. Continue?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#EF4444',
+                cancelButtonColor: '#6B7280',
+                confirmButtonText: 'Yes, archive it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('../endpoint/archive-product.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: `product_id=${productId}`
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire(
+                                    'Archived!',
+                                    'Product has been moved to archives.',
+                                    'success'
+                                ).then(() => {
+                                    document.getElementById(`product-${productId}`).remove();
+                                });
+                            } else {
+                                throw new Error(data.error || 'Failed to archive product');
+                            }
+                        })
+                        .catch(error => {
+                            Swal.fire(
+                                'Error!',
+                                error.message,
+                                'error'
+                            );
+                        });
                 }
-            })
-            .catch(error => {
-                Swal.fire(
-                    'Error!',
-                    error.message,
-                    'error'
-                );
             });
         }
-    });
-}
-</script>
+        document.getElementById('editQuantity').addEventListener('input', function(e) {
+            if (this.value <= 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Quantity',
+                    text: 'Quantity must be greater than 0',
+                    confirmButtonColor: '#3085d6'
+                });
+                this.value = 1; // Reset to minimum value
+                return false;
+            }
+        });
+
+        // Update existing form submission handler
+        document.getElementById('editProductForm').addEventListener('submit', function(e) {
+            const quantity = document.getElementById('editQuantity').value;
+
+            if (quantity <= 0) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Quantity',
+                    text: 'Quantity must be greater than 0',
+                    confirmButtonColor: '#3085d6'
+                });
+                document.getElementById('editQuantity').value = 1;
+                return false;
+            }
+        });
+    </script>
 </body>
 
 </html>

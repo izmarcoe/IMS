@@ -20,6 +20,13 @@ try {
         throw new Exception('Product not found');
     }
 
+    // Validate if there are actual changes
+    if ($currentProduct['product_name'] === $_POST['new_name'] &&
+        $currentProduct['price'] == $_POST['new_price'] &&
+        $currentProduct['quantity'] == $_POST['new_quantity']) {
+        throw new Exception('No changes detected. Request not submitted.');
+    }
+
     $stmt = $conn->prepare("
         INSERT INTO product_modification_requests 
         (product_id, employee_id, old_name, new_name, old_price, new_price, old_quantity, new_quantity) 
