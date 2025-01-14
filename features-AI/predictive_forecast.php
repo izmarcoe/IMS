@@ -89,7 +89,7 @@ $fname = $_SESSION['Fname'];
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
-<body class="bg-gradient-to-br from-gray-50 to-gray-100 text-gray-900 min-h-screen">
+<body class="bg-gradient-to-br from-gray-200 to-gray-400 text-gray-900 min-h-screen">
     <!-- Header -->
     <?php include '../features/header.php' ?>
     <main class="py-6">
