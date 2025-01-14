@@ -269,7 +269,12 @@ class DemandForecaster {
         for (let i = 1; i <= totalPages; i++) {
             const button = document.createElement('button');
             button.innerText = i;
-            button.className = `px-3 py-1 border rounded ${this.currentPage === i ? 'bg-blue-500 text-white' : 'bg-white'}`;
+            // Change from blue-500 to green-600
+            button.className = `px-3 py-1 border rounded ${
+                this.currentPage === i 
+                ? 'bg-green-600 text-white' // Changed from blue-500
+                : 'bg-white hover:bg-green-50'  // Added hover state
+            }`;
             button.addEventListener('click', () => {
                 this.currentPage = i;
                 this.displayForecasts();

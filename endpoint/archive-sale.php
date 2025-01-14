@@ -12,9 +12,10 @@ try {
 
     // Get sale data
     $stmt = $conn->prepare("
-        SELECT s.*, p.product_name 
+        SELECT s.*, p.product_name, pc.category_name, (s.quantity * s.price) as total_sales
         FROM sales s
         LEFT JOIN products p ON s.product_id = p.product_id
+        LEFT JOIN product_categories pc ON p.category_id = pc.id
         WHERE s.id = ?
     ");
     $stmt->execute([$saleId]);
@@ -27,16 +28,18 @@ try {
     // Insert into archive_sales
     $archiveStmt = $conn->prepare("
         INSERT INTO archive_sales 
-        (id, product_id, product_name, quantity, price, sale_date)
-        VALUES (?, ?, ?, ?, ?, ?)
+        (id, product_id, product_name, category_name, quantity, price, sale_date, total_sales)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     ");
     $archiveStmt->execute([
         $sale['id'],
         $sale['product_id'],
         $sale['product_name'],
+        $sale['category_name'],
         $sale['quantity'],
         $sale['price'],
-        $sale['sale_date']
+        $sale['sale_date'],
+        $sale['total_sales']
     ]);
 
     // Delete from sales

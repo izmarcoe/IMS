@@ -113,6 +113,53 @@ $fname = $_SESSION['Fname'];
 
             <h1 class="text-2xl font-bold mb-4">Product Demand Forecast</h1>
 
+
+            <div class="mt-8">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold">Product Demand Forecasts</h2>
+                </div>
+
+                <div class="mb-4 flex items-center">
+                    <div class="relative">
+                        <input type="text"
+                            id="productSearch"
+                            class="w-64 pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-green-600"
+                            placeholder="Search products...">
+                        <div class="absolute left-3 top-2.5">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                    </div>
+                    <button id="searchButton"
+                        class="ml-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-700">
+                        Search
+                    </button>
+                </div>
+
+                <table class="min-w-full bg-white border border-gray-200">
+                    <thead>
+                        <tr>
+                            <th class="px-4 py-2 border-b text-center bg-gray-50">Product ID</th>
+                            <th class="px-4 py-2 border-b text-left bg-gray-50">Product Name</th>
+                            <th class="px-4 py-2 border-b text-center bg-gray-50">Current Stock</th>
+                            <th class="px-4 py-2 border-b text-center bg-gray-50">Last Month Sales (<?php echo $previousMonthName; ?>)</th>
+                            <th class="px-4 py-2 border-b text-center bg-gray-50">Predicted Demand for <?php echo $nextMonthName; ?></th>
+                            <th class="px-4 py-2 border-b text-center bg-gray-50">Recommended Stock (at least)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="forecastTableBody" class="mb-4">
+                        <tr id="loadingRow" class="animate-pulse">
+                            <td colspan="6" class="text-center py-8">
+                                <div class="flex items-center justify-center">
+                                    <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                                </div>
+                                <p class="mt-4 text-gray-600 text-sm">Loading forecasts...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div id="paginationControls" class="my-4 flex justify-center space-x-2"></div>
+            </div>
+
             <!-- Top Products Card -->
             <div class="bg-white rounded-lg shadow-md p-6 mb-8 transition-all duration-300 hover:shadow-lg">
                 <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
@@ -157,54 +204,7 @@ $fname = $_SESSION['Fname'];
                 </div>
             </div>
 
-
-            <div class="mt-8">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-semibold">Product Demand Forecasts</h2>
-                </div>
-
-                <div class="mb-4 flex items-center">
-                    <div class="relative">
-                        <input type="text"
-                            id="productSearch"
-                            class="w-64 pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
-                            placeholder="Search products...">
-                        <div class="absolute left-3 top-2.5">
-                            <i class="fas fa-search text-gray-400"></i>
-                        </div>
-                    </div>
-                    <button id="searchButton"
-                        class="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200">
-                        Search
-                    </button>
-                </div>
-
-                <table class="min-w-full bg-white border border-gray-200">
-                    <thead>
-                        <tr>
-                            <th class="px-4 py-2 border-b text-center bg-gray-50">Product ID</th>
-                            <th class="px-4 py-2 border-b text-left bg-gray-50">Product Name</th>
-                            <th class="px-4 py-2 border-b text-center bg-gray-50">Current Stock</th>
-                            <th class="px-4 py-2 border-b text-center bg-gray-50">Last Month Sales (<?php echo $previousMonthName; ?>)</th>
-                            <th class="px-4 py-2 border-b text-center bg-gray-50">Predicted Demand for <?php echo $nextMonthName; ?></th>
-                            <th class="px-4 py-2 border-b text-center bg-gray-50">Recommended Stock (at least)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="forecastTableBody">
-                        <tr id="loadingRow" class="animate-pulse">
-                            <td colspan="6" class="text-center py-8">
-                                <div class="flex items-center justify-center">
-                                    <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                                </div>
-                                <p class="mt-4 text-gray-600 text-sm">Loading forecasts...</p>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <div id="paginationControls" class="mt-4 flex justify-center space-x-2"></div>
-            </div>
-            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8 mt-8">
                 <h2 class="text-xl font-semibold mb-4">
                     <i class="fas fa-chart-line mr-2 text-blue-500"></i>
                     Seasonal Trends Analysis

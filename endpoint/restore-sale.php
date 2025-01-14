@@ -22,16 +22,18 @@ try {
     // Restore to sales table
     $restoreStmt = $conn->prepare("
         INSERT INTO sales 
-        (id, product_id, product_name, quantity, price, sale_date)
-        VALUES (?, ?, ?, ?, ?, ?)
+        (id, product_id, product_name, category_name, quantity, price, sale_date, total_sales)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     ");
     $restoreStmt->execute([
         $sale['id'],
         $sale['product_id'],
         $sale['product_name'],
+        $sale['category_name'],
         $sale['quantity'],
         $sale['price'],
-        $sale['sale_date']
+        $sale['sale_date'],
+        $sale['total_sales']
     ]);
 
     // Delete from archive
