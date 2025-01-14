@@ -54,7 +54,7 @@ $fname = $_SESSION['Fname'];
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
-<body class="bg-[#DADBDF] h-screen overflow-hidden" data-user-role="<?php echo $_SESSION['user_role']; ?>">  
+<body class="bg-[#DADBDF] h-screen overflow-hidden" data-user-role="<?php echo $_SESSION['user_role']; ?>">
     <?php include '../features/header.php' ?>
     <main class="flex">
         <aside>
@@ -263,6 +263,80 @@ $fname = $_SESSION['Fname'];
                 }
             });
         }
+
+        document.getElementById('editCategoryForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+
+            fetch('../endpoint/process_category.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const categoryId = formData.get('id');
+                        const categoryName = formData.get('category_name');
+                        const description = formData.get('description');
+
+                        // Update row content in real-time
+                        const row = document.getElementById(`category-${categoryId}`);
+                        if (row) {
+                            const isAdmin = document.body.getAttribute('data-user-role') === 'admin';
+                            row.innerHTML = `
+                    <td class="px-4 md:px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm md:text-base text-gray-900">${categoryName}</div>
+                    </td>
+                    <td class="px-4 md:px-6 py-4">
+                        <div class="text-sm md:text-base text-gray-900 break-words">${description}</div>
+                    </td>
+                    <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm md:text-base">
+                        <div class="flex space-x-2">
+                            <button onclick="openEditModal({id: ${categoryId}, category_name: '${categoryName}', description: '${description}'})" 
+                                class="bg-blue-500 hover:bg-blue-600 text-white px-2 md:px-3 py-1 rounded-md text-sm">
+                                Edit
+                            </button>
+                            ${isAdmin ? `
+                                <button onclick="openArchiveModal(${categoryId})"
+                                    class="bg-red-500 hover:bg-red-600 text-white px-2 md:px-3 py-1 rounded-md text-sm">
+                                    Archive
+                                </button>
+                            ` : ''}
+                        </div>
+                    </td>
+                `;
+                        }
+
+                        closeEditModal();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: 'Category updated successfully',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        throw new Error(data.message || 'Failed to update category');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: error.message || 'Something went wrong',
+                        confirmButtonColor: '#3085d6'
+                    });
+                });
+        });
+        document.getElementById('edit_description').addEventListener('input', function() {
+            const maxLength = 50;
+            const currentLength = this.value.length;
+
+            if (currentLength > maxLength) {
+                this.value = this.value.substring(0, maxLength);
+            }
+        });
     </script>
 </body>
 
