@@ -75,34 +75,19 @@ if (isset($_SESSION['user_id'])) {
                 <p class="text-gray-500 mt-2">Fill in your personal details</p>
             </div>
 
-            <form action="./endpoint/add-user.php" method="POST" class="space-y-6" id="registrationForm">
-                <div class="hide-registration-inputs">
+            <form action="./endpoint/add-user.php" method="POST" class="space-y-6" id="registrationForm" enctype="application/x-www-form-urlencoded">                <div class="hide-registration-inputs">
                     <div class="grid grid-cols-2 gap-6">
                         <div>
                             <label for="firstName" class="block text-sm font-medium text-gray-700">
                                 First Name<span id="firstNameAsterisk" class="text-red-500 ml-1">*</span>
                             </label>
-                            <input type="text"
-                                id="firstName"
-                                name="first_name"
-                                required
-                                maxlength="25"
-                                pattern="[a-zA-Z]+"
-                                oninput="handleInput('firstName')"
-                                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <input type="text" id="firstName" name="first_name" required maxlength="25" pattern="[a-zA-Z]+" oninput="handleInput('firstName')" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                         </div>
                         <div>
                             <label for="lastName" class="block text-sm font-medium text-gray-700">
                                 Last Name<span id="lastNameAsterisk" class="text-red-500 ml-1">*</span>
                             </label>
-                            <input type="text"
-                                id="lastName"
-                                name="last_name"
-                                required
-                                maxlength="25"
-                                pattern="[a-zA-Z]+"
-                                oninput="handleInput('lastName')"
-                                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <input type="text" id="lastName" name="last_name" required maxlength="25" pattern="[a-zA-Z]+" oninput="handleInput('lastName')" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                         </div>
                     </div>
 
@@ -223,7 +208,10 @@ if (isset($_SESSION['user_id'])) {
                 input.addEventListener('input', validateForm);
             });
 
-            window.generateQrCode = function() {
+            window.generateQrCode = async function() {
+                const fname = document.getElementById('firstName').value; // Changed from fname to firstName
+                const lname = document.getElementById('lastName').value; // Changed from lname to lastName
+                
                 // Show loading overlay
                 Swal.fire({
                     title: 'Generating QR Code...',
@@ -234,89 +222,72 @@ if (isset($_SESSION['user_id'])) {
                     }
                 });
 
-                const fname = document.getElementById('fname').value;
-                const lname = document.getElementById('lname').value;
+                try {
+                    // Generate random code
+                    const text = generateRandomCode(10);
+                    const secretKey = 'artificial intelligence';
+                    const encryptedText = encryptData(text, secretKey);
+                    document.getElementById("generatedCode").value = encryptedText;
 
-                // Generate random code
-                const text = generateRandomCode(10);
-                const secretKey = 'artificial intelligence';
-                const encryptedText = encryptData(text, secretKey);
-                document.getElementById("generatedCode").value = encryptedText;
+                    // Generate QR Code
+                    const apiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(encryptedText)}`;
+                    const qrImg = document.getElementById('qrImg');
+                    
+                    // Hide registration inputs and show QR code
+                    document.querySelector('.hide-registration-inputs').classList.add('hidden');
+                    document.querySelector('.qr-code-container').classList.remove('hidden');
+                    document.getElementById('registerButton').classList.add('hidden');
 
-                // Generate QR Code
-                const apiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(encryptedText)}`;
-                const qrImg = document.getElementById('qrImg');
+                    // Wait for QR image to load
+                    await new Promise((resolve, reject) => {
+                        qrImg.onload = resolve;
+                        qrImg.onerror = reject;
+                        qrImg.src = apiUrl;
+                    });
 
-                // Hide registration inputs and show QR code
-                registrationInputs.classList.add('hidden');
-                qrCodeContainer.classList.remove('hidden');
-                registerButton.classList.add('hidden');
-
-                // Set QR image and create PDF
-                qrImg.src = apiUrl;
-                qrImg.onload = function() {
-                    const {
-                        jsPDF
-                    } = window.jspdf;
+                    // Generate PDF
+                    const { jsPDF } = window.jspdf;
                     const doc = new jsPDF();
 
-                    try {
-                        // Add user info to PDF
-                        doc.setFontSize(16);
-                        doc.text('Your QR Code Login Credentials', 105, 20, {
-                            align: 'center'
-                        });
-                        doc.setFontSize(12);
-                        doc.text(`Name: ${fname} ${lname}`, 20, 40);
-                        doc.text('Please keep this QR code safe and private.', 20, 50);
+                    // Add user info to PDF
+                    doc.setFontSize(16);
+                    doc.text('Your QR Code Login Credentials', 105, 20, {align: 'center'});
+                    doc.setFontSize(12);
+                    doc.text(`Name: ${fname} ${lname}`, 20, 40);
+                    doc.text('Please keep this QR code safe and private.', 20, 50);
+                    
+                    // Add QR code to PDF
+                    doc.addImage(qrImg, 'PNG', 65, 60, 80, 80);
+                    
+                    // Add instructions
+                    doc.setFontSize(10);
+                    doc.text('To login, use this QR code with the scanner on the login page.', 105, 160, {align: 'center'});
+                    
+                    // Save PDF
+                    doc.save(`QRCode_${fname}${lname}.pdf`);
 
-                        // Add QR code to PDF
-                        doc.addImage(qrImg, 'PNG', 65, 60, 80, 80);
+                    // Close loading overlay and show success message
+                    await Swal.fire({
+                        icon: 'success',
+                        title: 'QR Code Generated!',
+                        text: 'Your QR code has been generated and PDF has been downloaded.',
+                        confirmButtonColor: '#047857',
+                        showConfirmButton: true,
+                        allowOutsideClick: false
+                    });
 
-                        // Add instructions
-                        doc.setFontSize(10);
-                        doc.text('To login, use this QR code with the scanner on the login page.', 105, 160, {
-                            align: 'center'
-                        });
+                    // Submit the form
+                    document.getElementById('registrationForm').submit();
 
-                        // Save PDF
-                        doc.save(`QRCode_${fname}${lname}.pdf`);
-
-                        // Close loading overlay and show success message
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'QR Code Generated!',
-                            text: 'Your QR code has been generated and PDF has been downloaded.',
-                            confirmButtonColor: '#047857',
-                            showConfirmButton: true,
-                            allowOutsideClick: false
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                // Automatically submit the form after user acknowledges
-                                document.getElementById('registrationForm').submit();
-                            }
-                        });
-                    } catch (error) {
-                        // Handle any errors during PDF generation
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'There was an error generating your QR code. Please try again.',
-                            confirmButtonColor: '#047857'
-                        });
-                        console.error('PDF generation error:', error);
-                    }
-                };
-
-                // Handle QR code loading error
-                qrImg.onerror = function() {
+                } catch (error) {
+                    console.error('Error:', error);
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: 'Failed to generate QR code. Please try again.',
+                        text: 'There was an error generating your QR code. Please try again.',
                         confirmButtonColor: '#047857'
                     });
-                };
+                }
             }
 
             function generateRandomCode(length) {

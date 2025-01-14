@@ -65,7 +65,7 @@ function generateRandomCode(length) {
 
   return randomString;
 }
-
+/*
 function generateQrCode() {
   const registrationInputs = document.querySelector('.hide-registration-inputs');
   const h2 = document.querySelector('.registration-form > h2');
@@ -107,7 +107,7 @@ function generateQrCode() {
     };
   }
 }
-
+*/
 // Ensure the scanner starts after the page loads
 document.addEventListener('DOMContentLoaded', startScanner);
 console.log("Loaded SECRET_KEY:", artificial_intelligence);
