@@ -132,18 +132,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
 
             <!-- Login Toggle Options -->
-            <div class="text-center mt-4 text-sm text-gray-600">
-                <div class="mb-2">Login using</div>
-                <div class="flex justify-center items-center gap-6">
+            <div class="flex flex-col items-center justify-center mt-6">
+                <div class="text-sm font-medium text-gray-700 mb-3">Login using</div>
+                <div class="flex items-center justify-center space-x-8 w-full max-w-xs mx-auto">
                     <span id="qrCodeLoginLink"
-                        class="text-green-600 hover:text-green-700 cursor-pointer hidden"
+                        class="text-green-600 hover:text-green-700 cursor-pointer hidden transition-colors duration-200 px-4 py-2 rounded-md hover:bg-green-50"
                         onclick="togglePasswordLogin(false)">
-                        QR code
+                        <i class="fas fa-qrcode mr-2"></i>QR code
                     </span>
+                    <div class="text-gray-300 hidden">|</div>
                     <span id="passwordLoginLink"
-                        class="text-green-600 hover:text-green-700 cursor-pointer"
+                        class="text-green-600 hover:text-green-700 cursor-pointer transition-colors duration-200 px-4 py-2 rounded-md hover:bg-green-50"
                         onclick="togglePasswordLogin(true)">
-                        Password
+                        <i class="fas fa-key mr-2"></i>Password
                     </span>
                 </div>
             </div>
