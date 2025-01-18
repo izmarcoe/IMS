@@ -1,12 +1,12 @@
 <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
 
-<header class="flex flex-row sticky z-[999]">
+<header class="flex flex-row sticky z-[55]">
     <div class="flex items-center text-black p-3 flex-grow bg-gray-600 z-[999]">
         <div class="ml-6 flex flex-start text-white">
             <h2 class="text-[1.5rem] font-bold capitalize"><?php echo htmlspecialchars($_SESSION['user_role']); ?> Dashboard</h2>
         </div>
-        <div class="flex justify-end flex-grow text-white">
+        <div class="hidden lg:flex justify-end flex-grow text-white"> <!-- Added hidden md:flex -->
             <span class="px-4 font-bold text-[1rem]" id="datetime"><?php echo date('F j, Y, g:i A'); ?></span>
         </div>
         <?php if ($_SESSION['user_role'] === 'admin'): ?>

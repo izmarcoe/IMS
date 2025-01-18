@@ -3,26 +3,26 @@
 <!-- Alpine JS  -->
 <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-<div x-data="{ sidebarOpen: false }" class="relative h-screen">
-    <!-- Mobile Toggle Button -->
+<div x-data="{ sidebarOpen: false }" class="relative">
+    <!-- Mobile Toggle Button - Increase z-index -->
     <button @click="sidebarOpen = !sidebarOpen"
-        class="fixed top-4 left-4 z-50 p-2 bg-green-800 rounded-md text-white hover:bg-green-700 md:hidden focus:outline-none focus:ring-2 focus:ring-green-600">
+        class="fixed top-4 left-4 z-[80] p-2 bg-green-800 rounded-md text-white hover:bg-green-700 md:hidden focus:outline-none focus:ring-2 focus:ring-green-600">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path x-show="!sidebarOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
             <path x-show="sidebarOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
     </button>
 
-    <!-- Backdrop -->
+    <!-- Backdrop - Adjust z-index -->
     <div x-show="sidebarOpen"
         @click="sidebarOpen = false"
-        class="fixed inset-0 bg-black bg-opacity-50 transition-opacity md:hidden z-40">
+        class="fixed inset-0 bg-black bg-opacity-50 transition-opacity md:hidden z-[75]">
     </div>
 
-    <!-- Sidebar -->
+    <!-- Sidebar - Adjust position and z-index -->
     <div
         :class="{'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen}"
-        class="fixed md:static top-0 left-0 bottom-0 w-[300px] bg-gradient-to-b from-gray-800 to-gray-900 text-white transform transition-transform duration-300 ease-in-out md:translate-x-0 h-full md:min-h-screen z-50 flex flex-col shadow-xl">
+        class="fixed md:static top-0 left-0 bottom-0 w-[300px] bg-gradient-to-b from-gray-800 to-gray-900 text-white transform transition-transform duration-300 ease-in-out md:translate-x-0 h-screen overflow-hidden z-[77] flex flex-col shadow-xl">
 
         <!-- Logo Header -->
         <div class="flex-shrink-0 flex justify-center items-center bg-green-800 h-[120px] border-b border-gray-700">
