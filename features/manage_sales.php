@@ -284,16 +284,18 @@ $lname = $_SESSION['Lname'];
                                         <td class="px-3 py-4 total-sales"><?php echo htmlspecialchars($sale['total_sales']); ?></td>
                                         <td class="px-3 py-4 sale-date"><?php echo htmlspecialchars(date('F j, Y', strtotime($sale['sale_date']))); ?></td>
                                         <td class="px-3 py-4">
-                                            <button onclick="openEditModal(<?php echo htmlspecialchars(json_encode($sale)); ?>)"
-                                                class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-md text-sm">
-                                                Edit
-                                            </button>
-                                            <?php if ($_SESSION['user_role'] === 'admin'): ?>
-                                                <button onclick="archiveSale(<?php echo $sale['id']; ?>)"
-                                                    class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md text-sm">
-                                                    Archive
+                                            <div class="flex flex-row items-center">
+                                                <button onclick="openEditModal(<?php echo htmlspecialchars(json_encode($sale)); ?>)"
+                                                    class="bg-blue-500 hover:bg-blue-600 text-white px-2 mr-2 py-1 rounded-md text-sm">
+                                                    Edit
                                                 </button>
-                                            <?php endif; ?>
+                                                <?php if ($_SESSION['user_role'] === 'admin'): ?>
+                                                    <button onclick="archiveSale(<?php echo $sale['id']; ?>)"
+                                                        class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md text-sm">
+                                                        Archive
+                                                    </button>
+                                            </div>
+                                        <?php endif; ?>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -354,28 +356,28 @@ $lname = $_SESSION['Lname'];
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="editProductName">Product</label>
                             <?php if ($user_role == 'admin'): ?>
                                 <div class="relative">
-                                    <input type="text" 
-                                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                           id="editProductName" 
-                                           name="product_name" 
-                                           autocomplete="off"
-                                           placeholder="Search product...">
-                                    
+                                    <input type="text"
+                                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                        id="editProductName"
+                                        name="product_name"
+                                        autocomplete="off"
+                                        placeholder="Search product...">
+
                                     <div id="productDropdownContainer" class="hidden absolute z-50 w-full mt-1">
-                                        <select id="editProductSelect" 
-                                                class="w-full max-h-60 overflow-y-auto bg-white border border-gray-300 rounded-md shadow-lg" 
-                                                size="5">
+                                        <select id="editProductSelect"
+                                            class="w-full max-h-60 overflow-y-auto bg-white border border-gray-300 rounded-md shadow-lg"
+                                            size="5">
                                             <?php
                                             $stmt = $conn->prepare("SELECT product_id, product_name, price, quantity FROM products WHERE quantity > 0 ORDER BY product_name");
                                             $stmt->execute();
                                             $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                                            
-                                            foreach($products as $product): ?>
+
+                                            foreach ($products as $product): ?>
                                                 <option value="<?php echo $product['product_id']; ?>"
-                                                        data-id="<?php echo $product['product_id']; ?>"
-                                                        data-price="<?php echo $product['price']; ?>"
-                                                        data-stock="<?php echo $product['quantity']; ?>"
-                                                        class="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                                                    data-id="<?php echo $product['product_id']; ?>"
+                                                    data-price="<?php echo $product['price']; ?>"
+                                                    data-stock="<?php echo $product['quantity']; ?>"
+                                                    class="px-4 py-2 hover:bg-gray-100 cursor-pointer">
                                                     <?php echo htmlspecialchars($product['product_name']); ?>
                                                 </option>
                                             <?php endforeach; ?>
@@ -383,11 +385,11 @@ $lname = $_SESSION['Lname'];
                                     </div>
                                 </div>
                             <?php else: ?>
-                                <input type="text" 
-                                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 bg-gray-100 leading-tight focus:outline-none focus:shadow-outline"
-                                       id="editProductName" 
-                                       name="product_name" 
-                                       readonly>
+                                <input type="text"
+                                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 bg-gray-100 leading-tight focus:outline-none focus:shadow-outline"
+                                    id="editProductName"
+                                    name="product_name"
+                                    readonly>
                             <?php endif; ?>
                         </div>
 
@@ -399,13 +401,13 @@ $lname = $_SESSION['Lname'];
 
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="editQuantity">Quantity</label>
-                            <input type="number" 
-                                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline <?php if ($user_role == 'employee') echo 'bg-gray-100'; ?>"
-                                   id="editQuantity" 
-                                   name="quantity" 
-                                   min="1" 
-                                   required
-                                   <?php if ($user_role == 'employee') echo 'readonly'; ?>>
+                            <input type="number"
+                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline <?php if ($user_role == 'employee') echo 'bg-gray-100'; ?>"
+                                id="editQuantity"
+                                name="quantity"
+                                min="1"
+                                required
+                                <?php if ($user_role == 'employee') echo 'readonly'; ?>>
                             <small id="stockInfo" class="text-gray-500"></small>
                             <div id="quantityError" class="text-red-500 text-sm hidden"></div>
                         </div>
@@ -448,26 +450,26 @@ $lname = $_SESSION['Lname'];
             }).then((result) => {
                 if (result.isConfirmed) {
                     fetch('../endpoint/archive-sale.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: `sale_id=${saleId}`
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            Swal.fire('Archived!', 'Sale has been archived.', 'success')
-                            .then(() => {
-                                window.location.reload();
-                            });
-                        } else {
-                            throw new Error(data.error || 'Failed to archive sale');
-                        }
-                    })
-                    .catch(error => {
-                        Swal.fire('Error!', error.message, 'error');
-                    });
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: `sale_id=${saleId}`
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire('Archived!', 'Sale has been archived.', 'success')
+                                    .then(() => {
+                                        window.location.reload();
+                                    });
+                            } else {
+                                throw new Error(data.error || 'Failed to archive sale');
+                            }
+                        })
+                        .catch(error => {
+                            Swal.fire('Error!', error.message, 'error');
+                        });
                 }
             });
         }

@@ -9,7 +9,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'employee' && $_S
 }
 
 // Pagination setup
-$limit = 10;
+$limit = 8;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
@@ -68,8 +68,10 @@ $fname = $_SESSION['Fname'];
                 <h2 class="text-xl font-semibold">Categories</h2>
                 <div class="flex items-center space-x-4">
                     <?php if ($_SESSION['user_role'] === 'admin'): ?>
-                        <a href="archive-categories-table.php" class="text-blue-500 hover:text-blue-700 flex items-center">
-                            <i class="fas fa-archive mr-2"></i>View Archived Categories
+                        <a href="archive-categories-table.php"
+                            class="text-blue-500 hover:text-blue-700 flex items-center text-xs sm:text-base transition-all duration-200">
+                            <i class="fas fa-archive mr-1 sm:mr-2 text-xs sm:text-base"></i>
+                            <span>View Archived Categories</span>
                         </a>
                     <?php endif; ?>
                     <button onclick="openAddModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md">

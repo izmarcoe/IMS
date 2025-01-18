@@ -193,16 +193,18 @@ $fname = $_SESSION['Fname'];
                                                     Request Edit
                                                 </button>
                                             <?php else: ?>
-                                                <button onclick="openEditModal(<?php echo htmlspecialchars(json_encode($product)); ?>)"
-                                                    class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-md text-sm">
-                                                    Edit
-                                                </button>
-                                            <?php endif; ?>
-                                            <?php if ($_SESSION['user_role'] === 'admin'): ?>
-                                                <button onclick="openArchiveModal(<?php echo $product['product_id']; ?>)"
-                                                    class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md text-sm">
-                                                    Archive
-                                                </button>
+                                                <div class="flex flex-row items-center">
+                                                    <button onclick="openEditModal(<?php echo htmlspecialchars(json_encode($product)); ?>)"
+                                                        class="bg-blue-500 hover:bg-blue-600 text-white px-2 mr-2 py-1 rounded-md text-sm">
+                                                        Edit
+                                                    </button>
+                                                <?php endif; ?>
+                                                <?php if ($_SESSION['user_role'] === 'admin'): ?>
+                                                    <button onclick="openArchiveModal(<?php echo $product['product_id']; ?>)"
+                                                        class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md text-sm">
+                                                        Archive
+                                                    </button>
+                                                </div>
                                             <?php endif; ?>
                                         </td>
                                     </tr>
@@ -285,11 +287,11 @@ $fname = $_SESSION['Fname'];
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="editQuantity">
                             Quantity <span class="text-gray-500 text-xs">(Min: 1, Max: 999)</span>
                         </label>
-                        <input type="number" 
+                        <input type="number"
                             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            id="editQuantity" 
-                            name="quantity" 
-                            min="1" 
+                            id="editQuantity"
+                            name="quantity"
+                            min="1"
                             max="999"
                             required>
                         <p class="text-sm text-gray-500 mt-1">Enter a quantity between 1 and 999</p>

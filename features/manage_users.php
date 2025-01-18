@@ -88,157 +88,164 @@ $fname = $_SESSION['Fname'];
 
             <div class="container mx-auto mt-4 z-30 px-8 max-w-7xl">
                 <h2 class="mt-6 text-xl md:text-2xl font-semibold mb-6">Manage Users</h2>
-                <table class="w-full divide-y divide-gray-200 table-fixed">
-                    <thead class="bg-gray-50 sticky top-0 z-10">
-                        <tr>
-                            <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider w-[10%]">
-                                User ID
-                            </th>
-                            <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider w-[15%]">
-                                First name
-                            </th>
-                            <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider w-[15%]">
-                                Last name
-                            </th>
-                            <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider w-[20%]">
-                                Role
-                            </th>
-                            <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider w-[15%]">
-                                Status
-                            </th>
-                            <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider w-[25%]">
-                                Actions
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        <?php foreach ($users as $user): ?>
-                            <tr class="<?php echo $user['status'] == 'deactivated' ? 'bg-gray-400' : ''; ?>">
-                                <td class="px-4 md:px-6 py-4 whitespace-nowrap w-[10%]">
-                                    <div class="text-sm md:text-base text-gray-900"><?php echo htmlspecialchars($user['user_id']); ?></div>
-                                </td>
-                                <td class="px-4 md:px-6 py-4 whitespace-nowrap w-[15%]">
-                                    <div class="text-sm md:text-base text-gray-900"><?php echo htmlspecialchars($user['Fname']); ?></div>
-                                </td>
-                                <td class="px-4 md:px-6 py-4 whitespace-nowrap w-[15%]">
-                                    <div class="text-sm md:text-base text-gray-900"><?php echo htmlspecialchars($user['Lname']); ?></div>
-                                </td>
-                                <td class="px-4 md:px-6 py-4 whitespace-nowrap w-[20%]">
-                                    <?php
-                                    switch ($user['role']) {
-                                        case 'employee':
-                                            echo 'Employee';
-                                            break;
-                                        case 'new_user':
-                                            echo 'New User';
-                                            break;
-                                        default:
-                                            echo 'New User';
-                                    }
-                                    ?>
-                                </td>
-                                <td class="px-4 md:px-6 py-4 whitespace-nowrap w-[15%]">
-                                    <div class="text-sm md:text-base text-gray-900"><?php echo htmlspecialchars($user['status']); ?></div>
-                                </td>
-                                <td class="px-4 md:px-6 py-4 whitespace-nowrap w-[25%]">
+                <!-- Add responsive container and overflow handling -->
+                <div class="w-full overflow-hidden rounded-lg shadow-md">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50 sticky top-0 z-10">
+                                <tr>
+                                    <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider w-[10%]">
+                                        ID
+                                    </th>
+                                    <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider w-[15%]">
+                                        First name
+                                    </th>
+                                    <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider w-[15%]">
+                                        Last name
+                                    </th>
+                                    <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider w-[20%]">
+                                        Role
+                                    </th>
+                                    <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider w-[15%]">
+                                        Status
+                                    </th>
+                                    <th class="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider w-[25%]">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <?php foreach ($users as $user): ?>
+                                    <tr class="<?php echo $user['status'] == 'deactivated' ? 'bg-gray-400' : ''; ?>">
+                                        <td class="px-4 md:px-6 py-4 whitespace-nowrap w-[10%]">
+                                            <div class="text-sm md:text-base text-gray-900"><?php echo htmlspecialchars($user['user_id']); ?></div>
+                                        </td>
+                                        <td class="px-4 md:px-6 py-4 whitespace-nowrap w-[15%]">
+                                            <div class="text-sm md:text-base text-gray-900"><?php echo htmlspecialchars($user['Fname']); ?></div>
+                                        </td>
+                                        <td class="px-4 md:px-6 py-4 whitespace-nowrap w-[15%]">
+                                            <div class="text-sm md:text-base text-gray-900"><?php echo htmlspecialchars($user['Lname']); ?></div>
+                                        </td>
+                                        <td class="px-4 md:px-6 py-4 whitespace-nowrap w-[20%]">
+                                            <?php
+                                            switch ($user['role']) {
+                                                case 'employee':
+                                                    echo 'Employee';
+                                                    break;
+                                                case 'new_user':
+                                                    echo 'New User';
+                                                    break;
+                                                default:
+                                                    echo 'New User';
+                                            }
+                                            ?>
+                                        </td>
+                                        <td class="px-4 md:px-6 py-4 whitespace-nowrap w-[15%]">
+                                            <div class="text-sm md:text-base text-gray-900"><?php echo htmlspecialchars($user['status']); ?></div>
+                                        </td>
+                                        <td class="px-2 sm:px-4 py-2 whitespace-nowrap text-sm">
+                                            <div class="flex flex-wrap gap-1 sm:gap-2">
+                                                <?php if ($user['status'] == 'active'): ?>
+                                                    <button type="button" class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600" onclick="openModal('editRoleModal<?php echo $user['user_id']; ?>')">
+                                                        Edit Role
+                                                    </button>
+
+                                                    <button type="button"
+                                                        onclick="updateUserStatus(<?php echo $user['user_id']; ?>, 'deactivate')"
+                                                        class="bg-yellow-500 text-white px-3 py-1 rounded text-sm hover:bg-yellow-600 ml-2">
+                                                        Deactivate
+                                                    </button>
+                                                <?php else: ?>
+                                                    <button type="button"
+                                                        onclick="updateUserStatus(<?php echo $user['user_id']; ?>, 'activate')"
+                                                        class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600">
+                                                        Activate
+                                                    </button>
+                                                <?php endif; ?>
+                                            </div>
+                                        </td>
+                                    </tr>
                                     <?php if ($user['status'] == 'active'): ?>
-                                        <button type="button" class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600" onclick="openModal('editRoleModal<?php echo $user['user_id']; ?>')">
-                                            Edit Role
-                                        </button>
+                                        <div id="editRoleModal<?php echo $user['user_id']; ?>" class="hidden fixed inset-0 z-50">
+                                            <!-- Modal Backdrop -->
+                                            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
 
-                                        <button type="button"
-                                            onclick="updateUserStatus(<?php echo $user['user_id']; ?>, 'deactivate')"
-                                            class="bg-yellow-500 text-white px-3 py-1 rounded text-sm hover:bg-yellow-600 ml-2">
-                                            Deactivate
-                                        </button>
-                                    <?php else: ?>
-                                        <button type="button"
-                                            onclick="updateUserStatus(<?php echo $user['user_id']; ?>, 'activate')"
-                                            class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600">
-                                            Activate
-                                        </button>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-                            <?php if ($user['status'] == 'active'): ?>
-                                <div id="editRoleModal<?php echo $user['user_id']; ?>" class="hidden fixed inset-0 z-50">
-                                    <!-- Modal Backdrop -->
-                                    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+                                            <!-- Modal Content -->
+                                            <div class="fixed inset-0 z-10 overflow-y-auto">
+                                                <div class="flex min-h-full items-center justify-center p-4 text-center">
+                                                    <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                                                        <!-- Modal Header -->
+                                                        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                                                            <div class="flex items-start justify-between">
+                                                                <h3 class="text-lg font-medium leading-6 text-gray-900">
+                                                                    Edit Role for <?php echo htmlspecialchars($user['Fname'] . ' ' . $user['Lname']); ?>
+                                                                </h3>
+                                                                <button onclick="closeModal('editRoleModal<?php echo $user['user_id']; ?>')"
+                                                                    class="ml-auto bg-white rounded-md text-gray-400 hover:text-gray-500">
+                                                                    <span class="sr-only">Close</span>
+                                                                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                                    </svg>
+                                                                </button>
+                                                            </div>
+                                                        </div>
 
-                                    <!-- Modal Content -->
-                                    <div class="fixed inset-0 z-10 overflow-y-auto">
-                                        <div class="flex min-h-full items-center justify-center p-4 text-center">
-                                            <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                                                <!-- Modal Header -->
-                                                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                                                    <div class="flex items-start justify-between">
-                                                        <h3 class="text-lg font-medium leading-6 text-gray-900">
-                                                            Edit Role for <?php echo htmlspecialchars($user['Fname'] . ' ' . $user['Lname']); ?>
-                                                        </h3>
-                                                        <button onclick="closeModal('editRoleModal<?php echo $user['user_id']; ?>')"
-                                                            class="ml-auto bg-white rounded-md text-gray-400 hover:text-gray-500">
-                                                            <span class="sr-only">Close</span>
-                                                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                                            </svg>
-                                                        </button>
+                                                        <!-- Modal Body -->
+                                                        <div class="bg-white px-4 pb-4 sm:p-6 sm:pb-4">
+                                                            <form method="POST">
+                                                                <input type="hidden" name="user_id"
+                                                                    value="<?php echo htmlspecialchars($user['user_id']); ?>">
+
+                                                                <div class="mb-4">
+                                                                    <label for="role<?php echo $user['user_id']; ?>"
+                                                                        class="block text-sm font-medium text-gray-700 mb-2">
+                                                                        Select Role
+                                                                    </label>
+                                                                    <select id="role<?php echo $user['user_id']; ?>"
+                                                                        name="role"
+                                                                        class="mt-1 block w-full rounded-md border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500">
+                                                                        <option value="employee" <?php echo ($user['role'] == 'employee') ? 'selected' : ''; ?>>
+                                                                            Employee
+                                                                        </option>
+                                                                        <option value="new_user" <?php echo ($user['role'] == 'new_user') ? 'selected' : ''; ?>>
+                                                                            New User
+                                                                        </option>
+                                                                    </select>
+                                                                </div>
+
+                                                                <!-- Modal Footer -->
+                                                                <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                                                                    <button type="submit"
+                                                                        name="update_role"
+                                                                        class="inline-flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm">
+                                                                        Save Changes
+                                                                    </button>
+                                                                    <button type="button"
+                                                                        onclick="closeModal('editRoleModal<?php echo $user['user_id']; ?>')"
+                                                                        class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                                                                        Cancel
+                                                                    </button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
                                                     </div>
-                                                </div>
-
-                                                <!-- Modal Body -->
-                                                <div class="bg-white px-4 pb-4 sm:p-6 sm:pb-4">
-                                                    <form method="POST">
-                                                        <input type="hidden" name="user_id"
-                                                            value="<?php echo htmlspecialchars($user['user_id']); ?>">
-
-                                                        <div class="mb-4">
-                                                            <label for="role<?php echo $user['user_id']; ?>"
-                                                                class="block text-sm font-medium text-gray-700 mb-2">
-                                                                Select Role
-                                                            </label>
-                                                            <select id="role<?php echo $user['user_id']; ?>"
-                                                                name="role"
-                                                                class="mt-1 block w-full rounded-md border-gray-300 py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500">
-                                                                <option value="employee" <?php echo ($user['role'] == 'employee') ? 'selected' : ''; ?>>
-                                                                    Employee
-                                                                </option>
-                                                                <option value="new_user" <?php echo ($user['role'] == 'new_user') ? 'selected' : ''; ?>>
-                                                                    New User
-                                                                </option>
-                                                            </select>
-                                                        </div>
-
-                                                        <!-- Modal Footer -->
-                                                        <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                                                            <button type="submit"
-                                                                name="update_role"
-                                                                class="inline-flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm">
-                                                                Save Changes
-                                                            </button>
-                                                            <button type="button"
-                                                                onclick="closeModal('editRoleModal<?php echo $user['user_id']; ?>')"
-                                                                class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                                                                Cancel
-                                                            </button>
-                                                        </div>
-                                                    </form>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                            <?php endif; ?>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
                 <!-- Pagination -->
-                <div class="flex justify-center items-center mt-4 space-x-2">
+                <div class="flex flex-wrap justify-center gap-2 mt-4 px-2">
                     <?php if ($page > 1): ?>
-                        <a href="?page=1" class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+                        <a href="?page=1" class="px-2 sm:px-3 py-1 sm:py-2 text-sm sm:text-base bg-gray-200 rounded-md hover:bg-gray-300">
                             First
                         </a>
-                        <a href="?page=<?php echo $page - 1; ?>" class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+                        <a href="?page=<?php echo $page - 1; ?>" class="px-2 sm:px-3 py-1 sm:py-2 text-sm sm:text-base bg-gray-200 rounded-md hover:bg-gray-300">
                             Previous
                         </a>
                     <?php endif; ?>
@@ -249,16 +256,16 @@ $fname = $_SESSION['Fname'];
 
                     for ($i = $start; $i <= $end; $i++): ?>
                         <a href="?page=<?php echo $i; ?>" 
-                        class="px-3 py-2 <?php echo $i == $page ? 'bg-green-600 text-white' : 'bg-gray-200 hover:bg-gray-300'; ?> rounded-md">
+                        class="px-2 sm:px-3 py-1 sm:py-2 text-sm sm:text-base <?php echo $i == $page ? 'bg-green-600 text-white' : 'bg-gray-200 hover:bg-gray-300'; ?> rounded-md">
                             <?php echo $i; ?>
                         </a>
                     <?php endfor; ?>
 
                     <?php if ($page < $totalPages): ?>
-                        <a href="?page=<?php echo $page + 1; ?>" class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+                        <a href="?page=<?php echo $page + 1; ?>" class="px-2 sm:px-3 py-1 sm:py-2 text-sm sm:text-base bg-gray-200 rounded-md hover:bg-gray-300">
                             Next
                         </a>
-                        <a href="?page=<?php echo $totalPages; ?>" class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+                        <a href="?page=<?php echo $totalPages; ?>" class="px-2 sm:px-3 py-1 sm:py-2 text-sm sm:text-base bg-gray-200 rounded-md hover:bg-gray-300">
                             Last
                         </a>
                     <?php endif; ?>
