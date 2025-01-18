@@ -164,8 +164,12 @@ foreach ($weeklyOrders as $order) {
                 <div class="mb-4">
                     <h2 class="text-xl font-semibold text-gray-800">Weekly Orders</h2>
                 </div>
-                <div class="bg-white p-4 rounded-lg h-[200px] relative"> <!-- Added relative positioning -->
-                    <canvas id="monthlyOrdersChart" style="width:100% !important; height:100% !important;"></canvas>
+                <div class="bg-white p-4 rounded-lg relative overflow-x-auto"> 
+                    <div class="min-w-[600px]"> <!-- Minimum width container -->
+                        <div class="h-[200px]">
+                            <canvas id="monthlyOrdersChart" style="width:100% !important; height:100% !important;"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="flex flex-wrap justify-center items-center gap-6 mt-5">
