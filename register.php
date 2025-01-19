@@ -270,10 +270,33 @@ if (isset($_SESSION['user_id'])) {
             const registrationInputs = document.querySelector('.hide-registration-inputs');
             const qrCodeContainer = document.querySelector('.qr-code-container');
 
+            const firstName = document.getElementById('firstName');
+            const lastName = document.getElementById('lastName');
+
+            // Add trim function for name fields
+            function trimNameFields() {
+                if (firstName) {
+                    firstName.value = firstName.value.trim();
+                }
+                if (lastName) {
+                    lastName.value = lastName.value.trim();
+                }
+            }
+
+            // Add blur event listeners
+            firstName.addEventListener('blur', trimNameFields);
+            lastName.addEventListener('blur', trimNameFields);
+
             function validateForm() {
                 let allFilled = true;
                 formInputs.forEach(input => {
-                    if (!input.value) allFilled = false;
+                    if (input.id === 'firstName' || input.id === 'lastName') {
+                        if (!input.value.trim()) {
+                            allFilled = false;
+                        }
+                    } else if (!input.value) {
+                        allFilled = false;
+                    }
                 });
 
                 const passwordsMatch = password.value === confirmPassword.value;
@@ -575,6 +598,79 @@ if (isset($_SESSION['user_id'])) {
             if (!requirements.contains(e.target) && e.target !== passwordInput) {
                 requirements.classList.add('hidden');
             }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const registerButton = document.getElementById('registerButton');
+            const formInputs = document.querySelectorAll('#registrationForm input[required]');
+            const termsCheckbox = document.getElementById('termsCheckbox');
+            const password = document.getElementById('password');
+            const confirmPassword = document.getElementById('confirmPassword');
+            
+            // Disable button initially
+            registerButton.disabled = true;
+
+            function validateForm() {
+                // Get all required inputs
+                const requiredInputs = document.querySelectorAll('input[required]');
+                let isValid = true;
+
+                // Check all required fields
+                requiredInputs.forEach(input => {
+                    if (input.id === 'firstName' || input.id === 'lastName') {
+                        if (!input.value.trim()) {
+                            isValid = false;
+                        }
+                    } else if (!input.value.trim()) {
+                        isValid = false;
+                    }
+                });
+
+                // Check password requirements
+                const passwordValid = password.value.length >= 8 && 
+                                    /[A-Z]/.test(password.value) && 
+                                    /[a-z]/.test(password.value) && 
+                                    /[0-9]/.test(password.value) && 
+                                    /[^A-Za-z0-9]/.test(password.value);
+                
+                // Check passwords match
+                const passwordsMatch = password.value === confirmPassword.value;
+
+                // Check terms
+                const termsAccepted = termsCheckbox.checked;
+
+                // Enable button only if ALL conditions are met
+                registerButton.disabled = !(isValid && passwordValid && passwordsMatch && termsAccepted);
+            }
+
+            // Add event listeners to all form elements
+            formInputs.forEach(input => {
+                input.addEventListener('input', validateForm);
+            });
+
+            termsCheckbox.addEventListener('change', validateForm);
+            password.addEventListener('input', validateForm);
+            confirmPassword.addEventListener('input', validateForm);
+
+            // Replace existing submit handler
+            document.getElementById('registrationForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (!validateForm()) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Form Validation',
+                        text: 'Please fill all required fields and accept the terms and conditions',
+                        confirmButtonColor: '#047857'
+                    });
+                    return;
+                }
+                // If validation passes, proceed with QR generation
+                generateQrCode();
+            });
+
+            // Initial validation
+            validateForm();
         });
     </script>
 </body>
