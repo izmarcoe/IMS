@@ -44,6 +44,19 @@ $totalQuery->bindParam(':date', $date);
 $totalQuery->execute();
 $totals = $totalQuery->fetch(PDO::FETCH_ASSOC);
 
+// Add this query after existing queries
+$pdfQuery = $conn->prepare("
+    SELECT s.*, p.product_name, pc.category_name
+    FROM sales s
+    LEFT JOIN products p ON s.product_id = p.product_id
+    LEFT JOIN product_categories pc ON p.category_id = pc.id
+    WHERE DATE(sale_date) = :date
+    ORDER BY sale_date
+");
+$pdfQuery->bindParam(':date', $date);
+$pdfQuery->execute();
+$allSales = $pdfQuery->fetchAll(PDO::FETCH_ASSOC);
+
 // Calculate total pages
 $totalPages = ceil($totalSales / $limit);
 
@@ -214,6 +227,86 @@ $fname = $_SESSION['Fname'];
 
             // Save the PDF
             doc.save(`Sales Report: ${month} ${day}, ${year}.pdf`);
+        });
+    </script>
+    <script>
+        document.getElementById('download-pdf').addEventListener('click', function() {
+            const {
+                jsPDF
+            } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Get date
+            const currentDate = new Date('<?php echo $date; ?>');
+            const formattedDate = currentDate.toLocaleString('default', {
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric'
+            });
+
+            // PDF Header
+            doc.setFontSize(20);
+            doc.text('ZEFMAVEN COMPUTER PARTS AND ACCESSORIES', doc.internal.pageSize.getWidth() / 2, 20, {
+                align: 'center'
+            });
+
+            doc.setFontSize(14);
+            doc.text(`Sales Report for ${formattedDate}`,
+                doc.internal.pageSize.getWidth() / 2, 30, {
+                    align: 'center'
+                });
+
+            doc.text('Note: all AMOUNTS and PRICES are in PHP', doc.internal.pageSize.getWidth() / 2, 35, {
+                align: 'center'
+            });
+
+            // Table Data
+            const tableData = <?php echo json_encode($allSales); ?>;
+            const tableRows = tableData.map(sale => [
+                sale.id,
+                sale.product_name,
+                sale.category_name,
+                sale.quantity,
+                Number(sale.price).toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }),
+                (Number(sale.quantity) * Number(sale.price)).toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }),
+                sale.sale_date
+            ]);
+
+            // Table Headers
+            const headers = [
+                ['Sale ID', 'Product', 'Category', 'Quantity', 'Price', 'Total Amount', 'Sale Date']
+            ];
+
+            // Generate Table
+            doc.autoTable({
+                head: headers,
+                body: tableRows,
+                startY: 40,
+                theme: 'grid',
+                headStyles: {
+                    fillColor: [76, 175, 80]
+                },
+                didDrawPage: function(data) {
+                    doc.setFontSize(10);
+                    doc.text(`Page ${data.pageNumber}`, data.settings.margin.left,
+                        doc.internal.pageSize.height - 10);
+                }
+            });
+
+            // Add summary after table
+            const finalY = doc.lastAutoTable.finalY || 40;
+            doc.setFontSize(12);
+            doc.text(`Total Number of Sales: <?php echo $totals['total_sales']; ?>`, 14, finalY + 20);
+            doc.text(`Total Amount: <?php echo str_replace('+', '', number_format($totals['total_amount'], 2)); ?>`, 14, finalY + 30);
+
+            // Save PDF
+            doc.save(`Sales_Report_${formattedDate}.pdf`);
         });
     </script>
 </body>

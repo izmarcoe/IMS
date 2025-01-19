@@ -63,6 +63,21 @@ $totalQuery->bindParam(':year', $year);
 $totalQuery->execute();
 $totals = $totalQuery->fetch(PDO::FETCH_ASSOC);
 
+// Add this query after existing queries
+$pdfQuery = $conn->prepare("
+    SELECT s.*, p.product_name, pc.category_name
+    FROM sales s
+    LEFT JOIN products p ON s.product_id = p.product_id
+    LEFT JOIN product_categories pc ON p.category_id = pc.id
+    WHERE MONTH(sale_date) = :month 
+    AND YEAR(sale_date) = :year
+    ORDER BY sale_date
+");
+$pdfQuery->bindParam(':month', $month);
+$pdfQuery->bindParam(':year', $year);
+$pdfQuery->execute();
+$allSales = $pdfQuery->fetchAll(PDO::FETCH_ASSOC);
+
 $fname = $_SESSION['Fname'];
 ?>
 
@@ -218,38 +233,69 @@ $fname = $_SESSION['Fname'];
     <script src="../JS/time.js"></script>
     <script>
         document.getElementById('download-pdf').addEventListener('click', function() {
-            const {
-                jsPDF
-            } = window.jspdf;
+            const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-
-            // Get the current month and year
-            const currentDate = new Date();
-            const month = currentDate.toLocaleString('default', {
-                month: 'long'
-            });
+            
+            // Get month and year
+            const currentDate = new Date('<?php echo "$year-$month-01"; ?>');
+            const monthName = currentDate.toLocaleString('default', { month: 'long' });
             const year = currentDate.getFullYear();
 
-            // Add title
+            // PDF Header
             doc.setFontSize(20);
             doc.text('ZEFMAVEN COMPUTER PARTS AND ACCESSORIES', doc.internal.pageSize.getWidth() / 2, 20, {
                 align: 'center'
             });
 
-            // Add month and year
-            doc.setFontSize(16);
-            doc.text(`Sales Report for ${month} ${year}`, doc.internal.pageSize.getWidth() / 2, 30, {
+            doc.setFontSize(14);
+            doc.text(`Sales Report for ${monthName} ${year}`, 
+                doc.internal.pageSize.getWidth() / 2, 30, {
                 align: 'center'
             });
 
-            // Add table
-            doc.autoTable({
-                html: 'table',
-                startY: 40
+            doc.text('Note: all AMOUNTS and PRICES are in PHP', doc.internal.pageSize.getWidth() / 2, 35, {
+                align: 'center'
             });
 
-            // Save the PDF
-            doc.save(`Sales Report: ${month} ${year}.pdf`);
+            // Table Data
+            const tableData = <?php echo json_encode($allSales); ?>;
+            const tableRows = tableData.map(sale => [
+                sale.id,
+                sale.product_name,
+                sale.category_name,
+                sale.quantity,
+                Number(sale.price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}),
+                (Number(sale.quantity) * Number(sale.price)).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}),
+                sale.sale_date
+            ]);
+
+            // Table Headers
+            const headers = [
+                ['Sale ID', 'Product', 'Category', 'Quantity', 'Price', 'Total Amount', 'Sale Date']
+            ];
+
+            // Generate Table
+            doc.autoTable({
+                head: headers,
+                body: tableRows,
+                startY: 40,
+                theme: 'grid',
+                headStyles: { fillColor: [76, 175, 80] },
+                didDrawPage: function(data) {
+                    doc.setFontSize(10);
+                    doc.text(`Page ${data.pageNumber}`, data.settings.margin.left, 
+                        doc.internal.pageSize.height - 10);
+                }
+            });
+
+            // Add summary after table
+            const finalY = doc.lastAutoTable.finalY || 40;
+            doc.setFontSize(12);
+            doc.text(`Total Number of Sales: <?php echo $totals['total_sales']; ?>`, 14, finalY + 20);
+            doc.text(`Total Amount: <?php echo str_replace('+', '', number_format($totals['total_amount'], 2)); ?>`, 14, finalY +30);
+
+            // Save PDF
+            doc.save(`Sales_Report_${monthName}_${year}.pdf`);
         });
     </script>
 

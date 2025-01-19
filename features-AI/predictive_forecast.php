@@ -119,44 +119,48 @@ $fname = $_SESSION['Fname'];
                     <h2 class="text-xl font-semibold">Product Demand Forecasts</h2>
                 </div>
 
-                <div class="mb-4 flex items-center">
-                    <div class="relative">
+                <!-- Search Section - Responsive -->
+                <div class="mb-4 flex flex-wrap gap-2 items-center">
+                    <div class="relative flex-grow sm:flex-grow-0">
                         <input type="text"
                             id="productSearch"
-                            class="w-64 pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-green-600"
+                            class="w-full sm:w-64 pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-green-600"
                             placeholder="Search products...">
                         <div class="absolute left-3 top-2.5">
                             <i class="fas fa-search text-gray-400"></i>
                         </div>
                     </div>
                     <button id="searchButton"
-                        class="ml-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-700">
+                        class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-700">
                         Search
                     </button>
                 </div>
 
-                <table class="min-w-full bg-white border border-gray-200">
-                    <thead>
-                        <tr>
-                            <th class="px-4 py-2 border-b text-center bg-gray-50">Product ID</th>
-                            <th class="px-4 py-2 border-b text-left bg-gray-50">Product Name</th>
-                            <th class="px-4 py-2 border-b text-center bg-gray-50">Current Stock</th>
-                            <th class="px-4 py-2 border-b text-center bg-gray-50">Last Month Sales (<?php echo $previousMonthName; ?>)</th>
-                            <th class="px-4 py-2 border-b text-center bg-gray-50">Predicted Demand for <?php echo $nextMonthName; ?></th>
-                            <th class="px-4 py-2 border-b text-center bg-gray-50">Recommended Stock (at least)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="forecastTableBody" class="mb-4">
-                        <tr id="loadingRow" class="animate-pulse">
-                            <td colspan="6" class="text-center py-8">
-                                <div class="flex items-center justify-center">
-                                    <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                                </div>
-                                <p class="mt-4 text-gray-600 text-sm">Loading forecasts...</p>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <!-- Table Container with Horizontal Scroll -->
+                <div class="overflow-x-auto shadow-md rounded-lg">
+                    <table class="min-w-full w-max bg-white border border-gray-200">
+                        <thead>
+                            <tr>
+                                <th class="px-4 py-2 border-b text-center bg-gray-50 whitespace-nowrap">Product ID</th>
+                                <th class="px-4 py-2 border-b text-left bg-gray-50 whitespace-nowrap">Product Name</th>
+                                <th class="px-4 py-2 border-b text-center bg-gray-50 whitespace-nowrap">Current Stock</th>
+                                <th class="px-4 py-2 border-b text-center bg-gray-50 whitespace-nowrap">Last Month Sales (<?php echo $previousMonthName; ?>)</th>
+                                <th class="px-4 py-2 border-b text-center bg-gray-50 whitespace-nowrap">Predicted Demand for <?php echo $nextMonthName; ?></th>
+                                <th class="px-4 py-2 border-b text-center bg-gray-50 whitespace-nowrap">Recommended Stock (at least)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="forecastTableBody" class="mb-4">
+                            <tr id="loadingRow" class="animate-pulse">
+                                <td colspan="6" class="text-center py-8">
+                                    <div class="flex items-center justify-center">
+                                        <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                                    </div>
+                                    <p class="mt-4 text-gray-600 text-sm">Loading forecasts...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <div id="paginationControls" class="my-4 flex justify-center space-x-2"></div>
             </div>
 
