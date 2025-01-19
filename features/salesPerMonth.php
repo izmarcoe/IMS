@@ -83,82 +83,101 @@ $fname = $_SESSION['Fname'];
 <body class="bg-gray-200">
     <!-- Header -->
     <?php include '../features/header.php' ?>
-    <main class="flex">
-        <aside>
+
+    <main class="flex min-h-screen">
+        <!-- Sidebar - Hidden on mobile -->
+        <aside class=" w-64 bg-green-800">
             <?php include '../features/sidebar.php'; ?>
         </aside>
-        <div class="w-full">
-            <div class="container max-w-7xl mx-auto mt-8 px-4">
-                <h2 class="text-2xl font-bold mb-4">Sales Report for <?php echo htmlspecialchars("$month-$year"); ?></h2>
-                <form method="GET" action="salespermonth.php" class="mb-6">
-                    <div class="flex flex-wrap gap-4 max-w-2xl">
-                        <select name="month" class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+        <!-- Main Content - Full width on mobile -->
+        <div class="flex-1 p-4 sm:p-8 w-full">
+            <div class="max-w-7xl mx-auto">
+                <h2 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Sales Report for <?php echo htmlspecialchars($month); ?> <?php echo htmlspecialchars($year); ?></h2>
+
+                <!-- Month/Year Selection Form -->
+                <form method="GET" class="mb-4 sm:mb-6 space-y-2 sm:space-y-4">
+                    <div class="flex flex-col sm:flex-row gap-2 sm:space-x-4 items-start sm:items-center">
+                        <!-- Month Select -->
+                        <select name="month" class="w-full sm:w-auto px-3 sm:px-4 py-2 text-sm border border-gray-300 rounded-lg">
                             <?php for ($m = 1; $m <= 12; $m++): ?>
                                 <option value="<?php echo $m; ?>" <?php echo $m == $month ? 'selected' : ''; ?>>
                                     <?php echo date('F', mktime(0, 0, 0, $m, 1)); ?>
                                 </option>
                             <?php endfor; ?>
                         </select>
-                        <select name="year" class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        
+                        <!-- Year Select -->
+                        <select name="year" class="w-full sm:w-auto px-3 sm:px-4 py-2 text-sm border border-gray-300 rounded-lg">
                             <?php for ($y = date('Y'); $y >= 2000; $y--): ?>
                                 <option value="<?php echo $y; ?>" <?php echo $y == $year ? 'selected' : ''; ?>>
                                     <?php echo $y; ?>
                                 </option>
                             <?php endfor; ?>
                         </select>
-                        <button type="submit" class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">View Sales</button>
+
+                        <button type="submit" class="w-full sm:w-auto bg-green-600 text-white px-3 sm:px-4 py-2 text-sm rounded-lg hover:bg-green-700">
+                            View Sales
+                        </button>
                     </div>
+                    
+                    <button id="download-pdf" type="button" class="w-full sm:w-auto bg-red-600 text-white px-3 sm:px-4 py-2 text-sm rounded-lg hover:bg-red-700">
+                        Download as PDF
+                    </button>
                 </form>
-                <div class="mb-4">
-                    <button id="download-pdf" class="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">Download as PDF</button>
-                </div>
-                <div class="bg-white rounded-lg shadow p-4 mb-4 grid grid-cols-2 gap-4">
-                    <div class="text-center">
-                        <p class="text-gray-600">Total Number of Sales</p>
-                        <p class="text-2xl font-bold"><?php echo number_format($totals['total_sales']); ?></p>
+
+                <!-- Stats Grid - Compact on mobile -->
+                <div class="bg-white rounded-lg shadow p-3 sm:p-4 mb-4 grid grid-cols-2 gap-2 sm:gap-4 max-w-2xl mx-auto">
+                    <div class="text-center p-2">
+                        <p class="text-gray-600 text-xs sm:text-sm">Total Number of Sales</p>
+                        <p class="text-lg sm:text-xl font-bold"><?php echo number_format($totals['total_sales']); ?></p>
                     </div>
-                    <div class="text-center">
-                        <p class="text-gray-600">Total Amount</p>
-                        <p class="text-2xl font-bold">₱<?php echo number_format($totals['total_amount'], 2); ?></p>
+                    <div class="text-center p-2">
+                        <p class="text-gray-600 text-xs sm:text-sm">Total Amount</p>
+                        <p class="text-lg sm:text-xl font-bold">₱<?php echo number_format($totals['total_amount'], 2); ?></p>
                     </div>
                 </div>
-                
-                <div class="overflow-x-auto">
-                    <table class="w-full border-collapse bg-white shadow-sm rounded-lg text-sm">
-                        <thead>
-                            <tr class="bg-gray-100">
-                                <th class="px-3 py-3 text-left">Sale ID</th>
-                                <th class="px-3 py-3 text-left">Product</th>
-                                <th class="px-3 py-3 text-left">Category</th>
-                                <th class="px-3 py-3 text-left">Quantity</th>
-                                <th class="px-3 py-3 text-left">Price</th>
-                                <th class="px-3 py-3 text-left">Total Amount</th>
-                                <th class="px-3 py-3 text-left">Sale Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php if (empty($sales)): ?>
+
+                <!-- Sales Table - Scrollable on mobile -->
+                <div class="bg-white rounded-lg shadow overflow-hidden max-w-3xl mx-auto">
+                    <div class="overflow-x-auto">
+                        <table class="w-full divide-y divide-gray-200 text-sm">
+                            <thead class="bg-gray-50">
                                 <tr>
-                                    <td colspan="7" class="px-3 py-2 text-center text-gray-500">No sales found.</td>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sale ID</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Amount</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sale Date</th>
                                 </tr>
-                            <?php else: ?>
-                                <?php foreach ($sales as $sale):
-                                    $totalAmount = $sale['quantity'] * $sale['price'];
-                                ?>
-                                    <tr class="border-t hover:bg-gray-50">
-                                        <td class="px-3 py-4"><?php echo htmlspecialchars($sale['id']); ?></td>
-                                        <td class="px-3 py-4"><?php echo htmlspecialchars($sale['product_name']); ?></td>
-                                        <td class="px-3 py-4"><?php echo htmlspecialchars($sale['category_name']); ?></td>
-                                        <td class="px-3 py-4"><?php echo htmlspecialchars($sale['quantity']); ?></td>
-                                        <td class="px-3 py-4"><?php echo number_format($sale['price'], 2); ?></td>
-                                        <td class="px-3 py-4 font-semibold"><?php echo number_format($totalAmount, 2); ?></td>
-                                        <td class="px-3 py-4"><?php echo htmlspecialchars($sale['sale_date']); ?></td>
+                            </thead>
+                            <tbody>
+                                <?php if (empty($sales)): ?>
+                                    <tr>
+                                        <td colspan="7" class="px-3 py-2 text-center text-gray-500">No sales found.</td>
                                     </tr>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
+                                <?php else: ?>
+                                    <?php foreach ($sales as $sale):
+                                        $totalAmount = $sale['quantity'] * $sale['price'];
+                                    ?>
+                                        <tr class="border-t hover:bg-gray-50">
+                                            <td class="px-3 py-4"><?php echo htmlspecialchars($sale['id']); ?></td>
+                                            <td class="px-3 py-4"><?php echo htmlspecialchars($sale['product_name']); ?></td>
+                                            <td class="px-3 py-4"><?php echo htmlspecialchars($sale['category_name']); ?></td>
+                                            <td class="px-3 py-4"><?php echo htmlspecialchars($sale['quantity']); ?></td>
+                                            <td class="px-3 py-4"><?php echo number_format($sale['price'], 2); ?></td>
+                                            <td class="px-3 py-4 font-semibold"><?php echo number_format($totalAmount, 2); ?></td>
+                                            <td class="px-3 py-4"><?php echo htmlspecialchars($sale['sale_date']); ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+
                 <div class="flex justify-center items-center mt-4 space-x-2">
                     <?php if ($page > 1): ?>
                         <a href="?page=1&month=<?php echo htmlspecialchars($month); ?>&year=<?php echo htmlspecialchars($year); ?>"

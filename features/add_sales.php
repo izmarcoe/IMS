@@ -139,7 +139,7 @@ $fname = $_SESSION['Fname'];
         <aside>
             <?php include '../features/sidebar.php' ?>
         </aside>
-        <div class="p-2 md:p-8 rounded-lg shadow-md w-full max-w-[95vw] mx-auto flex-col">
+        <div class="p-2 md:p-8 w-full max-w-[95vw] mx-auto flex-col">
             <div class="container mt-2 p-2 mx-auto">
                 <h2 class="text-4xl font-bold mb-2">Add New Sale</h2>
 

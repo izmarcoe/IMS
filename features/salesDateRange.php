@@ -63,6 +63,20 @@ $totalQuery->execute([
 ]);
 $totals = $totalQuery->fetch(PDO::FETCH_ASSOC);
 
+// Fetch ALL sales data for PDF (without pagination)
+$pdfQuery = $conn->prepare("
+    SELECT s.*, p.product_name, pc.category_name
+    FROM sales s
+    LEFT JOIN products p ON s.product_id = p.product_id
+    LEFT JOIN product_categories pc ON p.category_id = pc.id
+    WHERE s.sale_date BETWEEN :start_date AND :end_date 
+    ORDER BY s.sale_date
+");
+$pdfQuery->bindParam(':start_date', $startDate);
+$pdfQuery->bindParam(':end_date', $endDate);
+$pdfQuery->execute();
+$allSales = $pdfQuery->fetchAll(PDO::FETCH_ASSOC);
+
 $fname = $_SESSION['Fname'];
 ?>
 
@@ -80,102 +94,123 @@ $fname = $_SESSION['Fname'];
 </head>
 
 <body class="bg-gray-200">
-    <!-- Header -->
     <?php include '../features/header.php' ?>
-    <main class="flex">
-        <aside>
+    <main class="flex min-h-screen">
+        <!-- Sidebar - Hidden on mobile -->
+        <aside class=" w-64 bg-green-800">
             <?php include '../features/sidebar.php'; ?>
         </aside>
-        <div class="w-full">
-            <div class="container max-w-7xl mx-auto mt-8 px-4">
-                <h2 class="text-2xl font-bold mb-4">Sales Report from <?php echo htmlspecialchars($startDate); ?> to <?php echo htmlspecialchars($endDate); ?></h2>
-                <form method="GET" action="salesDateRange.php" class="mb-6">
-                    <div class="flex flex-wrap gap-4 max-w-2xl">
-                        <input type="date" id="start_date" name="start_date" class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" value="<?php echo htmlspecialchars($startDate); ?>" max="<?php echo date('Y-m-d'); ?>">
-                        <input type="date" id="end_date" name="end_date" class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" value="<?php echo htmlspecialchars($endDate); ?>" max="<?php echo date('Y-m-d'); ?>" min="<?php echo htmlspecialchars($startDate); ?>">
-                        <button type="submit" class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">View Sales</button>
+
+        <!-- Main Content - Full width on mobile -->
+        <div class="flex-1 p-4 sm:p-8 w-full">
+            <div class="max-w-7xl mx-auto">
+                <h2 class="text-xl sm:text-md font-bold mb-4">Sales Report from
+                     <?php echo htmlspecialchars($startDate); ?> to <?php echo htmlspecialchars($endDate); ?></h2>
+                
+                <!-- Responsive Form -->
+                <form method="GET" action="salesDateRange.php" class="mb-4 sm:mb-6 space-y-2 sm:space-y-4">
+                    <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
+                        <input type="date" id="start_date" name="start_date" 
+                            class="w-full sm:w-auto px-3 py-2 text-sm border rounded-lg" 
+                            value="<?php echo htmlspecialchars($startDate); ?>" 
+                            max="<?php echo date('Y-m-d'); ?>">
+                        <input type="date" id="end_date" name="end_date" 
+                            class="w-full sm:w-auto px-3 py-2 text-sm border rounded-lg" 
+                            value="<?php echo htmlspecialchars($endDate); ?>" 
+                            max="<?php echo date('Y-m-d'); ?>">
+                        <button type="submit" 
+                            class="w-full sm:w-auto bg-green-600 text-white px-4 py-2 text-sm rounded-lg hover:bg-green-700">
+                            View Sales
+                        </button>
                     </div>
-                    <div class="my-4">
-                        <button id="download-pdf" class="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">Download as PDF</button>
-                    </div>
+                    <button id="download-pdf" type="button" 
+                        class="w-full sm:w-auto bg-red-600 text-white px-4 py-2 text-sm rounded-lg hover:bg-red-700">
+                        Download as PDF
+                    </button>
                 </form>
-                <div class="bg-white rounded-lg shadow p-4 mb-4 grid grid-cols-2 gap-4">
-                    <div class="text-center">
-                        <p class="text-gray-600">Total Number of Sales</p>
-                        <p class="text-2xl font-bold"><?php echo number_format($totals['total_sales']); ?></p>
+
+                <!-- Stats Grid - Compact for mobile -->
+                <div class="bg-white rounded-lg shadow p-3 sm:p-4 mb-4 grid grid-cols-2 gap-2 sm:gap-4 max-w-2xl mx-auto">
+                    <div class="text-center p-2">
+                        <p class="text-gray-600 text-xs sm:text-sm">Total Number of Sales</p>
+                        <p class="text-lg sm:text-xl font-bold"><?php echo number_format($totals['total_sales']); ?></p>
                     </div>
-                    <div class="text-center">
-                        <p class="text-gray-600">Total Amount</p>
-                        <p class="text-2xl font-bold">₱<?php echo number_format($totals['total_amount'], 2); ?></p>
+                    <div class="text-center p-2">
+                        <p class="text-gray-600 text-xs sm:text-sm">Total Amount</p>
+                        <p class="text-lg sm:text-xl font-bold">₱<?php echo number_format($totals['total_amount'], 2); ?></p>
                     </div>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full border-collapse bg-white shadow-sm rounded-lg text-sm">
-                        <thead>
-                            <tr class="bg-gray-100">
-                                <th class="px-3 py-3 text-left">
-                                    <div class="flex items-center gap-1">
-                                        Sale ID
-                                    </div>
-                                </th>
-                                <th class="px-3 py-3 text-left">
-                                    <div class="flex items-center gap-1">
-                                        Product
-                                    </div>
-                                </th>
-                                <th class="px-3 py-3 text-left">
-                                    <div class="flex items-center gap-1">
-                                        Category
-                                    </div>
-                                </th>
-                                <th class="px-3 py-3 text-left">
-                                    <div class="flex items-center gap-1">
-                                        Quantity
-                                    </div>
-                                </th>
-                                <th class="px-3 py-3 text-left">
-                                    <div class="flex items-center gap-1">
-                                        Price
-                                    </div>
-                                </th>
-                                <th class="px-3 py-3 text-left">
-                                    <div class="flex items-center gap-1">
-                                        Total Amount
-                                    </div>
-                                </th>
-                                <th class="px-3 py-3 text-left">
-                                    <div class="flex items-center gap-1">
-                                        Sales Date
-                                    </div>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php if (empty($sales)): ?>
-                                <tr>
-                                    <td colspan="7" class="px-3 py-2 text-center text-gray-500">No sales found.</td>
-                                </tr>
-                            <?php else: ?>
-                                <?php foreach ($sales as $sale):
-                                    $totalAmount = $sale['quantity'] * $sale['price'];
-                                ?>
-                                    <tr class="border-t hover:bg-gray-50">
-                                        <td class="px-3 py-4"><?php echo htmlspecialchars($sale['id']); ?></td>
-                                        <td class="px-3 py-4"><?php echo htmlspecialchars($sale['product_name']); ?></td>
-                                        <td class="px-3 py-4"><?php echo htmlspecialchars($sale['category_name']); ?></td>
-                                        <td class="px-3 py-4"><?php echo htmlspecialchars($sale['quantity']); ?></td>
-                                        <td class="px-3 py-4"><?php echo number_format($sale['price'], 2); ?></td>
-                                        <td class="px-3 py-4 font-semibold"><?php echo number_format($totalAmount, 2); ?></td>
-                                        <td class="px-3 py-4"><?php echo htmlspecialchars($sale['sale_date']); ?></td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
                 </div>
 
-                <!-- Pagination controls -->
-                <div class="flex justify-center items-center mt-4 space-x-2">
+                <!-- Responsive Table Container -->
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full border-collapse bg-white shadow-sm rounded-lg text-sm">
+                            <thead>
+                                <tr class="bg-gray-100">
+                                    <th class="px-3 py-3 text-left">
+                                        <div class="flex items-center gap-1">
+                                            Sale ID
+                                        </div>
+                                    </th>
+                                    <th class="px-3 py-3 text-left">
+                                        <div class="flex items-center gap-1">
+                                            Product
+                                        </div>
+                                    </th>
+                                    <th class="px-3 py-3 text-left">
+                                        <div class="flex items-center gap-1">
+                                            Category
+                                        </div>
+                                    </th>
+                                    <th class="px-3 py-3 text-left">
+                                        <div class="flex items-center gap-1">
+                                            Quantity
+                                        </div>
+                                    </th>
+                                    <th class="px-3 py-3 text-left">
+                                        <div class="flex items-center gap-1">
+                                            Price
+                                        </div>
+                                    </th>
+                                    <th class="px-3 py-3 text-left">
+                                        <div class="flex items-center gap-1">
+                                            Total Amount
+                                        </div>
+                                    </th>
+                                    <th class="px-3 py-3 text-left">
+                                        <div class="flex items-center gap-1">
+                                            Sales Date
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (empty($sales)): ?>
+                                    <tr>
+                                        <td colspan="7" class="px-3 py-2 text-center text-gray-500">No sales found.</td>
+                                    </tr>
+                                <?php else: ?>
+                                    <?php foreach ($sales as $sale):
+                                        $totalAmount = $sale['quantity'] * $sale['price'];
+                                    ?>
+                                        <tr class="border-t hover:bg-gray-50">
+                                            <td class="px-3 py-4"><?php echo htmlspecialchars($sale['id']); ?></td>
+                                            <td class="px-3 py-4"><?php echo htmlspecialchars($sale['product_name']); ?></td>
+                                            <td class="px-3 py-4"><?php echo htmlspecialchars($sale['category_name']); ?></td>
+                                            <td class="px-3 py-4"><?php echo htmlspecialchars($sale['quantity']); ?></td>
+                                            <td class="px-3 py-4"><?php echo number_format($sale['price'], 2); ?></td>
+                                            <td class="px-3 py-4 font-semibold"><?php echo number_format($totalAmount, 2); ?></td>
+                                            <td class="px-3 py-4"><?php echo htmlspecialchars($sale['sale_date']); ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Responsive Pagination -->
+                <div class="flex flex-wrap justify-center gap-1 mt-4">
                     <?php if ($page > 1): ?>
                         <a href="?page=1&start_date=<?php echo htmlspecialchars($startDate); ?>&end_date=<?php echo htmlspecialchars($endDate); ?>"
                             class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
@@ -221,51 +256,79 @@ $fname = $_SESSION['Fname'];
     <script src="../JS/time.js"></script>
     <script>
         document.getElementById('download-pdf').addEventListener('click', function() {
-            const {
-                jsPDF
-            } = window.jspdf;
+            const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-
-            // Get date range from PHP
+            
+            // Get date range
             const startDate = '<?php echo $startDate; ?>';
             const endDate = '<?php echo $endDate; ?>';
             const startDateObj = new Date(startDate);
             const endDateObj = new Date(endDate);
-            const startDay = startDateObj.toLocaleString('default', {
-                day: '2-digit'
-            });
-            const startMonth = startDateObj.toLocaleString('default', {
-                month: 'long'
-            });
-            const startYear = startDateObj.getFullYear();
-            const endDay = endDateObj.toLocaleString('default', {
-                day: '2-digit'
-            });
-            const endMonth = endDateObj.toLocaleString('default', {
-                month: 'long'
-            });
-            const endYear = endDateObj.getFullYear();
+            
+            // Format dates
+            const formatDate = (date) => {
+                return date.toLocaleString('default', {
+                    month: 'long',
+                    day: '2-digit',
+                    year: 'numeric'
+                });
+            };
 
-            // Add title
+            // PDF Header
             doc.setFontSize(20);
             doc.text('ZEFMAVEN COMPUTER PARTS AND ACCESSORIES', doc.internal.pageSize.getWidth() / 2, 20, {
                 align: 'center'
             });
 
-            // Add date range
             doc.setFontSize(14);
-            doc.text(`Sales Report from ${startMonth} ${startDay}, ${startYear} to ${endMonth} ${endDay}, ${endYear}`, doc.internal.pageSize.getWidth() / 2, 30, {
+            doc.text(`Sales Report from ${formatDate(startDateObj)} to ${formatDate(endDateObj)}`, 
+                doc.internal.pageSize.getWidth() / 2, 30, {
                 align: 'center'
             });
 
-            // Add table
+            doc.text('Note: all AMOUNTS and PRICES are in PHP', doc.internal.pageSize.getWidth() / 2, 35, {
+                align: 'center'
+            });
+            // Table Data
+            const tableData = <?php echo json_encode($allSales); ?>;
+            const tableRows = tableData.map(sale => [
+                sale.id,
+                sale.product_name,
+                sale.category_name,
+                sale.quantity,
+                `${parseFloat(sale.price).toFixed(2)}`,
+                `${(sale.quantity * sale.price).toFixed(2)}`,
+                sale.sale_date
+            ]);
+
+            // Table Headers
+            const headers = [
+                ['Sale ID', 'Product', 'Category', 'Quantity', 'Price', 'Total Amount', 'Sale Date']
+            ];
+
+            // Generate Table
             doc.autoTable({
-                html: 'table',
-                startY: 40
+                head: headers,
+                body: tableRows,
+                startY: 40,
+                theme: 'grid',
+                headStyles: { fillColor: [76, 175, 80] },
+                didDrawPage: function(data) {
+                    // Footer on each page
+                    doc.setFontSize(10);
+                    doc.text(`Page ${data.pageNumber}`, data.settings.margin.left, 
+                        doc.internal.pageSize.height - 10);
+                }
             });
 
-            // Save the PDF
-            doc.save(`Sales Report: ${startMonth} ${startDay}, ${startYear} to ${endMonth} ${endDay}, ${endYear}.pdf`);
+            // Add summary after table
+            const finalY = doc.lastAutoTable.finalY || 40;
+            doc.setFontSize(12);
+            doc.text(`Total Number of Sales: <?php echo $totals['total_sales']; ?>`, 14, finalY + 10);
+            doc.text(`Total Amount: <?php echo number_format($totals['total_amount'], 2); ?>`, 14, finalY + 20);
+
+            // Save PDF
+            doc.save(`Sales_Report_${startDate}_to_${endDate}.pdf`);
         });
     </script>
 </body>
