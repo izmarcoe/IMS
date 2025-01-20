@@ -108,7 +108,7 @@ $fname = $_SESSION['Fname'];
         <!-- Main Content - Full width on mobile -->
         <div class="flex-1 p-4 sm:p-8 w-full">
             <div class="max-w-7xl mx-auto">
-                <h2 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Sales Report for <?php echo htmlspecialchars($month); ?> <?php echo htmlspecialchars($year); ?></h2>
+                <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3">Sales Report for <?php echo htmlspecialchars($month); ?> <?php echo htmlspecialchars($year); ?></h2>
 
                 <!-- Month/Year Selection Form -->
                 <form method="GET" class="mb-4 sm:mb-6 space-y-2 sm:space-y-4">

@@ -86,7 +86,7 @@ $fname = $_SESSION['Fname'];
         <div class="p-4 md:p-8 rounded-lg shadow-md w-full max-w-[95vw] mx-auto flex-col">
             <div class="container mt-3 p-4 mx-auto">
                 <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-2xl font-bold">Manage Products</h2>
+                    <h2 class="text-4xl sm:text-2xl font-bold">Manage Products</h2>
                     <div class="flex space-x-4">
                         <?php if ($_SESSION['user_role'] === 'admin'): ?>
                             <a href="archive-products-table.php" class="text-blue-500 hover:text-blue-700">

@@ -102,13 +102,13 @@ $fname = $_SESSION['Fname'];
         </aside>
 
         <!-- Main Content - Full width on mobile -->
-        <div class="flex-1 p-4 sm:p-8 w-full">
+        <div class="flex-1 p-2 sm:p-8 w-full">
             <div class="max-w-7xl mx-auto">
-                <h2 class="text-xl sm:text-md font-bold mb-4">Sales Report from
+                <h2 class="text-xl sm:text-md font-bold mb-2">Sales Report from
                      <?php echo htmlspecialchars($startDate); ?> to <?php echo htmlspecialchars($endDate); ?></h2>
                 
                 <!-- Responsive Form -->
-                <form method="GET" action="salesDateRange.php" class="mb-4 sm:mb-6 space-y-2 sm:space-y-4">
+                <form method="GET" action="salesDateRange.php" class="mb-2 sm:mb-6 space-y-2 sm:space-y-4">
                     <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
                         <input type="date" id="start_date" name="start_date" 
                             class="w-full sm:w-auto px-3 py-2 text-sm border rounded-lg" 
@@ -130,7 +130,7 @@ $fname = $_SESSION['Fname'];
                 </form>
 
                 <!-- Stats Grid - Compact for mobile -->
-                <div class="bg-white rounded-lg shadow p-3 sm:p-4 mb-4 grid grid-cols-2 gap-2 sm:gap-4 mx-auto">
+                <div class="bg-white rounded-lg shadow sm:p-4 mb-2 grid grid-cols-2 gap-2 sm:gap-4 mx-auto">
                     <div class="text-center p-2">
                         <p class="text-gray-600 text-xs sm:text-sm">Total Number of Sales</p>
                         <p class="text-lg sm:text-xl font-bold"><?php echo number_format($totals['total_sales']); ?></p>

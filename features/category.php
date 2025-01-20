@@ -9,7 +9,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] != 'employee' && $_S
 }
 
 // Pagination setup
-$limit = 8;
+$limit = 10;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
@@ -62,10 +62,10 @@ $fname = $_SESSION['Fname'];
         </aside>
 
         <!-- Table Container -->
-        <div class="p-4 md:p-8 rounded-lg shadow-md w-full max-w-[95vw] mx-auto flex-col">
+        <div class="p-4 md:p-8 rounded-lg shadow-md w-full max-w-[95vw] mx-auto flex-col lg:mt-5 ">
             <!-- Header with Add Button -->
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold">Categories</h2>
+                <h2 class="text-4xl sm:text-2xl font-bold">Manage Categories</h2>
                 <div class="flex items-center space-x-4">
                     <?php if ($_SESSION['user_role'] === 'admin'): ?>
                         <a href="archive-categories-table.php"
