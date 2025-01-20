@@ -130,7 +130,7 @@ $fname = $_SESSION['Fname'];
                 </form>
 
                 <!-- Stats Grid - Compact for mobile -->
-                <div class="bg-white rounded-lg shadow p-3 sm:p-4 mb-4 grid grid-cols-2 gap-2 sm:gap-4 max-w-2xl mx-auto">
+                <div class="bg-white rounded-lg shadow p-3 sm:p-4 mb-4 grid grid-cols-2 gap-2 sm:gap-4 mx-auto">
                     <div class="text-center p-2">
                         <p class="text-gray-600 text-xs sm:text-sm">Total Number of Sales</p>
                         <p class="text-lg sm:text-xl font-bold"><?php echo number_format($totals['total_sales']); ?></p>

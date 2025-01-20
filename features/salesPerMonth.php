@@ -141,8 +141,8 @@ $fname = $_SESSION['Fname'];
                     </button>
                 </form>
 
-                <!-- Stats Grid - Compact on mobile -->
-                <div class="bg-white rounded-lg shadow p-3 sm:p-4 mb-4 grid grid-cols-2 gap-2 sm:gap-4 max-w-2xl mx-auto">
+                <!-- Stats Grid -->
+                <div class="bg-white rounded-lg shadow p-3 sm:p-4 mb-4 grid grid-cols-2 gap-2 sm:gap-4">
                     <div class="text-center p-2">
                         <p class="text-gray-600 text-xs sm:text-sm">Total Number of Sales</p>
                         <p class="text-lg sm:text-xl font-bold"><?php echo number_format($totals['total_sales']); ?></p>
@@ -153,8 +153,8 @@ $fname = $_SESSION['Fname'];
                     </div>
                 </div>
 
-                <!-- Sales Table - Scrollable on mobile -->
-                <div class="bg-white rounded-lg shadow overflow-hidden max-w-3xl mx-auto">
+                <!-- Sales Table -->
+                <div class="bg-white rounded-lg shadow overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="w-full divide-y divide-gray-200 text-sm">
                             <thead class="bg-gray-50">
