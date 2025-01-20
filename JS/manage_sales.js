@@ -39,9 +39,11 @@ async function fetchProducts(searchTerm) {
 }
 
 function openEditModal(sale) {
+    const originalQuantity = parseInt(sale.quantity);
+
     document.getElementById('editSalesModal').classList.remove('hidden');
     
-    // Populate form fields with current sale data
+    // Set initial form values
     document.getElementById('editSaleId').value = sale.id;
     document.getElementById('editProductId').value = sale.product_id;
     document.getElementById('editProductName').value = sale.product_name;
@@ -49,16 +51,16 @@ function openEditModal(sale) {
     document.getElementById('editQuantity').value = sale.quantity;
     document.getElementById('editOldQuantity').value = sale.quantity;
     
-    originalQuantity = parseInt(sale.quantity);
-    
-    // Fetch current stock information
-    fetch(`../endpoint/get_product.php?id=${sale.product_id}`)
+    // Get current stock from products table
+    fetch(`../endpoint/get_product_stock.php?id=${sale.product_id}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                availableStock = parseInt(data.product.quantity) + originalQuantity;
+                // Add current sale quantity to available stock
+                const totalAvailableStock = parseInt(data.stock) + originalQuantity;
                 document.getElementById('stockInfo').textContent = 
-                    `Available Stock: ${availableStock}`;
+                    `Available Stock: ${totalAvailableStock}`;
+                document.getElementById('editQuantity').max = totalAvailableStock;
             }
         });
     

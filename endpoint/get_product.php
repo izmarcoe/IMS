@@ -24,36 +24,22 @@ if (!isset($_GET['id'])) {
 }
 
 try {
-    $stmt = $conn->prepare("
-        SELECT 
-            p.product_id,
-            p.product_name,
-            p.category_id,
-            p.price,
-            p.quantity,
-            pc.category_name
-        FROM products p
-        LEFT JOIN product_categories pc ON p.category_id = pc.id
-        WHERE p.product_id = :id
-    ");
-    
-    $stmt->bindParam(':id', $_GET['id'], PDO::PARAM_INT);
-    $stmt->execute();
-    
+    $stmt = $conn->prepare("SELECT product_id, product_name, price, quantity FROM products WHERE product_id = ?");
+    $stmt->execute([$_GET['id']]);
     $product = $stmt->fetch(PDO::FETCH_ASSOC);
     
-    if ($product === false) {
+    if ($product) {
+        echo json_encode([
+            'success' => true,
+            'product' => $product
+        ]);
+    } else {
         http_response_code(404);
         echo json_encode([
             'error' => 'Product not found'
         ]);
         exit();
     }
-
-    echo json_encode([
-        'success' => true,
-        'product' => $product
-    ]);
 
 } catch (PDOException $e) {
     http_response_code(500);
