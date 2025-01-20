@@ -673,6 +673,158 @@ if (isset($_SESSION['user_id'])) {
             validateForm();
         });
     </script>
+    <script>
+   // Email validation function
+function validateEmail(email) {
+    // Basic email regex pattern
+    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    
+    // Additional checks
+    const checks = {
+        hasAtSymbol: email.includes('@'),
+        hasValidLength: email.length >= 5 && email.length <= 254,
+        noConsecutiveDots: !/\.{2,}/.test(email),
+        noSpaces: !/\s/.test(email),
+        validPattern: emailPattern.test(email),
+        validLocalPart: email.split('@')[0]?.length <= 64,
+        validDomainPart: email.split('@')[1]?.length <= 255
+    };
+    
+    return {
+        isValid: Object.values(checks).every(check => check === true),
+        checks
+    };
+}
+
+// Add this to your existing DOMContentLoaded event listener
+document.addEventListener('DOMContentLoaded', function() {
+    const emailInput = document.getElementById('email');
+    const registerButton = document.getElementById('registerButton');
+    
+    // Create error message element
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'text-red-500 text-sm mt-1 hidden';
+    emailInput.parentNode.appendChild(errorDiv);
+
+    // Modify the generateQrCode function to check email validity first
+    const originalGenerateQrCode = window.generateQrCode;
+    window.generateQrCode = async function() {
+        const email = emailInput.value.trim();
+        const emailValidation = validateEmail(email);
+
+        if (!emailValidation.isValid) {
+            // Build detailed error message
+            let errorMessage = 'Please fix the following email issues:\n';
+            if (!emailValidation.checks.hasAtSymbol) {
+                errorMessage += '- Email must contain @ symbol\n';
+            }
+            if (!emailValidation.checks.hasValidLength) {
+                errorMessage += '- Email length must be between 5 and 254 characters\n';
+            }
+            if (!emailValidation.checks.noConsecutiveDots) {
+                errorMessage += '- Email cannot contain consecutive dots\n';
+            }
+            if (!emailValidation.checks.noSpaces) {
+                errorMessage += '- Email cannot contain spaces\n';
+            }
+            if (!emailValidation.checks.validLocalPart) {
+                errorMessage += '- Username part (before @) is too long\n';
+            }
+            if (!emailValidation.checks.validDomainPart) {
+                errorMessage += '- Domain part (after @) is too long\n';
+            }
+
+            await Swal.fire({
+                icon: 'error',
+                title: 'Invalid Email Address',
+                text: errorMessage,
+                confirmButtonColor: '#047857'
+            });
+            return false;
+        }
+
+        // Proceed with original QR code generation if email is valid
+        return originalGenerateQrCode.call(this);
+    };
+    
+    emailInput.addEventListener('input', function() {
+        const email = this.value.trim();
+        
+        if (email) {
+            const validation = validateEmail(email);
+            
+            if (!validation.isValid) {
+                // Show specific error messages based on which checks failed
+                let errorMessage = 'Please enter a valid email address. ';
+                if (!validation.checks.hasAtSymbol) {
+                    errorMessage += 'Email must contain @ symbol. ';
+                }
+                if (!validation.checks.hasValidLength) {
+                    errorMessage += 'Email length must be between 5 and 254 characters. ';
+                }
+                if (!validation.checks.noConsecutiveDots) {
+                    errorMessage += 'Email cannot contain consecutive dots. ';
+                }
+                if (!validation.checks.noSpaces) {
+                    errorMessage += 'Email cannot contain spaces. ';
+                }
+                if (!validation.checks.validLocalPart) {
+                    errorMessage += 'Local part (before @) too long. ';
+                }
+                if (!validation.checks.validDomainPart) {
+                    errorMessage += 'Domain part (after @) too long. ';
+                }
+                
+                // Show error styling
+                emailInput.style.borderColor = '#ef4444';
+                emailInput.style.boxShadow = '0 0 0 1px #ef4444';
+                errorDiv.textContent = errorMessage;
+                errorDiv.classList.remove('hidden');
+                registerButton.disabled = true;
+                
+            } else {
+                // If email format is valid, proceed with existing email check
+                fetch('./endpoint/check-email.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `email=${encodeURIComponent(email)}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.exists) {
+                        emailInput.style.borderColor = '#ef4444';
+                        emailInput.style.boxShadow = '0 0 0 1px #ef4444';
+                        errorDiv.textContent = 'This email is already registered.';
+                        errorDiv.classList.remove('hidden');
+                        registerButton.disabled = true;
+                    } else {
+                        emailInput.style.borderColor = '#10b981';
+                        emailInput.style.boxShadow = '';
+                        errorDiv.classList.add('hidden');
+                        validateForm(); // Re-run the main form validation
+                    }
+                })
+            }
+        } else {
+            // Reset styling for empty input
+            emailInput.style.borderColor = '';
+            emailInput.style.boxShadow = '';
+            errorDiv.classList.add('hidden');
+            validateForm();
+        }
+    });
+    
+    // Add blur event for additional validation
+    emailInput.addEventListener('blur', function() {
+        if (this.value.trim() && !validateEmail(this.value.trim()).isValid) {
+            this.style.borderColor = '#ef4444';
+            this.style.boxShadow = '0 0 0 1px #ef4444';
+        }
+    });
+});
+</script>
 </body>
 
 </html>
