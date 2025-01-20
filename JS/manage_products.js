@@ -199,49 +199,19 @@ document.addEventListener('DOMContentLoaded', function() {
 // Edit form submission handler
 document.getElementById('editProductForm').addEventListener('submit', function(e) {
     e.preventDefault();
+    
+    const formData = new FormData(this);
+    const updatedFields = {};
+    
+    // Only include fields that have values
+    formData.forEach((value, key) => {
+        if (value.trim() !== '') {
+            updatedFields[key] = value;
+        }
+    });
 
-    // Get form values for validation
-    const quantity = parseInt(document.getElementById('editQuantity').value);
-    const price = parseFloat(document.getElementById('editPrice').value);
-    const productName = document.getElementById('editProductName').value.trim();
-    const categoryId = document.getElementById('editCategory').value;
-
-    // Validate inputs
-    if (!productName) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Invalid Input',
-            text: 'Product name cannot be empty!'
-        });
-        return;
-    }
-
-    if (!categoryId) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Invalid Input',
-            text: 'Please select a category!'
-        });
-        return;
-    }
-
-    if (isNaN(price) || price <= 0) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Invalid Price',
-            text: 'Price must be greater than 0!'
-        });
-        return;
-    }
-
-    if (isNaN(quantity) || quantity < 0) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Invalid Quantity',
-            text: 'Quantity must be greater than or equal to 0!'
-        });
-        return;
-    }
+    // Always include product_id
+    updatedFields.product_id = document.getElementById('editProductId').value;
 
     // Show loading state
     Swal.fire({
@@ -253,36 +223,21 @@ document.getElementById('editProductForm').addEventListener('submit', function(e
         }
     });
 
-    const formData = new FormData(this);
-
+    // Send AJAX request
     fetch('../endpoint/edit_product.php', {
         method: 'POST',
-        body: formData
+        body: new FormData(this)
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Get product ID for targeting the correct row
-            const productId = formData.get('product_id');
-            
-            // Update table row immediately with form data
-            const row = document.querySelector(`tr[data-product-id="${productId}"]`);
-            if (row) {
-                row.querySelector('td:nth-child(1)').textContent = formData.get('product_name');
-                const categorySelect = document.getElementById('editCategory');
-                const selectedCategory = categorySelect.options[categorySelect.selectedIndex].text;
-                row.querySelector('td:nth-child(2)').textContent = selectedCategory;
-                row.querySelector('td:nth-child(3)').textContent = formData.get('price');
-                row.querySelector('td:nth-child(4)').textContent = formData.get('quantity');
-            }
-            
-            // Close modal and show success
-            document.getElementById('editProductModal').classList.add('hidden');
             Swal.fire({
                 icon: 'success',
                 title: 'Success!',
                 text: 'Product updated successfully',
                 confirmButtonColor: '#10B981'
+            }).then(() => {
+                window.location.reload();
             });
         } else {
             throw new Error(data.error || 'Failed to update product');
