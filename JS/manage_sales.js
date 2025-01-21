@@ -39,7 +39,7 @@ async function fetchProducts(searchTerm) {
 }
 
 function openEditModal(sale) {
-    const originalQuantity = parseInt(sale.quantity);
+    originalQuantity = parseInt(sale.quantity); // Changed this line
 
     document.getElementById('editSalesModal').classList.remove('hidden');
     
@@ -101,7 +101,8 @@ document.getElementById('editQuantity').addEventListener('input', async function
 
     const stockCheck = await checkStock(productId, quantity, originalQuantity);
     
-    if (!stockCheck.success || !stockCheck.isAvailable) {
+    // Only show error if quantity is strictly greater than available stock
+    if (!stockCheck.success || (stockCheck.availableStock < quantity)) {
         errorDiv.textContent = 'Exceeded available stock';
         errorDiv.classList.remove('hidden');
         this.classList.add('border-red-500');
