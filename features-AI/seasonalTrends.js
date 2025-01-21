@@ -80,52 +80,75 @@ class SeasonalTrendAnalyzer {
         const currentDate = new Date();
         const currentMonth = currentDate.getMonth();
         
-        // Get historical data
-        const previousYearData = this.yearlyPatterns['2024'] || [];
-        if (!previousYearData.length) return null;
+        // Get all available years
+        const years = Object.keys(this.yearlyPatterns).sort();
+        if (years.length === 0) return null;
 
-        // Calculate seasonal indices
-        const seasonalIndices = previousYearData.map((value, index) => {
-            const avg = previousYearData.reduce((a, b) => a + b, 0) / previousYearData.length;
-            return value / avg;
+        // Calculate weighted seasonal patterns across all years
+        const seasonalPatterns = Array(12).fill(0);
+        let totalWeight = 0;
+
+        years.forEach((year, index) => {
+            const weight = Math.pow(1.1, index); // More recent years get higher weight
+            totalWeight += weight;
+            
+            this.yearlyPatterns[year].forEach((value, month) => {
+                seasonalPatterns[month] += (value * weight);
+            });
         });
 
-        // Calculate growth trends
+        // Normalize patterns
+        seasonalPatterns.forEach((value, index) => {
+            seasonalPatterns[index] = value / totalWeight;
+        });
+
+        // Calculate growth trends using all years
         const growthRates = [];
-        for (let i = 1; i < previousYearData.length; i++) {
-            if (previousYearData[i-1] && previousYearData[i]) {
-                growthRates.push((previousYearData[i] - previousYearData[i-1]) / previousYearData[i-1]);
+        years.forEach(year => {
+            const yearData = this.yearlyPatterns[year];
+            for (let i = 1; i < yearData.length; i++) {
+                if (yearData[i-1] && yearData[i]) {
+                    growthRates.push((yearData[i] - yearData[i-1]) / yearData[i-1]);
+                }
             }
-        }
+        });
 
-        // Use weighted average for growth rate
-        const recentGrowthWeight = 0.3;
-        const historicalGrowthWeight = 0.2;
-        const recentGrowth = growthRates.slice(-3).reduce((a, b) => a + b, 0) / 1.5;
+        // Use conservative growth rate
+        const recentGrowthWeight = 0.5;  // Reduced weight
+        const historicalGrowthWeight = 0.1; // Reduced weight
+        const recentGrowth = growthRates.slice(-3).reduce((a, b) => a + b, 0) / 3;
         const historicalGrowth = growthRates.reduce((a, b) => a + b, 0) / growthRates.length;
-        const weightedGrowthRate = (recentGrowth * recentGrowthWeight) + (historicalGrowth * historicalGrowthWeight);
+        const weightedGrowthRate = Math.min(
+            (recentGrowth * recentGrowthWeight) + 
+            (historicalGrowth * historicalGrowthWeight),
+            0.05  // Maximum 5% growth rate
+        );
 
-        // Market adjustment factor (conservative estimate)
-        const marketAdjustment = 1.08; // 8% market growth
+        // Reduced market adjustment
+        const marketAdjustment = 1.02; // Reduced from 1.08
 
-        // Predict remaining months
+        // Predict with caps
         const predictions = Array(12).fill(null);
         for (let month = currentMonth + 1; month < 12; month++) {
-            const baseValue = previousYearData[month];
+            const baseValue = seasonalPatterns[month];
             const monthsAhead = month - currentMonth;
-            const seasonalFactor = seasonalIndices[month];
             
-            // Calculate prediction with multiple factors
-            predictions[month] = Math.round(
+            // Cap variance factor
+            const varianceFactor = Math.min(1 + (monthsAhead * 0.01), 1.05); // Max 5% variance
+
+            let prediction = Math.round(
                 baseValue * 
                 (1 + weightedGrowthRate) ** monthsAhead * 
-                seasonalFactor * 
-                marketAdjustment
+                marketAdjustment * 
+                varianceFactor
             );
 
-            // Add variance based on month position
-            const varianceFactor = 1 + (monthsAhead * 0.02); // Increase uncertainty with time
-            predictions[month] = Math.round(predictions[month] * varianceFactor);
+            // Sanity check - cap at 150% of historical average
+            const historicalAvg = years.reduce((sum, year) => 
+                sum + (this.yearlyPatterns[year][month] || 0), 0) / years.length;
+            prediction = Math.min(prediction, historicalAvg * 1.5);
+
+            predictions[month] = prediction;
         }
 
         return predictions;

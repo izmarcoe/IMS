@@ -159,8 +159,9 @@ $fname = $_SESSION['Fname'];
                             name="sale_date"
                             id="sale_date"
                             class="mt-2 w-60 h-12 text-lg px-4 py-2 rounded-lg border border-gray-300 
-               focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
-               transition duration-150 ease-in-out"
+           focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+           transition duration-150 ease-in-out"
+                            min="2023-01-01"
                             max="<?php echo date('Y-m-d'); ?>"
                             value="<?php echo date('Y-m-d'); ?>"
                             required>
@@ -220,9 +221,9 @@ $fname = $_SESSION['Fname'];
                             Grand Total: ₱<span id="grandTotal">0.00</span>
                         </div>
 
-                    <button type="submit" id="submitBtn" class="mt-4 px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600">
-                        Submit
-                    </button>
+                        <button type="submit" id="submitBtn" class="mt-4 px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+                            Submit
+                        </button>
                     </div>
 
                 </form>
@@ -291,7 +292,7 @@ $fname = $_SESSION['Fname'];
 
             function updateProductOptions() {
                 const allSelects = document.querySelectorAll('[name="products[]"]');
-                
+
                 // Get all currently selected values
                 allSelects.forEach(select => {
                     if (select.value) {
@@ -367,13 +368,13 @@ $fname = $_SESSION['Fname'];
                     if (this.dataset.previousValue) {
                         selectedProducts.delete(this.dataset.previousValue);
                     }
-                    
+
                     // Add new selection
                     if (this.value) {
                         selectedProducts.add(this.value);
                         this.dataset.previousValue = this.value;
                     }
-                    
+
                     updateProductOptions();
                     // ...rest of your existing change handler code...
                     const selectedOption = this.options[this.selectedIndex];

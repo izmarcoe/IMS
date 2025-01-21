@@ -123,14 +123,13 @@ $fname = $_SESSION['Fname'];
                         </select>
                         
                         <!-- Year Select -->
-                        <select name="year" class="w-full sm:w-auto px-3 sm:px-4 py-2 text-sm border border-gray-300 rounded-lg">
-                            <?php for ($y = date('Y'); $y >= 2000; $y--): ?>
+                        <select name="year" id="year_select" class="w-full sm:w-auto px-3 sm:px-4 py-2 text-sm border border-gray-300 rounded-lg">
+                            <?php for ($y = 2023; $y <= date('Y'); $y++): ?>
                                 <option value="<?php echo $y; ?>" <?php echo $y == $year ? 'selected' : ''; ?>>
                                     <?php echo $y; ?>
                                 </option>
                             <?php endfor; ?>
                         </select>
-
                         <button type="submit" class="w-full sm:w-auto bg-green-600 text-white px-3 sm:px-4 py-2 text-sm rounded-lg hover:bg-green-700">
                             View Sales
                         </button>
@@ -231,6 +230,28 @@ $fname = $_SESSION['Fname'];
         </div>
     </main>
     <script src="../JS/time.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const yearSelect = document.getElementById('year_select');
+            const currentYear = new Date().getFullYear();
+            const minYear = 2023;
+
+            // Clear existing options
+            yearSelect.innerHTML = '';
+
+            // Populate year select options
+            for (let year = currentYear; year >= minYear; year--) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
+            }
+
+            // Set selected year
+            const selectedYear = <?php echo json_encode($year); ?>;
+            yearSelect.value = selectedYear;
+        });
+    </script>
     <script>
         document.getElementById('download-pdf').addEventListener('click', function() {
             const { jsPDF } = window.jspdf;

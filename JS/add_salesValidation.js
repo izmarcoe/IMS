@@ -57,3 +57,10 @@ $(document).ready(function() {
         }
     });
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date().toISOString().split('T')[0];
+    const saleDateInput = document.getElementById('sale_date');
+    saleDateInput.setAttribute('max', today);
+    saleDateInput.setAttribute('min', '2023-01-01');
+});

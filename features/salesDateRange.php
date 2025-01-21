@@ -105,25 +105,25 @@ $fname = $_SESSION['Fname'];
         <div class="flex-1 p-2 sm:p-8 w-full">
             <div class="max-w-7xl mx-auto">
                 <h2 class="text-xl sm:text-md font-bold mb-2">Sales Report from
-                     <?php echo htmlspecialchars($startDate); ?> to <?php echo htmlspecialchars($endDate); ?></h2>
-                
+                    <?php echo htmlspecialchars($startDate); ?> to <?php echo htmlspecialchars($endDate); ?></h2>
+
                 <!-- Responsive Form -->
                 <form method="GET" action="salesDateRange.php" class="mb-2 sm:mb-6 space-y-2 sm:space-y-4">
                     <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
-                        <input type="date" id="start_date" name="start_date" 
-                            class="w-full sm:w-auto px-3 py-2 text-sm border rounded-lg" 
-                            value="<?php echo htmlspecialchars($startDate); ?>" 
+                        <input type="date" id="start_date" name="start_date"
+                            class="w-full sm:w-auto px-3 py-2 text-sm border rounded-lg"
+                            value="<?php echo htmlspecialchars($startDate); ?>"
                             max="<?php echo date('Y-m-d'); ?>">
-                        <input type="date" id="end_date" name="end_date" 
-                            class="w-full sm:w-auto px-3 py-2 text-sm border rounded-lg" 
-                            value="<?php echo htmlspecialchars($endDate); ?>" 
+                        <input type="date" id="end_date" name="end_date"
+                            class="w-full sm:w-auto px-3 py-2 text-sm border rounded-lg"
+                            value="<?php echo htmlspecialchars($endDate); ?>"
                             max="<?php echo date('Y-m-d'); ?>">
-                        <button type="submit" 
+                        <button type="submit"
                             class="w-full sm:w-auto bg-green-600 text-white px-4 py-2 text-sm rounded-lg hover:bg-green-700">
                             View Sales
                         </button>
                     </div>
-                    <button id="download-pdf" type="button" 
+                    <button id="download-pdf" type="button"
                         class="w-full sm:w-auto bg-red-600 text-white px-4 py-2 text-sm rounded-lg hover:bg-red-700">
                         Download as PDF
                     </button>
@@ -253,18 +253,38 @@ $fname = $_SESSION['Fname'];
             document.getElementById('end_date').setAttribute('min', startDate);
         });
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            const startDateInput = document.getElementById('start_date');
+            const endDateInput = document.getElementById('end_date');
+            const minDate = '2023-01-01';
+
+            if (startDateInput) {
+                startDateInput.setAttribute('max', today);
+                startDateInput.setAttribute('min', minDate);
+            }
+
+            if (endDateInput) {
+                endDateInput.setAttribute('max', today);
+                endDateInput.setAttribute('min', minDate);
+            }
+        });
+    </script>
     <script src="../JS/time.js"></script>
     <script>
         document.getElementById('download-pdf').addEventListener('click', function() {
-            const { jsPDF } = window.jspdf;
+            const {
+                jsPDF
+            } = window.jspdf;
             const doc = new jsPDF();
-            
+
             // Get date range
             const startDate = '<?php echo $startDate; ?>';
             const endDate = '<?php echo $endDate; ?>';
             const startDateObj = new Date(startDate);
             const endDateObj = new Date(endDate);
-            
+
             // Format dates
             const formatDate = (date) => {
                 return date.toLocaleString('default', {
@@ -281,10 +301,10 @@ $fname = $_SESSION['Fname'];
             });
 
             doc.setFontSize(14);
-            doc.text(`Sales Report from ${formatDate(startDateObj)} to ${formatDate(endDateObj)}`, 
+            doc.text(`Sales Report from ${formatDate(startDateObj)} to ${formatDate(endDateObj)}`,
                 doc.internal.pageSize.getWidth() / 2, 30, {
-                align: 'center'
-            });
+                    align: 'center'
+                });
 
             doc.text('Note: all AMOUNTS and PRICES are in PHP', doc.internal.pageSize.getWidth() / 2, 35, {
                 align: 'center'
@@ -312,11 +332,13 @@ $fname = $_SESSION['Fname'];
                 body: tableRows,
                 startY: 40,
                 theme: 'grid',
-                headStyles: { fillColor: [76, 175, 80] },
+                headStyles: {
+                    fillColor: [76, 175, 80]
+                },
                 didDrawPage: function(data) {
                     // Footer on each page
                     doc.setFontSize(10);
-                    doc.text(`Page ${data.pageNumber}`, data.settings.margin.left, 
+                    doc.text(`Page ${data.pageNumber}`, data.settings.margin.left,
                         doc.internal.pageSize.height - 10);
                 }
             });

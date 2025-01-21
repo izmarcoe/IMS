@@ -94,9 +94,10 @@ $fname = $_SESSION['Fname'];
 
                 <!-- Date Selection Form -->
                 <form method="GET" action="salesperday.php" class="mb-4 sm:mb-6 space-y-2 sm:space-y-4">
-                    <div class="flex flex-col sm:flex-row gap-2 sm:space-x-4 items-start sm:items-center">
+                <div class="flex flex-col sm:flex-row gap-2 sm:space-x-4 items-start sm:items-center">
                         <input type="date"
                             name="date"
+                            id="sale_date"
                             value="<?php echo htmlspecialchars($date); ?>"
                             max="<?php echo date('Y-m-d'); ?>"
                             class="w-full sm:w-auto px-3 sm:px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
@@ -309,6 +310,16 @@ $fname = $_SESSION['Fname'];
             doc.save(`Sales_Report_${formattedDate}.pdf`);
         });
     </script>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            const saleDateInput = document.getElementById('sale_date');
+            if (saleDateInput) {
+                saleDateInput.setAttribute('max', today);
+                saleDateInput.setAttribute('min', '2023-01-01');
+            }
+        });
+        </script>
 </body>
 
 </html>

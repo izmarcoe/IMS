@@ -151,15 +151,15 @@
                         x-transition:enter-start="opacity-0 transform scale-95"
                         x-transition:enter-end="opacity-100 transform scale-100"
                         class="ml-8 mt-2 space-y-2">
-                        <a class="block py-2 px-4 rounded-lg text-lg hover:bg-green-700 transition-all duration-200 <?php echo ($current_page == 'salesPerDay.php') ? 'bg-green-800' : ''; ?>"
-                            href="../features/salesPerDay.php">Sales by Date</a>
+                        <a class="block py-2 px-4 rounded-lg text-lg hover:bg-green-700 transition-all duration-200  <?php echo ($current_page == 'salesPerDay.php') ? 'bg-green-800' : ''; ?>"
+                            href="../features/salesPerDay.php"><img src="../icons/salesreport.svg" class="h-5 w-5 mr-3 inline">Sales by Date</a>
                         <a class="block py-2 px-4 rounded-lg text-lg hover:bg-green-700 transition-all duration-200 <?php echo ($current_page == 'salesPerMonth.php') ? 'bg-green-800' : ''; ?>"
-                            href="../features/salesPerMonth.php">Sales by Month</a>
+                            href="../features/salesPerMonth.php"><img src="../icons/salesreport.svg" class="h-5 w-5 mr-3 inline">Sales by Month</a>
                         <a class="block py-2 px-4 rounded-lg text-lg hover:bg-green-700 transition-all duration-200 <?php echo ($current_page == 'salesDateRange.php') ? 'bg-green-800' : ''; ?>"
-                            href="../features/salesDateRange.php">Sales by Date Range</a>
+                            href="../features/salesDateRange.php"><img src="../icons/salesreport.svg" class="h-5 w-5 mr-3 inline">Sales by Date Range</a>
                         <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'admin'): ?>
                             <a class="block py-2 px-4 rounded-lg text-lg hover:bg-green-700 transition-all duration-200 <?php echo ($current_page == 'predictive_forecast.php') ? 'bg-green-800' : ''; ?>"
-                                href="../features-AI/predictive_forecast.php">Predictive Analytics</a>
+                                href="../features-AI/predictive_forecast.php"><img src="../icons/salesreport.svg" class="h-5 w-5 mr-3 inline">Predictive Analytics</a>
                         <?php endif; ?>
                     </div>
                 </div>
