@@ -1042,10 +1042,6 @@ video {
   width: max-content;
 }
 
-.w-\[800px\] {
-  width: 800px;
-}
-
 .min-w-\[300px\] {
   min-width: 300px;
 }
@@ -1715,6 +1711,10 @@ video {
   padding-left: 2.5rem;
 }
 
+.pl-6 {
+  padding-left: 1.5rem;
+}
+
 .pr-10 {
   padding-right: 2.5rem;
 }
@@ -1729,10 +1729,6 @@ video {
 
 .pt-5 {
   padding-top: 1.25rem;
-}
-
-.pl-6 {
-  padding-left: 1.5rem;
 }
 
 .text-left {

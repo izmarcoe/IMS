@@ -41,13 +41,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $mail->isSMTP();
             $mail->Host = 'smtp.gmail.com';
             $mail->SMTPAuth = true;
-            $mail->Username = 'marcobarraquio091504@gmail.com';
-            $mail->Password = 'iftu cfpk swld mrwi';
+            $mail->Username = 'zefmaven@gmail.com';
+            $mail->Password = 'pwhx lrbm nfmm rcvd';
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
             $mail->Port = 465;
             
             // Recipients
-            $mail->setFrom('marcobarraquio091504@gmail.com', 'ZEF Maven');
+            $mail->setFrom('zefmaven@gmail.com', 'Zefmaven computer parts and accessories');
             $mail->addAddress($email);
             
             // Content

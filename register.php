@@ -394,6 +394,60 @@ if (isset($_SESSION['user_id'])) {
                     return; // Stop execution if terms not accepted
                 }
 
+                // Validate email first
+                const emailInput = document.getElementById('email');
+                const email = emailInput.value.trim();
+                const emailValidation = validateEmail(email);
+
+                if (!emailValidation.isValid) {
+                    // Build detailed error message
+                    let errorMessage = 'Please fix the following email issues:\n';
+                    if (!emailValidation.checks.hasAtSymbol) errorMessage += '- Email must contain @ symbol\n';
+                    if (!emailValidation.checks.hasValidLength) errorMessage += '- Email length must be between 5 and 254 characters\n';
+                    if (!emailValidation.checks.noConsecutiveDots) errorMessage += '- Email cannot contain consecutive dots\n';
+                    if (!emailValidation.checks.noSpaces) errorMessage += '- Email cannot contain spaces\n';
+                    if (!emailValidation.checks.validPattern) errorMessage += '- Invalid email format\n';
+
+                    await Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Email Address',
+                        text: errorMessage,
+                        confirmButtonColor: '#047857'
+                    });
+                    return;
+                }
+
+                // Check if email exists in database
+                try {
+                    const response = await fetch('./endpoint/check-email.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `email=${encodeURIComponent(email)}`
+                    });
+                    const data = await response.json();
+                    
+                    if (data.exists) {
+                        await Swal.fire({
+                            icon: 'error',
+                            title: 'Email Already Exists',
+                            text: 'Please use a different email address',
+                            confirmButtonColor: '#047857'
+                        });
+                        return;
+                    }
+                } catch (error) {
+                    console.error('Error checking email:', error);
+                    await Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Could not validate email address. Please try again.',
+                        confirmButtonColor: '#047857'
+                    });
+                    return;
+                }
+
                 const fname = document.getElementById('firstName').value; // Changed from fname to firstName
                 const lname = document.getElementById('lastName').value; // Changed from lname to lastName
 
