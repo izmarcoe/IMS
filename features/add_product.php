@@ -21,8 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $error = "Category is required";
     } elseif ($price <= 0 || $price > 99999.00) {
         $error = "Price must be between 0 and 99,999.00 pesos";
-    } elseif ($quantity <= 0 || $quantity > 999) {
-        $error = "Quantity must be between 1 and 999";
+    } elseif ($quantity <= 0 || $quantity > 99) {
+        $error = "Quantity must be between 1 and 99";
     } else {
         try {
             // Check if product with the same name and price already exists

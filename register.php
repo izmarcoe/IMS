@@ -197,15 +197,89 @@ if (isset($_SESSION['user_id'])) {
             <div class="mt-3 text-center">
                 <h3 class="text-lg leading-6 font-medium text-gray-900">Terms and Conditions</h3>
                 <div class="mt-2 px-7 py-3 text-left">
-                    <p class="text-sm text-gray-500"> 
-    <!--
-                        1. All users must maintain confidentiality of their account credentials.<br>
-                        2. Users are responsible for all activities under their account.<br>
-                        3. Unauthorized access attempts are strictly prohibited.<br>
-                        4. The system must be used only for authorized business purposes.<br>
-                        5. Users must comply with all data protection regulations.
-                        -->
-                    </p>
+                    <div class="text-sm text-gray-600 max-h-60 overflow-y-auto">
+                        <h2 class="font-semibold text-base text-gray-700">Terms and Conditions</h2>
+                        <p class="mb-4">
+                            Welcome to the ZefMaven Inventory Management System. By using our system, you agree to comply with and be bound by the following terms and conditions. Please read them carefully before accessing or using our services.
+                        </p>
+
+                        <div class="space-y-4">
+                            <section>
+                                <h3 class="font-semibold">1. Acceptance of Terms</h3>
+                                <p>By accessing or using the ZefMaven Inventory Management System, you agree to these Terms and Conditions. If you do not agree to these terms, you must not use the system.</p>
+                            </section>
+
+                            <section>
+                                <h3 class="font-semibold">2. Use of the System</h3>
+                                <p>The system is intended for managing and tracking inventory items for ZefMaven Computer Shop and Accessories. Users are required to register and authenticate via QR code to access the system.</p>
+                                <p class="mt-2">You agree to:</p>
+                                <ul class="list-disc pl-6 mt-1">
+                                    <li>Use the system only for lawful purposes.</li>
+                                    <li>Not engage in activities that could harm, disrupt, or interfere with the functioning of the system.</li>
+                                </ul>
+                            </section>
+
+                            <section>
+                                <h3 class="font-semibold">3. Registration and Authentication</h3>
+                                <ul class="list-disc pl-6">
+                                    <li>Users must complete the registration process, providing accurate information.</li>
+                                    <li>The system uses QR code authentication to verify users and grant access to the inventory management features.</li>
+                                    <li>You are responsible for maintaining the confidentiality of your login details and QR code credentials.</li>
+                                </ul>
+                            </section>
+
+                            <section>
+                                <h3 class="font-semibold">4. Privacy and Data Protection</h3>
+                                <ul class="list-disc pl-6">
+                                    <li>We value your privacy and are committed to protecting your personal information.</li>
+                                    <li>Any personal information provided during the registration or use of the system will be handled according to our Privacy Policy.</li>
+                                    <li>By using this system, you consent to the collection and use of your data as described in our Privacy Policy.</li>
+                                </ul>
+                            </section>
+                            <section>
+                                <h3 class="font-semibold">5. Predictive Analytics</h3>
+                                <p>The system integrates predictive analytics for inventory tracking. While the system aims to provide accurate predictions, users acknowledge that the accuracy of predictions depends on various factors and may not always reflect real-time changes or future trends.</p>
+                            </section>
+
+                            <section>
+                                <h3 class="font-semibold">6. System Availability</h3>
+                                <p>The system may experience downtime or temporary unavailability due to maintenance, updates, or unforeseen technical issues. We will make reasonable efforts to ensure the system is available at all times but cannot guarantee continuous access.</p>
+                                <p class="mt-2">Users will be notified in advance of any planned maintenance.</p>
+                            </section>
+
+                            <section>
+                                <h3 class="font-semibold">7. User Obligations</h3>
+                                <p>You agree to:</p>
+                                <ul class="list-disc pl-6 mt-1">
+                                    <li>Keep your account information up to date.</li>
+                                    <li>Not share your access credentials with unauthorized persons.</li>
+                                    <li>Not attempt to bypass system security or access areas that are not authorized.</li>
+                                </ul>
+                            </section>
+                            <section>
+                                <h3 class="font-semibold">8. Limitation of Liability</h3>
+                                <ul class="list-disc pl-6">
+                                    <li>ZefMaven Computer Shop and Accessories will not be held liable for any damages resulting from the use or inability to use the system.</li>
+                                    <li>We are not responsible for any loss of data, disruption of business, or any indirect or consequential damages caused by system errors or malfunctions.</li>
+                                </ul>
+                            </section>
+
+                            <section>
+                                <h3 class="font-semibold">9. Intellectual Property</h3>
+                                <p>The content and software used in the ZefMaven Inventory Management System are protected by intellectual property laws. Users agree not to copy, modify, or distribute any part of the system without explicit permission.</p>
+                            </section>
+
+                            <section>
+                                <h3 class="font-semibold">10. Termination</h3>
+                                <p>We reserve the right to suspend or terminate your access to the system if you violate any terms in this agreement. Upon termination, your access to the system will be revoked.</p>
+                            </section>
+
+                            <section>
+                                <h3 class="font-semibold">11. Changes to the Terms and Conditions</h3>
+                                <p>ZefMaven reserves the right to modify or update these Terms and Conditions at any time. Any changes will be posted on this page with an updated effective date. It is your responsibility to review these terms periodically.</p>
+                            </section>
+                        </div>
+                    </div>
                 </div>
                 <div class="items-center px-4 py-3">
                     <button id="closeTermsModal" class="px-4 py-2 bg-green-700 text-white text-base font-medium rounded-md shadow-sm hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500">
@@ -607,7 +681,7 @@ if (isset($_SESSION['user_id'])) {
             const termsCheckbox = document.getElementById('termsCheckbox');
             const password = document.getElementById('password');
             const confirmPassword = document.getElementById('confirmPassword');
-            
+
             // Disable button initially
             registerButton.disabled = true;
 
@@ -628,12 +702,12 @@ if (isset($_SESSION['user_id'])) {
                 });
 
                 // Check password requirements
-                const passwordValid = password.value.length >= 8 && 
-                                    /[A-Z]/.test(password.value) && 
-                                    /[a-z]/.test(password.value) && 
-                                    /[0-9]/.test(password.value) && 
-                                    /[^A-Za-z0-9]/.test(password.value);
-                
+                const passwordValid = password.value.length >= 8 &&
+                    /[A-Z]/.test(password.value) &&
+                    /[a-z]/.test(password.value) &&
+                    /[0-9]/.test(password.value) &&
+                    /[^A-Za-z0-9]/.test(password.value);
+
                 // Check passwords match
                 const passwordsMatch = password.value === confirmPassword.value;
 
@@ -674,157 +748,157 @@ if (isset($_SESSION['user_id'])) {
         });
     </script>
     <script>
-   // Email validation function
-function validateEmail(email) {
-    // Basic email regex pattern
-    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    
-    // Additional checks
-    const checks = {
-        hasAtSymbol: email.includes('@'),
-        hasValidLength: email.length >= 5 && email.length <= 254,
-        noConsecutiveDots: !/\.{2,}/.test(email),
-        noSpaces: !/\s/.test(email),
-        validPattern: emailPattern.test(email),
-        validLocalPart: email.split('@')[0]?.length <= 64,
-        validDomainPart: email.split('@')[1]?.length <= 255
-    };
-    
-    return {
-        isValid: Object.values(checks).every(check => check === true),
-        checks
-    };
-}
+        // Email validation function
+        function validateEmail(email) {
+            // Basic email regex pattern
+            const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-// Add this to your existing DOMContentLoaded event listener
-document.addEventListener('DOMContentLoaded', function() {
-    const emailInput = document.getElementById('email');
-    const registerButton = document.getElementById('registerButton');
-    
-    // Create error message element
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'text-red-500 text-sm mt-1 hidden';
-    emailInput.parentNode.appendChild(errorDiv);
+            // Additional checks
+            const checks = {
+                hasAtSymbol: email.includes('@'),
+                hasValidLength: email.length >= 5 && email.length <= 254,
+                noConsecutiveDots: !/\.{2,}/.test(email),
+                noSpaces: !/\s/.test(email),
+                validPattern: emailPattern.test(email),
+                validLocalPart: email.split('@')[0]?.length <= 64,
+                validDomainPart: email.split('@')[1]?.length <= 255
+            };
 
-    // Modify the generateQrCode function to check email validity first
-    const originalGenerateQrCode = window.generateQrCode;
-    window.generateQrCode = async function() {
-        const email = emailInput.value.trim();
-        const emailValidation = validateEmail(email);
-
-        if (!emailValidation.isValid) {
-            // Build detailed error message
-            let errorMessage = 'Please fix the following email issues:\n';
-            if (!emailValidation.checks.hasAtSymbol) {
-                errorMessage += '- Email must contain @ symbol\n';
-            }
-            if (!emailValidation.checks.hasValidLength) {
-                errorMessage += '- Email length must be between 5 and 254 characters\n';
-            }
-            if (!emailValidation.checks.noConsecutiveDots) {
-                errorMessage += '- Email cannot contain consecutive dots\n';
-            }
-            if (!emailValidation.checks.noSpaces) {
-                errorMessage += '- Email cannot contain spaces\n';
-            }
-            if (!emailValidation.checks.validLocalPart) {
-                errorMessage += '- Username part (before @) is too long\n';
-            }
-            if (!emailValidation.checks.validDomainPart) {
-                errorMessage += '- Domain part (after @) is too long\n';
-            }
-
-            await Swal.fire({
-                icon: 'error',
-                title: 'Invalid Email Address',
-                text: errorMessage,
-                confirmButtonColor: '#047857'
-            });
-            return false;
+            return {
+                isValid: Object.values(checks).every(check => check === true),
+                checks
+            };
         }
 
-        // Proceed with original QR code generation if email is valid
-        return originalGenerateQrCode.call(this);
-    };
-    
-    emailInput.addEventListener('input', function() {
-        const email = this.value.trim();
-        
-        if (email) {
-            const validation = validateEmail(email);
-            
-            if (!validation.isValid) {
-                // Show specific error messages based on which checks failed
-                let errorMessage = 'Please enter a valid email address. ';
-                if (!validation.checks.hasAtSymbol) {
-                    errorMessage += 'Email must contain @ symbol. ';
+        // Add this to your existing DOMContentLoaded event listener
+        document.addEventListener('DOMContentLoaded', function() {
+            const emailInput = document.getElementById('email');
+            const registerButton = document.getElementById('registerButton');
+
+            // Create error message element
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'text-red-500 text-sm mt-1 hidden';
+            emailInput.parentNode.appendChild(errorDiv);
+
+            // Modify the generateQrCode function to check email validity first
+            const originalGenerateQrCode = window.generateQrCode;
+            window.generateQrCode = async function() {
+                const email = emailInput.value.trim();
+                const emailValidation = validateEmail(email);
+
+                if (!emailValidation.isValid) {
+                    // Build detailed error message
+                    let errorMessage = 'Please fix the following email issues:\n';
+                    if (!emailValidation.checks.hasAtSymbol) {
+                        errorMessage += '- Email must contain @ symbol\n';
+                    }
+                    if (!emailValidation.checks.hasValidLength) {
+                        errorMessage += '- Email length must be between 5 and 254 characters\n';
+                    }
+                    if (!emailValidation.checks.noConsecutiveDots) {
+                        errorMessage += '- Email cannot contain consecutive dots\n';
+                    }
+                    if (!emailValidation.checks.noSpaces) {
+                        errorMessage += '- Email cannot contain spaces\n';
+                    }
+                    if (!emailValidation.checks.validLocalPart) {
+                        errorMessage += '- Username part (before @) is too long\n';
+                    }
+                    if (!emailValidation.checks.validDomainPart) {
+                        errorMessage += '- Domain part (after @) is too long\n';
+                    }
+
+                    await Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Email Address',
+                        text: errorMessage,
+                        confirmButtonColor: '#047857'
+                    });
+                    return false;
                 }
-                if (!validation.checks.hasValidLength) {
-                    errorMessage += 'Email length must be between 5 and 254 characters. ';
-                }
-                if (!validation.checks.noConsecutiveDots) {
-                    errorMessage += 'Email cannot contain consecutive dots. ';
-                }
-                if (!validation.checks.noSpaces) {
-                    errorMessage += 'Email cannot contain spaces. ';
-                }
-                if (!validation.checks.validLocalPart) {
-                    errorMessage += 'Local part (before @) too long. ';
-                }
-                if (!validation.checks.validDomainPart) {
-                    errorMessage += 'Domain part (after @) too long. ';
-                }
-                
-                // Show error styling
-                emailInput.style.borderColor = '#ef4444';
-                emailInput.style.boxShadow = '0 0 0 1px #ef4444';
-                errorDiv.textContent = errorMessage;
-                errorDiv.classList.remove('hidden');
-                registerButton.disabled = true;
-                
-            } else {
-                // If email format is valid, proceed with existing email check
-                fetch('./endpoint/check-email.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `email=${encodeURIComponent(email)}`
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.exists) {
+
+                // Proceed with original QR code generation if email is valid
+                return originalGenerateQrCode.call(this);
+            };
+
+            emailInput.addEventListener('input', function() {
+                const email = this.value.trim();
+
+                if (email) {
+                    const validation = validateEmail(email);
+
+                    if (!validation.isValid) {
+                        // Show specific error messages based on which checks failed
+                        let errorMessage = 'Please enter a valid email address. ';
+                        if (!validation.checks.hasAtSymbol) {
+                            errorMessage += 'Email must contain @ symbol. ';
+                        }
+                        if (!validation.checks.hasValidLength) {
+                            errorMessage += 'Email length must be between 5 and 254 characters. ';
+                        }
+                        if (!validation.checks.noConsecutiveDots) {
+                            errorMessage += 'Email cannot contain consecutive dots. ';
+                        }
+                        if (!validation.checks.noSpaces) {
+                            errorMessage += 'Email cannot contain spaces. ';
+                        }
+                        if (!validation.checks.validLocalPart) {
+                            errorMessage += 'Local part (before @) too long. ';
+                        }
+                        if (!validation.checks.validDomainPart) {
+                            errorMessage += 'Domain part (after @) too long. ';
+                        }
+
+                        // Show error styling
                         emailInput.style.borderColor = '#ef4444';
                         emailInput.style.boxShadow = '0 0 0 1px #ef4444';
-                        errorDiv.textContent = 'This email is already registered.';
+                        errorDiv.textContent = errorMessage;
                         errorDiv.classList.remove('hidden');
                         registerButton.disabled = true;
+
                     } else {
-                        emailInput.style.borderColor = '#10b981';
-                        emailInput.style.boxShadow = '';
-                        errorDiv.classList.add('hidden');
-                        validateForm(); // Re-run the main form validation
+                        // If email format is valid, proceed with existing email check
+                        fetch('./endpoint/check-email.php', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                                body: `email=${encodeURIComponent(email)}`
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.exists) {
+                                    emailInput.style.borderColor = '#ef4444';
+                                    emailInput.style.boxShadow = '0 0 0 1px #ef4444';
+                                    errorDiv.textContent = 'This email is already registered.';
+                                    errorDiv.classList.remove('hidden');
+                                    registerButton.disabled = true;
+                                } else {
+                                    emailInput.style.borderColor = '#10b981';
+                                    emailInput.style.boxShadow = '';
+                                    errorDiv.classList.add('hidden');
+                                    validateForm(); // Re-run the main form validation
+                                }
+                            })
                     }
-                })
-            }
-        } else {
-            // Reset styling for empty input
-            emailInput.style.borderColor = '';
-            emailInput.style.boxShadow = '';
-            errorDiv.classList.add('hidden');
-            validateForm();
-        }
-    });
-    
-    // Add blur event for additional validation
-    emailInput.addEventListener('blur', function() {
-        if (this.value.trim() && !validateEmail(this.value.trim()).isValid) {
-            this.style.borderColor = '#ef4444';
-            this.style.boxShadow = '0 0 0 1px #ef4444';
-        }
-    });
-});
-</script>
+                } else {
+                    // Reset styling for empty input
+                    emailInput.style.borderColor = '';
+                    emailInput.style.boxShadow = '';
+                    errorDiv.classList.add('hidden');
+                    validateForm();
+                }
+            });
+
+            // Add blur event for additional validation
+            emailInput.addEventListener('blur', function() {
+                if (this.value.trim() && !validateEmail(this.value.trim()).isValid) {
+                    this.style.borderColor = '#ef4444';
+                    this.style.boxShadow = '0 0 0 1px #ef4444';
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

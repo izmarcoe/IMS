@@ -354,3 +354,27 @@ function createModificationRequest(product) {
         });
     });
 }
+
+function validatePrice(input) {
+    const price = parseFloat(input.value);
+    const errorDiv = document.getElementById('priceError');
+    
+    if (price < 1 || price > 99999) {
+        errorDiv.textContent = 'Price must be between ₱1 and ₱99,999';
+        errorDiv.classList.remove('hidden');
+        input.classList.add('border-red-500');
+        return false;
+    } else {
+        errorDiv.classList.add('hidden');
+        input.classList.remove('border-red-500');
+        return true;
+    }
+}
+
+// Add to form submit handler
+document.getElementById('editProductForm').addEventListener('submit', function(e) {
+    const price = document.getElementById('editPrice');
+    if (!validatePrice(price)) {
+        e.preventDefault();
+    }
+});

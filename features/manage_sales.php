@@ -256,12 +256,14 @@ $lname = $_SESSION['Lname'];
                                     <div class="flex items-center gap-1">
                                         Sale Date
                                         <div class="flex flex-col text-xs text-gray-400 ml-1">
+                <!--
                                             <a href="?sort=date_asc" class="hover:text-black">
                                                 <i class="fas fa-caret-up"></i>
                                             </a>
                                             <a href="?sort=date_desc" class="hover:text-black" style="margin-top:-3px;">
                                                 <i class="fas fa-caret-down"></i>
                                             </a>
+                                            -->
                                         </div>
                                     </div>
                                 </th>

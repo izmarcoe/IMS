@@ -280,8 +280,8 @@ $fname = $_SESSION['Fname'];
                     </div>
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="editPrice">Price</label>
-                        <input type="number" step="0.01" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            id="editPrice" name="price" min="1" required>
+                        <input type="number" step="1" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            id="editPrice" name="price" min="1" max="99999" required>
                     </div>
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="editQuantity">
@@ -390,6 +390,22 @@ $fname = $_SESSION['Fname'];
                 });
                 document.getElementById('editQuantity').value = 1;
                 return false;
+            }
+        });
+
+        document.getElementById('editPrice').addEventListener('change', function(e) {
+            const price = parseFloat(this.value);
+            
+            if (isNaN(price) || price < 1 || price > 99999) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Price',
+                    text: 'Please enter a price between 1 and 99,999',
+                    confirmButtonColor: '#3085d6'
+                }).then((result) => {
+                    this.value = ''; // Clear invalid input
+                    this.focus();    // Return focus to price field
+                });
             }
         });
     </script>
