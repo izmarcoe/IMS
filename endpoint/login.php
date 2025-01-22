@@ -68,13 +68,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Invalid QR code - redirect to admin login
                 echo "
                 <script>
-                    alert('Invalid QR code!');
-                    window.location.href = 'http://localhost/IMS/admin_login.php';
+                   document.addEventListener('DOMContentLoaded', function() {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Invalid QR Code',
+                                text: 'This QR code is not valid',
+                                showConfirmButton: false,
+                                timer: 2000
+                            }).then(function() {
+                                window.location.href = 'http://localhost/IMS/admin_login.php';
+                            });
+                        });
                 </script>
                 ";
                 exit();
             }
-        } else {
+        } else if (isset($_POST['login_type']) && $_POST['login_type'] === 'employee') {
             // Handle QR code login
             $stmt = $conn->prepare("SELECT `generated_code`, `Fname`, `Lname`, `user_id`, `role`, `status` FROM `login_db` WHERE `generated_code` = :generated_code");
             $stmt->bindParam(':generated_code', $qrCode);
@@ -83,74 +92,78 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $accountExist = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($accountExist) {
+                // Check if user has appropriate role for employee login page
+                if (!in_array($accountExist['role'], ['employee', 'new_user'])) {
+                    echo "
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Invalid QR Code',
+                                text: 'This QR code is not valid',
+                                showConfirmButton: false,
+                                timer: 2000
+                            }).then(function() {
+                                window.location.href = 'http://localhost/IMS/user_login.php';
+                            });
+                        });
+                    </script>
+                    ";
+                    exit();
+                }
+
                 if ($accountExist['status'] == 'active') {
                     session_start();
                     $_SESSION['user_id'] = $accountExist['user_id'];
                     $_SESSION['user_role'] = $accountExist['role'];
                     $_SESSION['qr-code'] = $qrCode;
 
-                    // Check the user role for redirection
-                    if ($_SESSION['user_role'] == 'employee') {
+                    // Redirect based on role
+                    if ($accountExist['role'] == 'employee') {
                         echo "
                         <script>
-                                window.location.href = 'http://localhost/IMS/dashboards/employee_dashboard.php';
+                            window.location.href = 'http://localhost/IMS/dashboards/employee_dashboard.php';
                         </script>
                         ";
-                    } else if ($_SESSION['user_role'] == 'admin') {
+                    } else {
                         echo "
                         <script>
-                                window.location.href = 'http://localhost/IMS/dashboards/admin_dashboard.php';
-                        </script>
-                        ";
-                    } else if ($_SESSION['user_role'] == 'new_user') {
-                        echo "
-                        <script>
-                            document.addEventListener('DOMContentLoaded', function() {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Login Successfully!',
-                                    showConfirmButton: false,
-                                    timer: 2000
-                                }).then(function() {
-                                    window.location.href = 'http://localhost/IMS/home.php';
-                                });
-                            });
+                            window.location.href = 'http://localhost/IMS/home.php';
                         </script>
                         ";
                     }
                 } else {
-                    // Inactive account - redirect to employee login
                     echo "
                     <script>
-                         document.addEventListener('DOMContentLoaded', function() {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Account deactivated!',
-                                    text: 'Please contact your admin.',
-                                    showConfirmButton: false,
-                                    timer: 2000
-                                }).then(function() {
-                                    window.location.href = 'http://localhost/IMS/user_login.php';
-                                });
+                        document.addEventListener('DOMContentLoaded', function() {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Account deactivated!',
+                                text: 'Please contact your admin.',
+                                showConfirmButton: false,
+                                timer: 2000
+                            }).then(function() {
+                                window.location.href = 'http://localhost/IMS/user_login.php';
                             });
+                        });
                     </script>
                     ";
                     exit();
                 }
             } else {
-                // Invalid QR code - redirect to employee login
                 echo "
                 <script>
                     document.addEventListener('DOMContentLoaded', function() {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Invalid QR code!',
-                                    showConfirmButton: false,
-                                    timer: 2000
-                                }).then(function() {
-                                    window.location.href = 'http://localhost/IMS/user_login.php';
-                                });
-                            });
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Invalid QR Code',
+                            text: 'QR code not recognized',
+                            showConfirmButton: false,
+                            timer: 2000
+                        }).then(function() {
+                            window.location.href = 'http://localhost/IMS/user_login.php';
+                        });
+                    });
                 </script>
                 ";
                 exit();

@@ -198,7 +198,6 @@ if (isset($_SESSION['user_id'])) {
                 <h3 class="text-lg leading-6 font-medium text-gray-900">Terms and Conditions</h3>
                 <div class="mt-2 px-7 py-3 text-left">
                     <div class="text-sm text-gray-600 max-h-60 overflow-y-auto">
-                        <h2 class="font-semibold text-base text-gray-700">Terms and Conditions</h2>
                         <p class="mb-4">
                             Welcome to the ZefMaven Inventory Management System. By using our system, you agree to comply with and be bound by the following terms and conditions. Please read them carefully before accessing or using our services.
                         </p>

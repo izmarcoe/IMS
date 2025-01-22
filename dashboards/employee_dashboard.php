@@ -1,6 +1,6 @@
 <?php
 session_start();
-include('../conn/conn.php'); // Ensure this points to the correct path of your conn.php
+include('../conn/conn.php'); 
 require '../endpoint/employeeAuth.php';
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
@@ -12,7 +12,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'employee') {
     exit();
 }
 
-$currentMonth = date('F'); // Get the current month name
+$currentMonth = date('F'); // current month name
 
 // User ID from session
 $user_id = $_SESSION['user_id'];
