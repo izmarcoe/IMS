@@ -200,7 +200,7 @@ $fname = $_SESSION['Fname'];
                                 <div class="stock-info text-sm text-gray-600 w-32"></div>
 
                                 <div class="flex">
-                                    <button type="button" class="remove-row text-red-500 hover:text-red-700 p-1"> Remove
+                                    <button type="button" class="remove-row bg-red-500 text-white rounded-md p-2"> Remove
                                     </button>
                                 </div>
                             </div>

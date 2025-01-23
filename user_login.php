@@ -243,7 +243,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 qrInput.value = content;
                 qrDetectedContainer.classList.remove('hidden');
                 Swal.fire({
-                    icon: 'success',
+                    icon: 'info',
                     title: 'QR Code Detected!',
                     text: 'Processing login...',
                     showConfirmButton: false,

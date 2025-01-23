@@ -177,7 +177,7 @@ $lname = $_SESSION['Lname'];
                         <input type="text" name="search" placeholder="Search by Product Name"
                             value="<?php echo htmlspecialchars($search); ?>"
                             class="w-[300px] border border-gray-300 rounded px-3 py-2">
-                        <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded" type="submit">Search</button>
+                        <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded" type="submit">Search</button>
                         <a href="manage_sales.php" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Clear</a>
                     </div>
                 </form>
