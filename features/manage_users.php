@@ -36,10 +36,40 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_role'])) {
     $user_id = $_POST['user_id'];
     $new_role = $_POST['role'];
-    $updateStmt = $conn->prepare("UPDATE login_db SET role = ? WHERE user_id = ?");
-    $updateStmt->execute([$new_role, $user_id]);
-    header("Location: ../features/manage_users.php");
-    exit();
+    
+    try {
+        $conn->beginTransaction();
+        
+        // Update role
+        $updateStmt = $conn->prepare("UPDATE login_db SET role = ? WHERE user_id = ?");
+        $updateStmt->execute([$new_role, $user_id]);
+        
+        // If updating current user's role, update their session
+        if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == $user_id) {
+            $_SESSION['user_role'] = $new_role;
+        }
+        
+        $conn->commit();
+        
+        // Return success response for AJAX
+        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+            echo json_encode(['success' => true, 'new_role' => $new_role]);
+            exit;
+        }
+        
+        header("Location: ../features/manage_users.php");
+        exit();
+    } catch (Exception $e) {
+        $conn->rollBack();
+        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+            echo json_encode(['error' => $e->getMessage()]);
+            exit;
+        }
+        header("Location: ../features/manage_users.php?error=update_failed");
+        exit();
+    }
 }
 
 // Handle user archive

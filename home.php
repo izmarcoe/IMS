@@ -5,25 +5,31 @@ header("Pragma: no-cache");
 session_start();
 include('./conn/conn.php');
 
-
 // Check if the user is logged in and has the role 'new_user'
-if (isset($_SESSION['user_id']) && isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'new_user') {
+if (isset($_SESSION['user_id']) && isset($_SESSION['user_role'])) {
     $user_id = $_SESSION['user_id'];
 
-    // Fetch the user's name and role from the database
+    // Fetch the user's current role from database
     $stmt = $conn->prepare("SELECT `Fname`, `Lname`, `role` FROM `login_db` WHERE `user_id` = :user_id");
     $stmt->bindParam(':user_id', $user_id);
     $stmt->execute();
 
     if ($stmt->rowCount() > 0) {
-        $row = $stmt->fetch(PDO::FETCH_ASSOC); // Fetch as associative array
-        $fname = $row['Fname'];
-        $lname = $row['Lname'];
-        $role = $row['role']; // Fetch the user's role
-        $user_name = htmlspecialchars($fname . " " . $lname); // Concatenate first and last name
-
-        // Check if the user is a new user
-        if ($role === 'new_user') {
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $currentRole = $row['role'];
+        
+        // Check if role changed from new_user to employee
+        if ($_SESSION['user_role'] == 'new_user' && $currentRole == 'employee') {
+            $_SESSION['user_role'] = $currentRole; // Update session role
+            header("Location: ./dashboards/employee_dashboard.php");
+            exit();
+        }
+        
+        // Continue with existing new_user check
+        if ($_SESSION['user_role'] == 'new_user') {
+            $fname = $row['Fname'];
+            $lname = $row['Lname'];
+            $user_name = htmlspecialchars($fname . " " . $lname);
 ?>
             <!DOCTYPE html>
             <html lang="en">
@@ -33,6 +39,8 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['user_role']) && $_SESSION['u
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Welcome</title>
                 <link href="./src/output.css" rel="stylesheet">
+                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                <script src="./JS/roleMonitor.js"></script>
                 <script>
                     // Replace the current history state
                     window.history.replaceState({

@@ -88,6 +88,8 @@ $fname = $_SESSION['Fname'];
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sales Report - Date Range</title>
     <link rel="stylesheet" href="../src/output.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="../JS/roleMonitor.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
