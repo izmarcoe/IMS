@@ -136,12 +136,12 @@ $fname = $_SESSION['Fname'];
                 </div>
                 <div class="mb-4">
                     <label for="price" class="block text-gray-700 text-sm font-bold mb-2">Price</label>
-                    <input type="number"
+                    <input type="text"
+                        id="price"
                         name="price"
-                        step="1"
-                        min="1"
-                        max="99999.00"
                         class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        pattern="^\d{1,5}(\.\d{0,2})?$"
+                        placeholder="Enter price (1-99,999.99)"
                         required>
                 </div>
                 <div class="mb-4">
@@ -305,6 +305,46 @@ $fname = $_SESSION['Fname'];
 
                 // If validation passes, submit the form
                 this.submit();
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('#price').on('input', function(e) {
+                let value = $(this).val();
+                
+                // Allow only numbers and decimal point
+                value = value.replace(/[^\d.]/g, '');
+                
+                // Ensure single decimal point
+                let parts = value.split('.');
+                if (parts.length > 2) value = parts[0] + '.' + parts.slice(1).join('');
+                
+                // Limit to 5 digits before decimal
+                if (parts[0] && parts[0].length > 5) {
+                    parts[0] = parts[0].slice(0, 5);
+                }
+                
+                // Limit to 2 decimal places
+                if (parts[1] && parts[1].length > 2) {
+                    parts[1] = parts[1].slice(0, 2);
+                }
+                
+                value = parts.join('.');
+                $(this).val(value);
+                
+                // Validate range
+                const numValue = parseFloat(value);
+                if (numValue > 99999.99) {
+                    $(this).val('99999.99');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Price',
+                        text: 'Maximum price is 99,999.99',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                }
             });
         });
     </script>

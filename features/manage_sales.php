@@ -315,10 +315,12 @@ $lname = $_SESSION['Lname'];
                             class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
                             First
                         </a>
+                        <!--
                         <a href="?page=<?php echo $page - 1; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
                             class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
                             Previous
                         </a>
+                        -->
                     <?php endif; ?>
 
                     <?php
@@ -333,10 +335,12 @@ $lname = $_SESSION['Lname'];
                     <?php endfor; ?>
 
                     <?php if ($page < $totalPages): ?>
+                    <!--
                         <a href="?page=<?php echo $page + 1; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
                             class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
                             Next
                         </a>
+                    -->
                         <a href="?page=<?php echo $totalPages; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
                             class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
                             Last
@@ -425,7 +429,7 @@ $lname = $_SESSION['Lname'];
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="editSaleDate">Sale Date</label>
                             <input type="date" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                id="editSaleDate" name="sale_date" required>
+                                id="editSaleDate" name="sale_date" required  <?php if ($user_role == 'employee') echo 'readonly'; ?>>
                         </div>
 
                         <div class="flex justify-end gap-2">

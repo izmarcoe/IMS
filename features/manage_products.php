@@ -223,10 +223,12 @@ $fname = $_SESSION['Fname'];
                             class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
                             First
                         </a>
+                        <!--
                         <a href="?page=<?php echo $page - 1; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
                             class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
                             Previous
                         </a>
+                        -->
                     <?php endif; ?>
 
                     <?php
@@ -240,17 +242,18 @@ $fname = $_SESSION['Fname'];
                             <?php echo $i; ?>
                         </a>
                     <?php endfor; ?>
-
+                    <!--
                     <?php if ($page < $totalPages): ?>
                         <a href="?page=<?php echo $page + 1; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
                             class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
                             Next
                         </a>
-                        <a href="?page=<?php echo $totalPages; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
-                            class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
-                            Last
-                        </a>
-                    <?php endif; ?>
+                        --->
+                    <a href="?page=<?php echo $totalPages; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
+                        class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+                        Last
+                    </a>
+                <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -286,17 +289,36 @@ $fname = $_SESSION['Fname'];
                             id="editPrice" name="price" min="1" max="99999" required>
                     </div>
                     <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="editQuantity">
-                            Quantity <span class="text-gray-500 text-xs">(Min: 1, Max: 999)</span>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="editCurrentQuantity">
+                            Current Quantity
+                        </label>
+                        <input type="number"
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 bg-gray-100 leading-tight focus:outline-none focus:shadow-outline"
+                            id="editCurrentQuantity"
+                            name="current_quantity"
+                            readonly>
+                    </div>
+
+                    <!-- Update the quantity display section -->
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="editAdditionalQuantity">
+                            Additional Quantity
                         </label>
                         <input type="number"
                             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            id="editQuantity"
-                            name="quantity"
+                            id="editAdditionalQuantity"
+                            name="additional_quantity"
                             min="1"
                             max="999"
+                            maxlength="3"
+                            onkeydown="return event.keyCode !== 190 && event.keyCode !== 110"
+                            oninput="javascript: if (this.value.length > 3) this.value = this.value.slice(0, 3);"
+                            placeholder="Enter quantity (1-999)"
                             required>
-                        <p class="text-sm text-gray-500 mt-1">Enter a quantity between 1 and 999</p>
+                        <p class="mt-2 text-sm">
+                            <span class="font-medium">New total will be: </span>
+                            <span id="newTotalQuantity" class="font-bold text-gray-600">-</span>
+                        </p>
                     </div>
                     <div class="flex justify-end gap-2">
                         <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded" onclick="closeEditModal()">Cancel</button>
@@ -397,7 +419,7 @@ $fname = $_SESSION['Fname'];
 
         document.getElementById('editPrice').addEventListener('change', function(e) {
             const price = parseFloat(this.value);
-            
+
             if (isNaN(price) || price < 1 || price > 99999) {
                 Swal.fire({
                     icon: 'error',
@@ -406,7 +428,7 @@ $fname = $_SESSION['Fname'];
                     confirmButtonColor: '#3085d6'
                 }).then((result) => {
                     this.value = ''; // Clear invalid input
-                    this.focus();    // Return focus to price field
+                    this.focus(); // Return focus to price field
                 });
             }
         });

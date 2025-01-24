@@ -32,6 +32,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $params[] = $_POST['quantity'];
     }
 
+    if (!empty($_POST['additional_quantity'])) {
+        $current_quantity = $_POST['current_quantity'] ?? 0;
+        $additional_quantity = $_POST['additional_quantity'] ?? 0;
+        $new_total = $current_quantity + $additional_quantity;
+        
+        if ($new_total > 999) {
+            echo json_encode(['success' => false, 'error' => 'Total quantity cannot exceed 999']);
+            exit;
+        }
+        
+        $updateFields[] = "quantity = ?";
+        $params[] = $new_total;
+    }
+
     if (!empty($updateFields)) {
         $params[] = $product_id;
         $query = "UPDATE products SET " . implode(", ", $updateFields) . " WHERE product_id = ?";

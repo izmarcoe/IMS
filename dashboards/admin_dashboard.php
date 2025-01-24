@@ -114,6 +114,12 @@ $weeklyOrdersStmt = $conn->prepare("
 $weeklyOrdersStmt->execute();
 $weeklyOrders = $weeklyOrdersStmt->fetchAll(PDO::FETCH_ASSOC);
 
+// Near the top where queries are executed
+$stmt = $conn->prepare("SELECT COUNT(*) as total FROM login_db WHERE status = 'active'");
+$stmt->execute();
+$result = $stmt->fetch(PDO::FETCH_ASSOC);
+$totalActivatedUsers = $result['total'];
+
 // Format data for Chart.js
 $currentWeekData = array_fill(0, 7, 0);
 $lastWeekData = array_fill(0, 7, 0);
@@ -164,7 +170,7 @@ foreach ($weeklyOrders as $order) {
                 <div class="mb-4">
                     <h2 class="text-xl font-semibold text-gray-800">Weekly Orders</h2>
                 </div>
-                <div class="bg-white p-4 rounded-lg relative overflow-x-auto"> 
+                <div class="bg-white p-4 rounded-lg relative overflow-x-auto">
                     <div class="min-w-[300px]"> <!-- Minimum width container -->
                         <div class="h-[200px]">
                             <canvas id="monthlyOrdersChart" style="width:100% !important; height:100% !important;"></canvas>
@@ -174,56 +180,64 @@ foreach ($weeklyOrders as $order) {
             </div>
             <div class="flex flex-wrap justify-center items-center gap-6 mt-5">
                 <!-- Total Number of Users -->
-                <div class="flex flex-col justify-between text-white p-8 bg-pink-600 rounded-lg shadow-md h-full w-80">
-                    <!-- Label -->
-                    <div class="flex items-center justify-center bg-pink-600 text-white p-4 rounded-full h-[40%]">
-                        <img src="../icons/user.svg" alt="User Icon" class="w-24 h-24 object-contain">
+                <a href="../features/manage_users.php" class="block hover:opacity-90 transition-opacity cursor-pointer">
+                    <div class="flex flex-col justify-between text-white p-8 bg-pink-600 rounded-lg shadow-md h-full w-80">
+                        <!-- Label -->
+                        <div class="flex items-center justify-center bg-pink-600 text-white p-4 rounded-full h-[40%]">
+                            <img src="../icons/user.svg" alt="User Icon" class="w-24 h-24 object-contain">
+                        </div>
+                        <!-- Value and Label -->
+                        <div class="flex flex-col items-center text-white p-4 rounded-lg h-[60%]">
+                            <span class="text-2xl font-bold"><?php echo htmlspecialchars($totalActivatedUsers); ?></span>
+                            <span class="text-md">Activated Accounts</span>
+                        </div>
                     </div>
-                    <!-- Value and Label -->
-                    <div class="flex flex-col items-center  text-white p-4 rounded-lg h-[60%]">
-                        <span class="text-2xl font-bold"><?php echo htmlspecialchars($totalUsers); ?></span>
-                        <span class="text-md">Users</span>
-                    </div>
-                </div>
+                </a>
 
                 <!-- Total Number of categories -->
-                <div class="flex flex-col justify-between text-white p-8 bg-orange-600 rounded-lg shadow-md h-full w-80">
-                    <!-- Label -->
-                    <div class="flex items-center justify-center bg-orange-600 text-white p-4 rounded-full h-[40%]">
-                        <img src="../icons/Category.svg" alt="User Icon" class="w-24 h-24 object-contain">
+                <a href="../features/category.php" class="block hover:opacity-90 transition-opacity cursor-pointer">
+                    <div class="flex flex-col justify-between text-white p-8 bg-orange-600 rounded-lg shadow-md h-full w-80">
+                        <!-- Label -->
+                        <div class="flex items-center justify-center bg-orange-600 text-white p-4 rounded-full h-[40%]">
+                            <img src="../icons/Category.svg" alt="User Icon" class="w-24 h-24 object-contain">
+                        </div>
+                        <!-- Value and Label -->
+                        <div class="flex flex-col items-center  text-white p-4 rounded-lg h-[60%]">
+                            <span class="text-2xl font-bold"><?php echo htmlspecialchars($totalCategories); ?></span>
+                            <span class="text-md">Categories</span>
+                        </div>
                     </div>
-                    <!-- Value and Label -->
-                    <div class="flex flex-col items-center  text-white p-4 rounded-lg h-[60%]">
-                        <span class="text-2xl font-bold"><?php echo htmlspecialchars($totalCategories); ?></span>
-                        <span class="text-md">Categories</span>
-                    </div>
-                </div>
+                </a>
 
                 <!-- Total Number of products -->
-                <div class="flex flex-col justify-between text-white p-8 bg-blue-600 rounded-lg shadow-md h-full w-80">
-                    <!-- Label -->
-                    <div class="flex items-center justify-center bg-blue-600 text-white p-4 rounded-full h-[40%]">
-                        <img src="../icons/cart 4.svg" alt="User Icon" class="w-24 h-24 object-contain">
+                <a href="../features/manage_products.php" class="block hover:opacity-90 transition-opacity cursor-pointer">
+                    <div class="flex flex-col justify-between text-white p-8 bg-blue-600 rounded-lg shadow-md h-full w-80">
+                        <!-- Label -->
+                        <div class="flex items-center justify-center bg-blue-600 text-white p-4 rounded-full h-[40%]">
+                            <img src="../icons/cart 4.svg" alt="User Icon" class="w-24 h-24 object-contain">
+                        </div>
+                        <!-- Value and Label -->
+                        <div class="flex flex-col items-center  text-white p-4 rounded-lg h-[60%]">
+                            <span class="text-2xl font-bold"><?php echo htmlspecialchars($totalProducts); ?></span>
+                            <span class="text-md">Products</span>
+                        </div>
                     </div>
-                    <!-- Value and Label -->
-                    <div class="flex flex-col items-center  text-white p-4 rounded-lg h-[60%]">
-                        <span class="text-2xl font-bold"><?php echo htmlspecialchars($totalProducts); ?></span>
-                        <span class="text-md">Products</span>
-                    </div>
-                </div>
+                </a>
 
-                <!-- Total Number of sales -->
-                <div class="flex flex-col justify-between p-8 bg-green-600 rounded-lg shadow-md h-full w-80">
-                    <!-- Label -->
-                    <div class="flex items-center justify-center bg-green-600 text-white p-4 rounded-full h-[40%]">
-                        <img src="../icons/sales_db.svg" alt="User Icon" class="w-24 h-24 object-contain">
+                    <!-- Total Number of sales -->
+                <a href="../features/manage_sales.php" class="block hover:opacity-90 transition-opacity cursor-pointer">
+                    <div class="flex flex-col justify-between p-8 bg-green-600 rounded-lg shadow-md h-full w-80">
+                        <!-- Label -->
+                        <div class="flex items-center justify-center bg-green-600 text-white p-4 rounded-full h-[40%]">
+                            <img src="../icons/sales_db.svg" alt="User Icon" class="w-24 h-24 object-contain">
+                        </div>
+                        <!-- Value and Label -->
+                        <div class="flex flex-col items-center text-white p-4 rounded-lg h-[60%]">
+                            <span class="text-2xl font-bold"><?php echo htmlspecialchars(empty($totalSales) ? '0' : $totalSales); ?></span>
+                            <span class="text-md">Sales</span>
+                        </div>
                     </div>
-                    <!-- Value and Label -->
-                    <div class="flex flex-col items-center text-white p-4 rounded-lg h-[60%]">
-                        <span class="text-2xl font-bold"><?php echo htmlspecialchars(empty($totalSales) ? '0' : $totalSales); ?></span>
-                        <span class="text-md">Sales</span>
-                    </div>
-                </div>
+                </a>
             </div>
 
             <!-- Grid Container -->

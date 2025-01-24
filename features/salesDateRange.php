@@ -212,15 +212,11 @@ $fname = $_SESSION['Fname'];
                 </div>
 
                 <!-- Responsive Pagination -->
-                <div class="flex flex-wrap justify-center gap-1 mt-4">
+                <div class="flex justify-center items-center mt-4 space-x-2">
                     <?php if ($page > 1): ?>
                         <a href="?page=1&start_date=<?php echo htmlspecialchars($startDate); ?>&end_date=<?php echo htmlspecialchars($endDate); ?>"
                             class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
                             First
-                        </a>
-                        <a href="?page=<?php echo $page - 1; ?>&start_date=<?php echo htmlspecialchars($startDate); ?>&end_date=<?php echo htmlspecialchars($endDate); ?>"
-                            class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
-                            Previous
                         </a>
                     <?php endif; ?>
 
@@ -236,10 +232,6 @@ $fname = $_SESSION['Fname'];
                     <?php endfor; ?>
 
                     <?php if ($page < $totalPages): ?>
-                        <a href="?page=<?php echo $page + 1; ?>&start_date=<?php echo htmlspecialchars($startDate); ?>&end_date=<?php echo htmlspecialchars($endDate); ?>"
-                            class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
-                            Next
-                        </a>
                         <a href="?page=<?php echo $totalPages; ?>&start_date=<?php echo htmlspecialchars($startDate); ?>&end_date=<?php echo htmlspecialchars($endDate); ?>"
                             class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
                             Last

@@ -194,15 +194,12 @@ $fname = $_SESSION['Fname'];
                     </div>
                 </div>
 
+                <!-- Update pagination section -->
                 <div class="flex justify-center items-center mt-4 space-x-2">
                     <?php if ($page > 1): ?>
                         <a href="?page=1&month=<?php echo htmlspecialchars($month); ?>&year=<?php echo htmlspecialchars($year); ?>"
                             class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
                             First
-                        </a>
-                        <a href="?page=<?php echo $page - 1; ?>&month=<?php echo htmlspecialchars($month); ?>&year=<?php echo htmlspecialchars($year); ?>"
-                            class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
-                            Previous
                         </a>
                     <?php endif; ?>
 
@@ -218,10 +215,6 @@ $fname = $_SESSION['Fname'];
                     <?php endfor; ?>
 
                     <?php if ($page < $totalPages): ?>
-                        <a href="?page=<?php echo $page + 1; ?>&month=<?php echo htmlspecialchars($month); ?>&year=<?php echo htmlspecialchars($year); ?>"
-                            class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
-                            Next
-                        </a>
                         <a href="?page=<?php echo $totalPages; ?>&month=<?php echo htmlspecialchars($month); ?>&year=<?php echo htmlspecialchars($year); ?>"
                             class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
                             Last
