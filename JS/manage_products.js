@@ -399,7 +399,6 @@ const categorySelectHTML = `
 // Insert the select element into the DOM
 document.getElementById('editCategoryContainer').innerHTML = categorySelectHTML;
 
-// Function to create a modification request
 function createModificationRequest(product) {
     Swal.fire({
         title: 'Request Product Modification',
@@ -418,15 +417,26 @@ function createModificationRequest(product) {
                         class="mt-1 block w-full px-4 py-2 bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
                         value="${product.price}"
                         min="0.01"
-                        step="0.01">
+                        step="0.01"
+                        readonly>
                 </div>
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
-                    <input type="number" id="newQuantity" 
-                        class="mt-1 block w-full px-4 py-2 bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Current Quantity</label>
+                    <input type="number" id="currentQuantity" 
+                        class="mt-1 block w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-600 cursor-not-allowed" 
                         value="${product.quantity}"
+                        readonly>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Additional Quantity</label>
+                    <input type="number" id="additionalQuantity" 
+                        class="mt-1 block w-full px-4 py-2 bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
                         min="1"
-                        max="999">
+                        max="999"
+                        onkeydown="return event.keyCode !== 190 && event.keyCode !== 110"
+                        oninput="if (this.value.length > 3) this.value = this.value.slice(0, 3);"
+                        placeholder="Enter quantity (1-999)"
+                        required>
                     <p class="mt-1 text-sm text-gray-500">Enter a quantity between 1 and 999</p>
                 </div>
             </div>
@@ -435,11 +445,12 @@ function createModificationRequest(product) {
         confirmButtonText: 'Submit Request',
         showLoaderOnConfirm: true,
         preConfirm: () => {
-            const newQuantity = parseInt(document.getElementById('newQuantity').value);
+            const additionalQty = parseInt(document.getElementById('additionalQuantity').value);
             const newPrice = parseFloat(document.getElementById('newPrice').value);
+            const currentQty = parseInt(document.getElementById('currentQuantity').value);
 
-            if (newQuantity < 1 || newQuantity > 999) {
-                Swal.showValidationMessage('Quantity must be between 1 and 999');
+            if (additionalQty < 1 || additionalQty > 999) {
+                Swal.showValidationMessage('Additional quantity must be between 1 and 999');
                 return false;
             }
 
@@ -451,8 +462,9 @@ function createModificationRequest(product) {
             const formData = new FormData();
             formData.append('product_id', product.product_id);
             formData.append('new_name', document.getElementById('newName').value);
-            formData.append('new_price', document.getElementById('newPrice').value);
-            formData.append('new_quantity', document.getElementById('newQuantity').value);
+            formData.append('new_price', newPrice);
+            formData.append('current_quantity', currentQty);
+            formData.append('new_quantity', currentQty + additionalQty);
 
             return fetch('../endpoint/create_product_request.php', {
                 method: 'POST',
@@ -799,6 +811,207 @@ function openEditModal(product) {
 }
 
 $(document).ready(function() {
+    // Real-time quantity calculation
+    function updateTotalQuantity(currentQty) {
+        $('#editAdditionalQuantity').off('input').on('input', function() {
+            const additionalQty = parseInt($(this).val()) || 0;
+            const newTotal = currentQty + additionalQty;
+            const $totalSpan = $('#newTotalQuantity');
+            
+            if (!$(this).val()) {
+                $totalSpan.text(currentQty).removeClass('text-green-600 text-red-600').addClass('text-gray-600');
+                return;
+            }
+            
+            if (newTotal > 999) {
+                $(this).val(999 - currentQty);
+                $totalSpan.text('999').addClass('text-red-600');
+                showError('Total quantity cannot exceed 999');
+            } else {
+                $totalSpan.text(newTotal).removeClass('text-red-600').addClass('text-green-600');
+            }
+        });
+    }
+
+    // Form submission
+    $('#editProductForm').on('submit', function(e) {
+        e.preventDefault();
+        $.ajax({
+            url: '../endpoint/update-product.php',
+            method: 'POST',
+            data: $(this).serialize(),
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: response.message
+                    }).then(() => location.reload());
+                } else {
+                    showError(response.message);
+                }
+            },
+            error: function() {
+                showError('Network error occurred');
+            }
+        });
+    });
+
+    // Open modal function
+    window.openEditModal = function(product) {
+        $('#editProductId').val(product.product_id);
+        $('#editProductName').val(product.product_name);
+        $('#editCategory').val(product.category_id);
+        $('#editPrice').val(product.price);
+        $('#editCurrentQuantity').val(product.quantity);
+        $('#editAdditionalQuantity').val('');
+        $('#newTotalQuantity').text(product.quantity)
+            .removeClass('text-green-600 text-red-600')
+            .addClass('text-gray-600');
+        
+        updateTotalQuantity(parseInt(product.quantity));
+        $('#editProductModal').removeClass('hidden');
+    };
+
+    function showError(message) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: message,
+            timer: 2000,
+            showConfirmButton: false
+        });
+    }
+});
+
+$(document).ready(function() {
+    // Real-time quantity validation and calculation
+    $('#editAdditionalQuantity').on('input', function() {
+        // Get values
+        const currentQty = parseInt($('#editCurrentQuantity').val()) || 0;
+        const additionalQty = parseInt($(this).val()) || 0;
+        const $totalSpan = $('#newTotalQuantity');
+
+        // Clear if empty input
+        if (!$(this).val()) {
+            $totalSpan.text(currentQty)
+                     .removeClass('text-green-600 text-red-600')
+                     .addClass('text-gray-600');
+            return;
+        }
+
+        // Validate input
+        if (additionalQty < 1) {
+            $(this).val('');
+            $totalSpan.text(currentQty)
+                     .removeClass('text-green-600 text-red-600')
+                     .addClass('text-gray-600');
+            showError('Additional quantity must be at least 1');
+            return;
+        }
+
+        // Calculate new total
+        const newTotal = currentQty + additionalQty;
+
+        // Validate total
+        if (newTotal > 999) {
+            const maxAddition = 999 - currentQty;
+            $(this).val(maxAddition);
+            $totalSpan.text('999')
+                     .removeClass('text-gray-600 text-green-600')
+                     .addClass('text-red-600');
+            showError('Total quantity cannot exceed 999');
+            return;
+        }
+
+        // Update display with valid total
+        $totalSpan.text(newTotal)
+                 .removeClass('text-gray-600 text-red-600')
+                 .addClass('text-green-600');
+    });
+});
+
+function showError(message) {
+    Swal.fire({
+        icon: 'error',
+        title: 'Invalid Quantity',
+        text: message,
+        timer: 2000,
+        showConfirmButton: false
+    });
+}
+
+// Replace all existing quantity-related event listeners with this single implementation
+$(document).ready(function() {
+    // Single event listener for real-time calculation
+    $('#editAdditionalQuantity').on('input', function() {
+        const currentQty = parseInt($('#editCurrentQuantity').val()) || 0;
+        const additionalQty = parseInt($(this).val()) || 0;
+        const $totalSpan = $('#newTotalQuantity');
+
+        // If input is empty, show current quantity
+        if (!$(this).val()) {
+            $totalSpan.text(currentQty)
+                     .removeClass('text-green-600 text-red-600')
+                     .addClass('text-gray-600');
+            return;
+        }
+
+        // Calculate new total
+        const newTotal = currentQty + additionalQty;
+
+        // Validate and update display
+        if (additionalQty < 1) {
+            $(this).val('');
+            $totalSpan.text(currentQty)
+                     .removeClass('text-green-600 text-red-600')
+                     .addClass('text-gray-600');
+            showError('Additional quantity must be at least 1');
+            return;
+        }
+
+        if (newTotal > 999) {
+            const maxAdd = 999 - currentQty;
+            $(this).val(maxAdd);
+            $totalSpan.text('999')
+                     .removeClass('text-gray-600 text-green-600')
+                     .addClass('text-red-600');
+            showError('Total quantity cannot exceed 999');
+        } else {
+            $totalSpan.text(newTotal)
+                     .removeClass('text-gray-600 text-red-600')
+                     .addClass('text-green-600');
+        }
+    });
+});
+
+// Keep this error function
+function showError(message) {
+    Swal.fire({
+        icon: 'error',
+        title: 'Invalid Quantity',
+        text: message,
+        timer: 2000,
+        showConfirmButton: false
+    });
+}
+
+// Update modal open function
+function openEditModal(product) {
+    $('#editProductId').val(product.product_id);
+    $('#editProductName').val(product.product_name);
+    $('#editCategory').val(product.category_id);
+    $('#editPrice').val(product.price);
+    $('#editCurrentQuantity').val(product.quantity);
+    $('#editAdditionalQuantity').val('');
+    $('#newTotalQuantity').text(product.quantity)
+                         .removeClass('text-green-600 text-red-600')
+                         .addClass('text-gray-600');
+    $('#editProductModal').removeClass('hidden');
+}
+
+$(document).ready(function() {
     // Real-time calculation with AJAX
     $('#editAdditionalQuantity').on('keyup input', function() {
         const currentQty = parseInt($('#editCurrentQuantity').val()) || 0;
@@ -1045,255 +1258,6 @@ function showError(message) {
     Swal.fire({
         icon: 'error',
         title: 'Invalid Quantity',
-        text: message,
-        timer: 2000,
-        showConfirmButton: false
-    });
-}
-
-$(document).ready(function() {
-    // Remove any existing handlers
-    $('#editAdditionalQuantity').off('input');
-
-    // Add real-time quantity calculation
-    $('#editAdditionalQuantity').on('input', function() {
-        const currentQty = parseInt($('#editCurrentQuantity').val()) || 0;
-        let additionalQty = parseInt($(this).val()) || 0;
-        const $totalSpan = $('#newTotalQuantity');
-
-        // Validate input length
-        if ($(this).val().length > 3) {
-            $(this).val($(this).val().slice(0, 3));
-            showError('Maximum 3 digits allowed');
-            return;
-        }
-
-        // Validate input range
-        if (additionalQty < 1 || additionalQty > 999) {
-            $(this).val('');
-            $totalSpan.text(currentQty)
-                     .removeClass('text-green-600 text-red-600')
-                     .addClass('text-gray-600');
-            showError('Additional quantity must be between 1 and 999');
-            return;
-        }
-
-        // Calculate new total
-        const newTotal = currentQty + additionalQty;
-
-        // Validate total and update display
-        if (newTotal > 999) {
-            const maxAdd = 999 - currentQty;
-            $(this).val(maxAdd);
-            $totalSpan.text('999')
-                     .removeClass('text-gray-600 text-green-600')
-                     .addClass('text-red-600');
-            showError('Total quantity cannot exceed 999');
-        } else {
-            $totalSpan.text(newTotal)
-                     .removeClass('text-gray-600 text-red-600')
-                     .addClass('text-green-600');
-        }
-    });
-
-    function showError(message) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Invalid Quantity',
-            text: message,
-            timer: 2000,
-            showConfirmButton: false
-        });
-    }
-});
-
-$(document).ready(function() {
-    // Remove any existing event listeners
-    $('#editAdditionalQuantity').off('input');
-
-    // Add input event listener
-    $('#editAdditionalQuantity').on('input', function() {
-        // Get input values
-        const currentQty = parseInt($('#editCurrentQuantity').val()) || 0;
-        const additionalQty = parseInt($(this).val()) || 0;
-        const $totalSpan = $('#newTotalQuantity');
-
-        console.log('Current:', currentQty, 'Additional:', additionalQty); // Debug
-
-        // Handle empty input
-        if (!$(this).val()) {
-            $totalSpan.text(currentQty)
-                     .removeClass('text-green-600 text-red-600')
-                     .addClass('text-gray-600');
-            return;
-        }
-
-        // Calculate new total
-        const newTotal = currentQty + additionalQty;
-        console.log('New Total:', newTotal); // Debug
-
-        // Update display based on validation
-        if (additionalQty < 1) {
-            $totalSpan.text(currentQty)
-                     .removeClass('text-green-600 text-red-600')
-                     .addClass('text-gray-600');
-            return;
-        }
-
-        if (newTotal > 999) {
-            const maxAdd = 999 - currentQty;
-            $(this).val(maxAdd);
-            $totalSpan.text('999')
-                     .removeClass('text-gray-600 text-green-600')
-                     .addClass('text-red-600');
-            showError('Total quantity cannot exceed 999');
-        } else {
-            $totalSpan.text(newTotal)
-                     .removeClass('text-gray-600 text-red-600')
-                     .addClass('text-green-600');
-        }
-    });
-});
-
-function showError(message) {
-    Swal.fire({
-        icon: 'error',
-        title: 'Invalid Quantity',
-        text: message,
-        timer: 2000,
-        showConfirmButton: false
-    });
-}
-
-$(document).ready(function() {
-    // Remove existing listeners first
-    $('#editAdditionalQuantity').off('input');
-
-    // Add real-time calculation
-    $('#editAdditionalQuantity').on('input', function() {
-        const $currentQty = $('#editCurrentQuantity');
-        const $additionalQty = $(this);
-        const $totalSpan = $('#newTotalQuantity');
-        
-        let currentQty = parseInt($currentQty.val()) || 0;
-        let additionalQty = parseInt($additionalQty.val()) || 0;
-
-        // Debug logs
-        console.log('Current:', currentQty, 'Additional:', additionalQty);
-
-        // Clear if empty
-        if (!$additionalQty.val()) {
-            $totalSpan.text(currentQty)
-                     .removeClass('text-green-600 text-red-600')
-                     .addClass('text-gray-600');
-            return;
-        }
-
-        // Validate length
-        if ($additionalQty.val().length > 3) {
-            $additionalQty.val($additionalQty.val().slice(0, 3));
-            additionalQty = parseInt($additionalQty.val());
-        }
-
-        // Calculate total
-        let newTotal = currentQty + additionalQty;
-        console.log('New Total:', newTotal);
-
-        // Validate and update
-        if (additionalQty < 1) {
-            $totalSpan.text(currentQty)
-                     .removeClass('text-green-600 text-red-600')
-                     .addClass('text-gray-600');
-        } else if (newTotal > 999) {
-            let maxAdd = 999 - currentQty;
-            $additionalQty.val(maxAdd);
-            $totalSpan.text('999')
-                     .removeClass('text-gray-600 text-green-600')
-                     .addClass('text-red-600');
-            showError('Total quantity cannot exceed 999');
-        } else {
-            $totalSpan.text(newTotal)
-                     .removeClass('text-gray-600 text-red-600')
-                     .addClass('text-green-600')
-                     .hide()
-                     .fadeIn(200);
-        }
-    });
-
-    // Update values when modal opens
-    window.openEditModal = function(product) {
-        $('#editProductId').val(product.product_id);
-        $('#editProductName').val(product.product_name);
-        $('#editCategory').val(product.category_id);
-        $('#editPrice').val(product.price);
-        $('#editCurrentQuantity').val(product.quantity);
-        $('#editAdditionalQuantity').val('');
-        $('#newTotalQuantity').text(product.quantity)
-                             .removeClass('text-green-600 text-red-600')
-                             .addClass('text-gray-600');
-        $('#editProductModal').removeClass('hidden');
-    };
-});
-
-function showError(message) {
-    Swal.fire({
-        icon: 'error',
-        title: 'Invalid Quantity',
-        text: message,
-        timer: 2000,
-        showConfirmButton: false
-    });
-}
-
-$(document).ready(function() {
-    // Clear existing listeners
-    $('#editAdditionalQuantity').off('input');
-
-    // Add input validation
-    $('#editAdditionalQuantity').on('input', function() {
-        // Get current input value
-        let value = $(this).val();
-        
-        // Limit to 3 digits
-        if (value.length > 3) {
-            $(this).val(value.slice(0, 3));
-            showError('Maximum 3 digits allowed');
-            return;
-        }
-
-        const currentQty = parseInt($('#editCurrentQuantity').val()) || 0;
-        const additionalQty = parseInt($(this).val()) || 0;
-        const $totalSpan = $('#newTotalQuantity');
-
-        // Calculate and validate total
-        const newTotal = currentQty + additionalQty;
-
-        if (!$(this).val()) {
-            $totalSpan.text(currentQty)
-                     .removeClass('text-green-600 text-red-600')
-                     .addClass('text-gray-600');
-            return;
-        }
-
-        if (newTotal > 999) {
-            const maxAdd = 999 - currentQty;
-            $(this).val(maxAdd);
-            $totalSpan.text('999')
-                     .removeClass('text-gray-600 text-green-600')
-                     .addClass('text-red-600');
-            showError('Total quantity cannot exceed 999');
-        } else {
-            $totalSpan.text(newTotal)
-                     .removeClass('text-gray-600 text-red-600')
-                     .addClass('text-green-600');
-        }
-    });
-});
-
-function showError(message) {
-    Swal.fire({
-        icon: 'error',
-        title: 'Invalid Input',
         text: message,
         timer: 2000,
         showConfirmButton: false

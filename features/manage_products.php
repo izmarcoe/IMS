@@ -315,10 +315,7 @@ $fname = $_SESSION['Fname'];
                             oninput="javascript: if (this.value.length > 3) this.value = this.value.slice(0, 3);"
                             placeholder="Enter quantity (1-999)"
                             required>
-                        <p class="mt-2 text-sm">
-                            <span class="font-medium">New total will be: </span>
-                            <span id="newTotalQuantity" class="font-bold text-gray-600">-</span>
-                        </p>
+                      
                     </div>
                     <div class="flex justify-end gap-2">
                         <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded" onclick="closeEditModal()">Cancel</button>
@@ -329,7 +326,7 @@ $fname = $_SESSION['Fname'];
         </div>
     </div>
 
-    <!-- Replace Delete Modal with Archive Modal -->
+    <!-- Archive Modal -->
     <div id="archiveModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
         <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
             <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Archive Product</h3>
