@@ -430,6 +430,60 @@ $fname = $_SESSION['Fname'];
             }
         });
     </script>
+    <script>
+function validateQuantity(input, currentQty) {
+    currentQty = parseInt(currentQty) || 0;
+    const additionalQty = parseInt(input.value) || 0;
+    const totalQty = currentQty + additionalQty;
+    
+    // Update max quantity hint
+    document.getElementById('maxQuantityHint').textContent = 
+        `Maximum additional quantity allowed: ${999 - currentQty}`;
+    
+    if (input.value.length > 3) {
+        input.value = input.value.slice(0, 3);
+    }
+    
+    if (totalQty > 999) {
+        input.value = 999 - currentQty;
+        Swal.fire({
+            icon: 'error',
+            title: 'Invalid Quantity',
+            text: 'Total quantity cannot exceed 999',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    }
+}
+
+document.getElementById('editProductForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const currentQty = parseInt(document.getElementById('editCurrentQuantity').value) || 0;
+    const additionalQty = parseInt(document.getElementById('editAdditionalQuantity').value) || 0;
+    const totalQty = currentQty + additionalQty;
+
+    if (!additionalQty || additionalQty < 1) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Invalid Quantity',
+            text: 'Additional quantity must be at least 1'
+        });
+        return false;
+    }
+
+    if (totalQty > 999) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Invalid Quantity',
+            text: 'Total quantity cannot exceed 999'
+        });
+        return false;
+    }
+
+    // Continue with form submission if validation passes
+    // ...existing submission code...
+});
+</script>
 </body>
 
 </html>
