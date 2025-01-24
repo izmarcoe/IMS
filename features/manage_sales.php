@@ -258,7 +258,7 @@ $lname = $_SESSION['Lname'];
                                     <div class="flex items-center gap-1">
                                         Sale Date
                                         <div class="flex flex-col text-xs text-gray-400 ml-1">
-                <!--
+                                            <!--
                                             <a href="?sort=date_asc" class="hover:text-black">
                                                 <i class="fas fa-caret-up"></i>
                                             </a>
@@ -269,14 +269,16 @@ $lname = $_SESSION['Lname'];
                                         </div>
                                     </div>
                                 </th>
-                                <th class="px-3 py-3 text-left">Actions</th>
+                                <?php if ($_SESSION['user_role'] === 'admin'): ?>
+                                    <th class="px-3 py-3 text-left">Actions</th>
+                                <?php endif; ?>
                             </tr>
                         </thead>
 
                         <tbody>
                             <?php if (empty($sales)): ?>
                                 <tr>
-                                    <td colspan="8" class="px-3 py-2 text-center">No sales records found.</td>
+                                    <td colspan="<?php echo ($_SESSION['user_role'] === 'admin') ? '7' : '6'; ?>" class="px-3 py-2 text-center">No sales records found.</td>
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($sales as $sale): ?>
@@ -287,20 +289,20 @@ $lname = $_SESSION['Lname'];
                                         <td class="px-3 py-4 quantity"><?php echo htmlspecialchars($sale['quantity']); ?></td>
                                         <td class="px-3 py-4 total-sales"><?php echo htmlspecialchars($sale['total_sales']); ?></td>
                                         <td class="px-3 py-4 sale-date"><?php echo htmlspecialchars(date('F j, Y', strtotime($sale['sale_date']))); ?></td>
-                                        <td class="px-3 py-4">
-                                            <div class="flex flex-row items-center">
-                                                <button onclick="openEditModal(<?php echo htmlspecialchars(json_encode($sale)); ?>)"
-                                                    class="bg-blue-500 hover:bg-blue-600 text-white px-2 mr-2 py-1 rounded-md text-sm">
-                                                    Edit
-                                                </button>
-                                                <?php if ($_SESSION['user_role'] === 'admin'): ?>
+                                        <?php if ($_SESSION['user_role'] === 'admin'): ?>
+                                            <td class="px-3 py-4">
+                                                <div class="flex flex-row items-center">
+                                                    <button onclick="openEditModal(<?php echo htmlspecialchars(json_encode($sale)); ?>)"
+                                                        class="bg-blue-500 hover:bg-blue-600 text-white px-2 mr-2 py-1 rounded-md text-sm">
+                                                        Edit
+                                                    </button>
                                                     <button onclick="archiveSale(<?php echo $sale['id']; ?>)"
                                                         class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md text-sm">
                                                         Archive
                                                     </button>
-                                            </div>
+                                                </div>
+                                            </td>
                                         <?php endif; ?>
-                                        </td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php endif; ?>
@@ -335,7 +337,7 @@ $lname = $_SESSION['Lname'];
                     <?php endfor; ?>
 
                     <?php if ($page < $totalPages): ?>
-                    <!--
+                        <!--
                         <a href="?page=<?php echo $page + 1; ?>&search=<?php echo urlencode($search); ?>&sort=<?php echo urlencode($sort); ?>"
                             class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
                             Next
@@ -429,7 +431,7 @@ $lname = $_SESSION['Lname'];
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="editSaleDate">Sale Date</label>
                             <input type="date" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                id="editSaleDate" name="sale_date" required  <?php if ($user_role == 'employee') echo 'readonly'; ?>>
+                                id="editSaleDate" name="sale_date" required <?php if ($user_role == 'employee') echo 'readonly'; ?>>
                         </div>
 
                         <div class="flex justify-end gap-2">

@@ -234,7 +234,7 @@ foreach ($weeklyOrders as $order) {
                         <!-- Value and Label -->
                         <div class="flex flex-col items-center text-white p-4 rounded-lg h-[60%]">
                             <span class="text-2xl font-bold"><?php echo htmlspecialchars(empty($totalSales) ? '0' : $totalSales); ?></span>
-                            <span class="text-md">Sales</span>
+                            <span class="text-md">Sales this month</span>
                         </div>
                     </div>
                 </a>
