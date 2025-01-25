@@ -125,7 +125,9 @@ if (isset($_SESSION['user_id'])) {
                                 Password<span id="passwordAsterisk" class="text-red-500 ml-1">*</span>
                             </label>
                             <div class="relative group">
-                                <input type="password" id="password" name="password" required
+                                <input type="password" id="password" name="password" required onpaste="return false"
+                                    oncopy="return false"
+                                    oncut="return false"
                                     oninput="handleInput('password')"
                                     class="mt-1 block w-full px-3 py-2 pr-10 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent focus:invalid:ring-red-500 focus:invalid:border-red-500">
                                 <button type="button" onclick="togglePassword('password', 'togglePassword1')"
@@ -138,7 +140,9 @@ if (isset($_SESSION['user_id'])) {
                         <div>
                             <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirm Password</label>
                             <div class="relative">
-                                <input type="password" id="confirmPassword" name="confirm_password" required
+                                <input type="password" id="confirmPassword" name="confirm_password" required onpaste="return false"
+                                    oncopy="return false"
+                                    oncut="return false"
                                     class="mt-1 block w-full px-3 py-2 pr-10 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent focus:invalid:ring-red-500 focus:invalid:border-red-500">
                                 <button type="button" onclick="togglePassword('confirmPassword', 'togglePassword2')"
                                     class="absolute inset-y-0 right-0 flex items-center pr-3 mt-1">
@@ -403,7 +407,7 @@ if (isset($_SESSION['user_id'])) {
                     // Build detailed error message
                     let errorMessage = 'Please fix the following email issues:\n';
                     if (!emailValidation.checks.hasAtSymbol) errorMessage += '- Email must contain @ symbol\n';
-                    if (!emailValidation.checks.hasValidLength) errorMessage += '- Email length must be between 5 and 254 characters\n';
+                    if (!emailValidation.checks.hasValidLength) errorMessage += '';
                     if (!emailValidation.checks.noConsecutiveDots) errorMessage += '- Email cannot contain consecutive dots\n';
                     if (!emailValidation.checks.noSpaces) errorMessage += '- Email cannot contain spaces\n';
                     if (!emailValidation.checks.validPattern) errorMessage += '- Invalid email format\n';
@@ -427,7 +431,7 @@ if (isset($_SESSION['user_id'])) {
                         body: `email=${encodeURIComponent(email)}`
                     });
                     const data = await response.json();
-                    
+
                     if (data.exists) {
                         await Swal.fire({
                             icon: 'error',
@@ -846,7 +850,7 @@ if (isset($_SESSION['user_id'])) {
                         errorMessage += '- Email must contain @ symbol\n';
                     }
                     if (!emailValidation.checks.hasValidLength) {
-                        errorMessage += '- Email length must be between 5 and 254 characters\n';
+                        errorMessage += '';
                     }
                     if (!emailValidation.checks.noConsecutiveDots) {
                         errorMessage += '- Email cannot contain consecutive dots\n';
@@ -855,10 +859,10 @@ if (isset($_SESSION['user_id'])) {
                         errorMessage += '- Email cannot contain spaces\n';
                     }
                     if (!emailValidation.checks.validLocalPart) {
-                        errorMessage += '- Username part (before @) is too long\n';
+                        errorMessage += '';
                     }
                     if (!emailValidation.checks.validDomainPart) {
-                        errorMessage += '- Domain part (after @) is too long\n';
+                        errorMessage += '';
                     }
 
                     await Swal.fire({
@@ -884,22 +888,22 @@ if (isset($_SESSION['user_id'])) {
                         // Show specific error messages based on which checks failed
                         let errorMessage = 'Please enter a valid email address. ';
                         if (!validation.checks.hasAtSymbol) {
-                            errorMessage += 'Email must contain @ symbol. ';
+                            errorMessage += '';
                         }
                         if (!validation.checks.hasValidLength) {
-                            errorMessage += 'Email length must be between 5 and 254 characters. ';
+                            errorMessage += '';
                         }
                         if (!validation.checks.noConsecutiveDots) {
-                            errorMessage += 'Email cannot contain consecutive dots. ';
+                            errorMessage += '';
                         }
                         if (!validation.checks.noSpaces) {
                             errorMessage += 'Email cannot contain spaces. ';
                         }
                         if (!validation.checks.validLocalPart) {
-                            errorMessage += 'Local part (before @) too long. ';
+                            errorMessage += ' ';
                         }
                         if (!validation.checks.validDomainPart) {
-                            errorMessage += 'Domain part (after @) too long. ';
+                            errorMessage += ' ';
                         }
 
                         // Show error styling

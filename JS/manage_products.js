@@ -4,8 +4,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Edit Modal Functions
   function openEditModal(product) {
-    $("#editProductId").val(product.product_id);
-    $("#editProductName").val(product.product_name);
+    document.getElementById('editProductId').value = product.product_id;
+    document.getElementById('editProductName').value = product.product_name;
+    updateEditCharCount(document.getElementById('editProductName'));
     $("#editCategory").val(product.category_id);
     $("#editPrice").val(product.price);
     $("#editCurrentQuantity").val(product.quantity);
@@ -277,6 +278,7 @@ document.addEventListener("DOMContentLoaded", function () {
   window.openEditModal = function (product) {
     $("#editProductId").val(product.product_id);
     $("#editProductName").val(product.product_name);
+    updateEditCharCount(document.getElementById('editProductName'));
     $("#editCategory").val(product.category_id);
     $("#editPrice").val(product.price);
     $("#editCurrentQuantity").val(product.quantity);
@@ -681,8 +683,9 @@ $(document).ready(function () {
 
 // Update openEditModal to set initial total
 function openEditModal(product) {
-  $("#editProductId").val(product.product_id);
-  $("#editProductName").val(product.product_name);
+  document.getElementById('editProductId').value = product.product_id;
+  document.getElementById('editProductName').value = product.product_name;
+  updateEditCharCount(document.getElementById('editProductName'));
   $("#editCategory").val(product.category_id);
   $("#editPrice").val(product.price);
   $("#editCurrentQuantity").val(product.quantity);
@@ -878,6 +881,9 @@ $(document).ready(function () {
 
 // Update openEditModal function
 function openEditModal(product) {
+  document.getElementById('editProductId').value = product.product_id;
+  document.getElementById('editProductName').value = product.product_name;
+  updateEditCharCount(document.getElementById('editProductName'));
   // ...existing code...
   $("#editCurrentQuantity").val(product.quantity);
   $("#editAdditionalQuantity").val("");
@@ -948,6 +954,7 @@ $(document).ready(function () {
   window.openEditModal = function (product) {
     $("#editProductId").val(product.product_id);
     $("#editProductName").val(product.product_name);
+    updateEditCharCount(document.getElementById('editProductName'));
     $("#editCategory").val(product.category_id);
     $("#editPrice").val(product.price);
     $("#editCurrentQuantity").val(product.quantity);
@@ -1094,8 +1101,9 @@ function showError(message) {
 
 // Update modal open function
 function openEditModal(product) {
-  $("#editProductId").val(product.product_id);
-  $("#editProductName").val(product.product_name);
+  document.getElementById('editProductId').value = product.product_id;
+  document.getElementById('editProductName').value = product.product_name;
+  updateEditCharCount(document.getElementById('editProductName'));
   $("#editCategory").val(product.category_id);
   $("#editPrice").val(product.price);
   $("#editCurrentQuantity").val(product.quantity);
@@ -1370,4 +1378,21 @@ function showError(message) {
     timer: 2000,
     showConfirmButton: false,
   });
+}
+
+function updateEditCharCount(input) {
+    const maxLength = 25;
+    const currentLength = input.value.length;
+    document.getElementById('editCharCount').textContent = 
+        `(${currentLength}/${maxLength})`;
+    
+    if (currentLength === maxLength) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Character Limit Reached',
+            text: 'Product name cannot exceed 25 characters',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    }
 }

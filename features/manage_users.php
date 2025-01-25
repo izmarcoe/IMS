@@ -36,34 +36,38 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_role'])) {
     $user_id = $_POST['user_id'];
     $new_role = $_POST['role'];
-    
+
     try {
         $conn->beginTransaction();
-        
+
         // Update role
         $updateStmt = $conn->prepare("UPDATE login_db SET role = ? WHERE user_id = ?");
         $updateStmt->execute([$new_role, $user_id]);
-        
+
         // If updating current user's role, update their session
         if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == $user_id) {
             $_SESSION['user_role'] = $new_role;
         }
-        
+
         $conn->commit();
-        
+
         // Return success response for AJAX
-        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 
-            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+        if (
+            isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'
+        ) {
             echo json_encode(['success' => true, 'new_role' => $new_role]);
             exit;
         }
-        
+
         header("Location: ../features/manage_users.php");
         exit();
     } catch (Exception $e) {
         $conn->rollBack();
-        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 
-            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+        if (
+            isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'
+        ) {
             echo json_encode(['error' => $e->getMessage()]);
             exit;
         }
@@ -176,9 +180,14 @@ $fname = $_SESSION['Fname'];
                                         <td class="px-2 sm:px-4 py-2 whitespace-nowrap text-sm">
                                             <div class="flex flex-wrap gap-1 sm:gap-2">
                                                 <?php if ($user['status'] == 'active'): ?>
-                                                    <button type="button" class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600" onclick="openModal('editRoleModal<?php echo $user['user_id']; ?>')">
-                                                        Edit Role
-                                                    </button>
+                                                    <?php if ($user['role'] !== 'employee'): ?>
+                                                        <button type="button"
+                                                            class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600"
+                                                            onclick="openModal('editRoleModal<?php echo $user['user_id']; ?>')"
+                                                            <?php echo ($user['role'] === 'new_user' ? '' : 'disabled style="opacity: 0.5; cursor: not-allowed;"'); ?>>
+                                                            Edit Role
+                                                        </button>
+                                                    <?php endif; ?>
 
                                                     <button type="button"
                                                         onclick="updateUserStatus(<?php echo $user['user_id']; ?>, 'deactivate')"
@@ -285,8 +294,8 @@ $fname = $_SESSION['Fname'];
                     $end = min($totalPages, $page + 2);
 
                     for ($i = $start; $i <= $end; $i++): ?>
-                        <a href="?page=<?php echo $i; ?>" 
-                        class="px-2 sm:px-3 py-1 sm:py-2 text-sm sm:text-base <?php echo $i == $page ? 'bg-green-600 text-white' : 'bg-gray-200 hover:bg-gray-300'; ?> rounded-md">
+                        <a href="?page=<?php echo $i; ?>"
+                            class="px-2 sm:px-3 py-1 sm:py-2 text-sm sm:text-base <?php echo $i == $page ? 'bg-green-600 text-white' : 'bg-gray-200 hover:bg-gray-300'; ?> rounded-md">
                             <?php echo $i; ?>
                         </a>
                     <?php endfor; ?>

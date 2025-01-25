@@ -111,9 +111,18 @@ $fname = $_SESSION['Fname'];
 
             <form method="POST" class="space-y-6" id="addProductForm" onsubmit="return validateForm(event)">
                 <div class="mb-4">
-                    <label for="product_name" class="block text-gray-700 text-sm font-bold mb-2">Product Name</label>
-                    <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        id="product_name" name="product_name">
+                    <label for="product_name" class="block text-gray-700 text-sm font-bold mb-2">
+                        Product Name
+                        <span id="charCount" class="text-sm text-gray-500 ml-2">(0/25)</span>
+                    </label>
+                    <input type="text"
+                        id="product_name"
+                        name="product_name"
+                        maxlength="25"
+                        oninput="updateCharCount(this)"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        placeholder="Enter product name (max 25 characters)"
+                        required>
                 </div>
                 <div class="mb-4">
                     <label for="category" class="block text-gray-700 text-sm font-bold mb-2">Category</label>
@@ -134,7 +143,7 @@ $fname = $_SESSION['Fname'];
                         ?>
                     </select>
                 </div>
-                <div class="mb-4">
+                <div id="priceContainer" class="mb-4 hidden">
                     <label for="price" class="block text-gray-700 text-sm font-bold mb-2">Price</label>
                     <input type="text"
                         id="price"
@@ -144,13 +153,19 @@ $fname = $_SESSION['Fname'];
                         placeholder="Enter price (1-99,999.99)"
                         required>
                 </div>
-                <div class="mb-4">
+
+                <div id="quantityContainer" class="mb-4 hidden">
                     <label for="quantity" class="block text-gray-700 text-sm font-bold mb-2">Quantity</label>
                     <input type="number"
+                        id="quantity"
                         name="quantity"
                         min="1"
                         max="999"
+                        maxlength="3"
+                        onkeydown="return event.keyCode !== 190 && event.keyCode !== 110"
+                        oninput="if (this.value.length > 3) this.value = this.value.slice(0, 3); if (this.value > 999) this.value = 999;"
                         class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        placeholder="Enter quantity (1-999)"
                         required>
                 </div>
                 <button type="submit" class="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline">
@@ -348,6 +363,45 @@ $fname = $_SESSION['Fname'];
             });
         });
     </script>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const productName = document.querySelector('input[name="product_name"]');
+    const category = document.querySelector('select[name="category_id"]');
+    const priceContainer = document.getElementById('priceContainer');
+    const quantityContainer = document.getElementById('quantityContainer');
+
+    function checkInputs() {
+        if (productName.value.trim() !== '' && category.value !== '') {
+            priceContainer.classList.remove('hidden');
+            quantityContainer.classList.remove('hidden');
+        } else {
+            priceContainer.classList.add('hidden');
+            quantityContainer.classList.add('hidden');
+        }
+    }
+
+    productName.addEventListener('input', checkInputs);
+    category.addEventListener('change', checkInputs);
+});
+</script>
+<script>
+function updateCharCount(input) {
+    const maxLength = 25;
+    const currentLength = input.value.length;
+    document.getElementById('charCount').textContent = 
+        `(${currentLength}/${maxLength})`;
+    
+    if (currentLength === maxLength) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Character Limit Reached',
+            text: 'Product name cannot exceed 25 characters',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    }
+}
+</script>
 
 </body>
 

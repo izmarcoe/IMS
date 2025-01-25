@@ -186,7 +186,7 @@ $fname = $_SESSION['Fname'];
                                     <tr class="border-t hover:bg-gray-50" data-product-id="<?php echo $product['product_id']; ?>">
                                         <td class="px-3 py-4"><?php echo htmlspecialchars($product['product_name']); ?></td>
                                         <td class="px-3 py-4"><?php echo htmlspecialchars($product['category_name'] ?? 'No Category'); ?></td>
-                                        <td class="px-3 py-4"><?php echo htmlspecialchars($product['price']); ?></td>
+                                        <td class="px-3 py-4">₱<?php echo htmlspecialchars($product['price']); ?></td>
                                         <td class="px-3 py-4"><?php echo htmlspecialchars($product['quantity']); ?></td>
                                         <td class="px-3 py-4">
                                             <?php if ($_SESSION['user_role'] === 'employee'): ?>
@@ -267,9 +267,17 @@ $fname = $_SESSION['Fname'];
                 <form id="editProductForm" method="POST">
                     <input type="hidden" name="product_id" id="editProductId">
                     <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="editProductName">Product Name</label>
-                        <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            id="editProductName" name="product_name" required>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="editProductName">
+                            Product Name
+                        </label>
+                        <input type="text"
+                            id="editProductName"
+                            name="product_name"
+                            maxlength="25"
+                            oninput="updateEditCharCount(this)"
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            placeholder="Enter product name (max 25 characters)"
+                            required>
                     </div>
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="editCategory">Category</label>
@@ -285,8 +293,13 @@ $fname = $_SESSION['Fname'];
                     </div>
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="editPrice">Price</label>
-                        <input type="number" step="1" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            id="editPrice" name="price" min="1" max="99999" required>
+                        <input type="text"
+                            id="editPrice"
+                            name="price"
+                            pattern="^\d{1,5}(\.\d{0,2})?$"
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            placeholder="Enter price (max 99,999.99)"
+                            required>
                     </div>
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="editCurrentQuantity">
@@ -295,8 +308,7 @@ $fname = $_SESSION['Fname'];
                         <input type="number"
                             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 bg-gray-100 leading-tight focus:outline-none focus:shadow-outline"
                             id="editCurrentQuantity"
-                            name="current_quantity"
-                            readonly>
+                            name="current_quantity">
                     </div>
 
                     <!-- Update the quantity display section -->
@@ -313,9 +325,8 @@ $fname = $_SESSION['Fname'];
                             maxlength="3"
                             onkeydown="return event.keyCode !== 190 && event.keyCode !== 110"
                             oninput="javascript: if (this.value.length > 3) this.value = this.value.slice(0, 3);"
-                            placeholder="Enter quantity (1-999)"
-                            required>
-                      
+                            placeholder="Enter quantity (1-999)">
+
                     </div>
                     <div class="flex justify-end gap-2">
                         <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded" onclick="closeEditModal()">Cancel</button>
@@ -431,59 +442,100 @@ $fname = $_SESSION['Fname'];
         });
     </script>
     <script>
-function validateQuantity(input, currentQty) {
-    currentQty = parseInt(currentQty) || 0;
-    const additionalQty = parseInt(input.value) || 0;
-    const totalQty = currentQty + additionalQty;
-    
-    // Update max quantity hint
-    document.getElementById('maxQuantityHint').textContent = 
-        `Maximum additional quantity allowed: ${999 - currentQty}`;
-    
-    if (input.value.length > 3) {
-        input.value = input.value.slice(0, 3);
-    }
-    
-    if (totalQty > 999) {
-        input.value = 999 - currentQty;
-        Swal.fire({
-            icon: 'error',
-            title: 'Invalid Quantity',
-            text: 'Total quantity cannot exceed 999',
-            timer: 2000,
-            showConfirmButton: false
+        function validateQuantity(input, currentQty) {
+            currentQty = parseInt(currentQty) || 0;
+            const additionalQty = parseInt(input.value) || 0;
+            const totalQty = currentQty + additionalQty;
+
+            // Update max quantity hint
+            document.getElementById('maxQuantityHint').textContent =
+                `Maximum additional quantity allowed: ${999 - currentQty}`;
+
+            if (input.value.length > 3) {
+                input.value = input.value.slice(0, 3);
+            }
+
+            if (totalQty > 999) {
+                input.value = 999 - currentQty;
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Quantity',
+                    text: 'Total quantity cannot exceed 999',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            }
+        }
+
+        document.getElementById('editProductForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const currentQty = parseInt(document.getElementById('editCurrentQuantity').value) || 0;
+            const additionalQty = parseInt(document.getElementById('editAdditionalQuantity').value) || 0;
+            const totalQty = currentQty + additionalQty;
+
+            if (!additionalQty || additionalQty < 1) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Quantity',
+                    text: 'Additional quantity must be at least 1'
+                });
+                return false;
+            }
+
+            if (totalQty > 999) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Quantity',
+                    text: 'Total quantity cannot exceed 999'
+                });
+                return false;
+            }
+
+            // Continue with form submission if validation passes
+            // ...existing submission code...
         });
-    }
-}
 
-document.getElementById('editProductForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const currentQty = parseInt(document.getElementById('editCurrentQuantity').value) || 0;
-    const additionalQty = parseInt(document.getElementById('editAdditionalQuantity').value) || 0;
-    const totalQty = currentQty + additionalQty;
+        document.getElementById('editPrice').addEventListener('input', function(e) {
+            // Remove any non-numeric characters except decimal point
+            let value = this.value.replace(/[^\d.]/g, '');
 
-    if (!additionalQty || additionalQty < 1) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Invalid Quantity',
-            text: 'Additional quantity must be at least 1'
+            // Ensure only one decimal point
+            const decimalCount = (value.match(/\./g) || []).length;
+            if (decimalCount > 1) {
+                value = value.replace(/\.(?=.*\.)/g, '');
+            }
+
+            // Split number into integer and decimal parts
+            const parts = value.split('.');
+
+            // Limit integer part to 5 digits
+            if (parts[0].length > 5) {
+                parts[0] = parts[0].slice(0, 5);
+            }
+
+            // Limit decimal part to 2 digits
+            if (parts[1] && parts[1].length > 2) {
+                parts[1] = parts[1].slice(0, 2);
+            }
+
+            // Reconstruct the value
+            value = parts.join('.');
+
+            // Validate final value
+            const price = parseFloat(value);
+            if (price > 99999.99) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Price',
+                    text: 'Maximum price is 99,999.99',
+                    confirmButtonColor: '#3085d6'
+                });
+                value = '99999.99';
+            }
+
+            this.value = value;
         });
-        return false;
-    }
-
-    if (totalQty > 999) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Invalid Quantity',
-            text: 'Total quantity cannot exceed 999'
-        });
-        return false;
-    }
-
-    // Continue with form submission if validation passes
-    // ...existing submission code...
-});
-</script>
+    </script>
 </body>
 
 </html>

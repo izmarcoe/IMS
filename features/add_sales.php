@@ -132,7 +132,19 @@ $fname = $_SESSION['Fname'];
     <script src="../JS/roleMonitor.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+<style>
+input[type="number"].no-spinners {
+    -webkit-appearance: textfield;
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
 
+input[type="number"].no-spinners::-webkit-outer-spin-button,
+input[type="number"].no-spinners::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+</style>
 <body style="background-color: #DADBDF;">
     <!-- Header -->
     <?php include '../features/header.php' ?>
@@ -183,16 +195,20 @@ $fname = $_SESSION['Fname'];
                                     <?php endforeach; ?>
                                 </select>
 
-                                <input type="text" name="categories[]" readonly
+                                <input type="text" placeholder="Category" name="categories[]" readonly
                                     class="w-32 h-8 text-sm bg-gray-100 rounded border">
 
                                 <input type="hidden" name="category_names[]">
 
-                                <input type="number" name="prices[]" readonly
-                                    class="w-24 h-8 text-sm bg-gray-100 rounded border">
+                                <input type="number" placeholder="Price" name="prices[]" readonly
+                                    class="w-22 h-8 text-sm bg-gray-100 rounded border">
 
-                                <input type="number" name="quantities[]" min="1" required
-                                    class="w-24 h-8 text-sm rounded border">
+                                <input type="number" placeholder="Quantity (1-999)" name="quantities[]" min="1"
+                                    maxlength="3"
+                                    onkeydown="return event.keyCode !== 190 && event.keyCode !== 110"
+                                    oninput="if (this.value.length > 3) this.value = this.value.slice(0, 3); if (this.value > 999) this.value = 999;"
+                                    required
+                                    class="w-25 h-8 text-md rounded border no-spinners">
 
                                 <div class="text-sm">
                                     Total: ₱<span class="row-total">0.00</span>
@@ -335,23 +351,21 @@ $fname = $_SESSION['Fname'];
                     const result = await checkStock(productId, quantity);
                     clearErrors(row);
 
-                    // If input is empty or 0, clear errors and styling
                     if (!quantity) {
                         quantityInput.classList.remove('border-red-500');
                         clearErrors(row);
-                        submitBtn.disabled = false;
+                        addButton.disabled = true;
                         return true;
                     }
 
-                    // Check for stock availability
                     if (!result.success || !result.isAvailable) {
                         quantityInput.classList.add('border-red-500');
                         showStockError(row, 'Exceeded the current available stock');
-                        submitBtn.disabled = true;
+                        addButton.disabled = true;
                         return false;
                     } else {
                         quantityInput.classList.remove('border-red-500');
-                        submitBtn.disabled = false;
+                        addButton.disabled = false;
                         return true;
                     }
                 }
@@ -365,6 +379,8 @@ $fname = $_SESSION['Fname'];
                 const stockInfo = row.querySelector('.stock-info');
 
                 productSelect.addEventListener('change', function() {
+                    addButton.disabled = true;
+                    addButton.classList.add('opacity-50', 'cursor-not-allowed');
                     // Remove previous selection
                     if (this.dataset.previousValue) {
                         selectedProducts.delete(this.dataset.previousValue);
@@ -394,13 +410,14 @@ $fname = $_SESSION['Fname'];
                     const quantity = this.value ? parseInt(this.value) : 0;
                     const productId = productSelect.value;
 
-                    if (!this.value) {
-                        // If input is empty, clear errors and styling
-                        this.classList.remove('border-red-500');
-                        clearErrors(row);
-                        submitBtn.disabled = false;
-                    } else if (productId && quantity > 0) {
-                        await validateStock(productId, quantity, this);
+                    if (productId && quantity > 0) {
+                        const isValid = await validateStock(productId, quantity, this);
+                        addButton.disabled = !isValid;
+                        addButton.classList.toggle('opacity-50', !isValid);
+                        addButton.classList.toggle('cursor-not-allowed', !isValid);
+                    } else {
+                        addButton.disabled = true;
+                        addButton.classList.add('opacity-50', 'cursor-not-allowed');
                     }
                     updateRowTotal(row);
                 });
@@ -498,5 +515,6 @@ $fname = $_SESSION['Fname'];
         });
     </script>
 </body>
+
 
 </html>

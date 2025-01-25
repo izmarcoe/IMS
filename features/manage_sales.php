@@ -287,7 +287,7 @@ $lname = $_SESSION['Lname'];
                                         <td class="px-3 py-4 category-name"><?php echo htmlspecialchars($sale['category_name'] ?? 'No Category'); ?></td>
                                         <td class="px-3 py-4 price"><?php echo htmlspecialchars($sale['price']); ?></td>
                                         <td class="px-3 py-4 quantity"><?php echo htmlspecialchars($sale['quantity']); ?></td>
-                                        <td class="px-3 py-4 total-sales"><?php echo htmlspecialchars($sale['total_sales']); ?></td>
+                                        <td class="px-3 py-4">₱<?php echo number_format($sale['total_sales'], 2, '.', ','); ?></td>
                                         <td class="px-3 py-4 sale-date"><?php echo htmlspecialchars(date('F j, Y', strtotime($sale['sale_date']))); ?></td>
                                         <?php if ($_SESSION['user_role'] === 'admin'): ?>
                                             <td class="px-3 py-4">
@@ -430,7 +430,10 @@ $lname = $_SESSION['Lname'];
 
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="editSaleDate">Sale Date</label>
-                            <input type="date" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            <input type="date"
+                             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                              min="2023-01-01"
+                              max="<?php echo date('Y-m-d'); ?>"
                                 id="editSaleDate" name="sale_date" required <?php if ($user_role == 'employee') echo 'readonly'; ?>>
                         </div>
 

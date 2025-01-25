@@ -170,12 +170,12 @@ $fname = $_SESSION['Fname'];
                     <form id="addCategoryForm" action="../endpoint/process_category.php" method="POST">
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2">Category Name</label>
-                            <input type="text" name="category_name" required
+                            <input type="text" name="category_name" maxlength="30" placeholder="max of 30 characters" required
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500">
                         </div>
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2">Description</label>
-                            <textarea name="description" rows="3"
+                            <textarea name="description" rows="3" maxlength="40"placeholder="max of 40 characters"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"></textarea>
                         </div>
                         <input type="hidden" name="action" value="add">
@@ -199,12 +199,12 @@ $fname = $_SESSION['Fname'];
                         <input type="hidden" id="edit_id" name="id">
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2">Category Name</label>
-                            <input type="text" id="edit_category_name" name="category_name" required
+                            <input type="text" id="edit_category_name" name="category_name" maxlength="30" required
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500">
                         </div>
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2">Description</label>
-                            <textarea id="edit_description" name="description" rows="3"
+                            <textarea id="edit_description" name="description" rows="3" maxlength="40"placeholder="max of 40 characters"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500"></textarea>
                         </div>
                         <input type="hidden" name="action" value="edit">
